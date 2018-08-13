@@ -1,0 +1,6 @@
+{
+  "azureFunctions.projectRuntime": "~1",
+  "azureFunctions.projectLanguage": "JavaScript",
+  "appService.zipIgnorePattern": ["node_modules{,/**}"],
+  "appService.deploySubpath": "serverless-microservices-web"
+}
