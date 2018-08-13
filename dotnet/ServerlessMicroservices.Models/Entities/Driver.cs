@@ -1,6 +1,6 @@
 ﻿using System;
 
-namespace ServerlessMicroservices.Models
+namespace ServerlessMicroservices.Models.Entities
 {
     public class Driver
     {

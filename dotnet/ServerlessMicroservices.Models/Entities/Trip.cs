@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Text;
-
-namespace ServerlessMicroservices.Models
+﻿namespace ServerlessMicroservices.Models.Entities
 {
     public class Trip
     {
@@ -17,6 +13,6 @@ namespace ServerlessMicroservices.Models
         // TripEnd (DateTime (UTC) nullable)
         // TripCanceled (bool)
         // RatingByPassenger (float? nullable)
-        // RatingByDriver (float? nullable)
+        // RatingByDriver (float? nullable)    
     }
 }

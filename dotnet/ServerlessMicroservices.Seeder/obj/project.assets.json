@@ -681,23 +681,23 @@
     ]
   },
   "packageFolders": {
-    "C:\\Users\\joel\\.nuget\\packages\\": {},
+    "C:\\Users\\khale\\.nuget\\packages\\": {},
     "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder": {}
   },
   "project": {
     "version": "1.0.0",
     "restore": {
-      "projectUniqueName": "C:\\Dropbox (Personal)\\Projects\\Solliance\\serverless-microservices\\dotnet\\ServerlessMicroservices.Seeder\\ServerlessMicroservices.Seeder.csproj",
+      "projectUniqueName": "C:\\Users\\khale\\Dropbox\\Work\\Src\\Yangles\\serverless-microservices\\dotnet\\ServerlessMicroservices.Seeder\\ServerlessMicroservices.Seeder.csproj",
       "projectName": "ServerlessMicroservices.Seeder",
-      "projectPath": "C:\\Dropbox (Personal)\\Projects\\Solliance\\serverless-microservices\\dotnet\\ServerlessMicroservices.Seeder\\ServerlessMicroservices.Seeder.csproj",
-      "packagesPath": "C:\\Users\\joel\\.nuget\\packages\\",
-      "outputPath": "C:\\Dropbox (Personal)\\Projects\\Solliance\\serverless-microservices\\dotnet\\ServerlessMicroservices.Seeder\\obj\\",
+      "projectPath": "C:\\Users\\khale\\Dropbox\\Work\\Src\\Yangles\\serverless-microservices\\dotnet\\ServerlessMicroservices.Seeder\\ServerlessMicroservices.Seeder.csproj",
+      "packagesPath": "C:\\Users\\khale\\.nuget\\packages\\",
+      "outputPath": "C:\\Users\\khale\\Dropbox\\Work\\Src\\Yangles\\serverless-microservices\\dotnet\\ServerlessMicroservices.Seeder\\obj\\",
       "projectStyle": "PackageReference",
       "fallbackFolders": [
         "C:\\Program Files\\dotnet\\sdk\\NuGetFallbackFolder"
       ],
       "configFilePaths": [
-        "C:\\Users\\joel\\AppData\\Roaming\\NuGet\\NuGet.Config",
+        "C:\\Users\\khale\\AppData\\Roaming\\NuGet\\NuGet.Config",
         "C:\\Program Files (x86)\\NuGet\\Config\\Microsoft.VisualStudio.Offline.config"
       ],
       "originalTargetFrameworks": [

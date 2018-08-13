@@ -1,8 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Text;
 
-namespace ServerlessMicroservices.Models
+namespace ServerlessMicroservices.Models.Entities
 {
     public class Car
     {
