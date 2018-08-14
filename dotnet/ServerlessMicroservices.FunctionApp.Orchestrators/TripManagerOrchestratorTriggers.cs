@@ -28,7 +28,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             var reqMessage = req.ToHttpRequestMessage();
             var res = context.CreateCheckStatusResponse(reqMessage, trip.Code);
             res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
-            // TODO: So no retry header in Core....
+            // TODO: So no retry header in Core?
             return (ActionResult) new OkObjectResult(res.Content);
         }
 

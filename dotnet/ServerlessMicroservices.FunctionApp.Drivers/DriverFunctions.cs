@@ -1,24 +1,24 @@
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using ServerlessMicroservices.Shared.Services;
-using System.Threading.Tasks;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Services;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ServerlessMicroservices.FunctionApp.Drivers
 {
     public static class DriverFunctions
     {
-        [FunctionName("G_Drivers")]
+        [FunctionName("GetDrivers")]
         public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers")] HttpRequest req, 
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("G_Drivers triggered....");
+            log.LogInformation("GetDrivers triggered....");
 
             try
             {
@@ -27,17 +27,18 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
             catch (Exception e)
             {
-                log.Error($"G_Drivers failed: {e.Message}");
-                return new BadRequestObjectResult($"G_Drivers failed: {e.Message}");
+                var error = $"GetDrivers failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("G_Driver")]
+        [FunctionName("GetDriver")]
         public static async Task<IActionResult> GetDriver([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{code}")] HttpRequest req,
             string code,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("G_Driver triggered....");
+            log.LogInformation("GetDriver triggered....");
 
             try
             {
@@ -46,16 +47,17 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
             catch (Exception e)
             {
-                log.Error($"G_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"G_Driver failed: {e.Message}");
+                var error = $"GetDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("P_Driver")]
-        public static async Task<IActionResult> PostDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "drivers")] HttpRequest req,
-            TraceWriter log)
+        [FunctionName("CreateDriver")]
+        public static async Task<IActionResult> CreateDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "drivers")] HttpRequest req,
+            ILogger log)
         {
-            log.Info("P_Driver triggered....");
+            log.LogInformation("CreateDriver triggered....");
 
             try
             {
@@ -66,16 +68,17 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
             catch (Exception e)
             {
-                log.Error($"P_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"P_Driver failed: {e.Message}");
+                var error = $"CreateDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("U_Driver")]
+        [FunctionName("UpdateDriverLocation")]
         public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Function, "put", Route = "drivers")] HttpRequest req,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("U_Driver triggered....");
+            log.LogInformation("UpdateDriverLocation triggered....");
 
             try
             {
@@ -86,17 +89,18 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
             catch (Exception e)
             {
-                log.Error($"U_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"U_Driver failed: {e.Message}");
+                var error = $"UpdateDriverLocation failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("G_DriverLocations")]
+        [FunctionName("GetDriverLocations")]
         public static async Task<IActionResult> GetDriverLocations([HttpTrigger(AuthorizationLevel.Function, "get", Route = "driverlocations/{code}")] HttpRequest req,
             string code,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("G_DriverLocations triggered....");
+            log.LogInformation("GetDriverLocations triggered....");
 
             try
             {
@@ -105,17 +109,18 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
             catch (Exception e)
             {
-                log.Error($"G_DriverLocations failed: {e.Message}");
-                return new BadRequestObjectResult($"G_DriverLocations failed: {e.Message}");
+                var error = $"GetDriverLocations failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("D_Driver")]
+        [FunctionName("DeleteDriver")]
         public static async Task<IActionResult> DeleteDriver([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "drivers/{code}")] HttpRequest req,
             string code,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("D_Driver triggered....");
+            log.LogInformation("DeleteDriver triggered....");
 
             try
             {
@@ -125,8 +130,9 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
             catch (Exception e)
             {
-                log.Error($"D_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"D_Driver failed: {e.Message}");
+                var error = $"DeleteDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
     }

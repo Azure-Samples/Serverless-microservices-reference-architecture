@@ -71,9 +71,9 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         }
 
         // *** PRIVATE ***//
-        private static async Task Notify(TripItem driver)
+        private static async Task Notify(TripItem trip)
         {
-            // This will most likely enqueue an item to SignalR service via INotifyService           
+            //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
         }
     }
 }
