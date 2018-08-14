@@ -34,6 +34,10 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 if (availableDrivers.Count == 0)
                     throw new Exception("No drivers available!!");
 
+                // Update the trip
+                trip.AvailableDrivers = availableDrivers;
+                trip = await context.CallActivityAsync<TripItem>("A_TM_UpdateTrip", trip);
+
                 // Wait for either a timer or an external event to signal that a driver accepted the trip
                 using (var cts = new CancellationTokenSource())
                 {
@@ -54,31 +58,25 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 }
 
                 if (driverAcceptCode == "Timed Out")
-                    throw new Exception($"Out of {availableDrivers.Count}, no driver responed on time!!");
+                    throw new Exception($"Did not receive an ack from any driver in {Constants.WAIT_FOR_DRIVERS_PERIOD_IN_SECONDS} seconds!!");
 
-                // Notify other drivers
                 var acceptedDriver = availableDrivers.SingleOrDefault(d => d.Code == driverAcceptCode);
                 if (acceptedDriver == null)
                     throw new Exception($"Data integrity - received an ack from an invalid driver {driverAcceptCode}!!");
 
-                var otherDrivers = availableDrivers.Remove(acceptedDriver);
-                await context.CallActivityAsync("A_TM_NotifyOtherDrivers", otherDrivers);
-
                 // Update the trip
-                trip = await context.CallActivityAsync<TripItem>("A_TM_UpdateTrip", new TripInfo
-                {
-                    Trip = trip,
-                    Passenger = passenger,
-                    Driver = acceptedDriver
-                });
+                trip.Driver = acceptedDriver;
+                trip.AcceptDate = context.CurrentUtcDateTime;
+                trip = await context.CallActivityAsync<TripItem>("A_TM_UpdateTrip", trip);
+
+                // Notify the selected driver
+                await context.CallActivityAsync("A_TM_NotifySelectedDriver", trip);
+
+                // Remove selected and notify other drivers
+                await context.CallActivityAsync("A_TM_NotifyOtherDrivers", trip);
 
                 // Notify the passenger
-                await context.CallActivityAsync("A_TM_NotifyPassenger", new TripInfo
-                {
-                    Trip = trip,
-                    Passenger = passenger,
-                    Driver = acceptedDriver
-                });
+                await context.CallActivityAsync("A_TM_NotifyPassenger", trip);
 
                 // Externalize the trip
                 await context.CallActivityAsync("A_TM_Externalize", trip);
@@ -91,6 +89,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 if (!context.IsReplaying)
                     log.LogInformation($"Caught an error from an activity: {e.Message}");
 
+                trip.Error = e.Message;
                 await context.CallActivityAsync<string>("A_TM_Cleanup", trip);
 
                 return new
@@ -115,46 +114,55 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             List<DriverItem> availableDrivers = new List<DriverItem>();
             foreach (var driver in availableDrivers)
             {
-                await Notify(driver);
+                await Notify(driver, trip);
             }
 
             return availableDrivers;
         }
 
-        [FunctionName("A_TM_NotifyOtherDrivers")]
-        public static async Task NotifyOtherDrivers([ActivityTrigger] List<DriverItem> otherDrivers,
-            ILogger log)
-        {
-            log.LogInformation($"NotifyOtherDrivers starting....");
-            foreach (var driver in otherDrivers)
-            {
-                await Notify(driver, true);
-            }
-        }
-
         [FunctionName("A_TM_UpdateTrip")]
-        public static async Task<TripItem> UpdateTrip([ActivityTrigger] TripInfo info,
+        public static async Task<TripItem> UpdateTrip([ActivityTrigger] TripItem trip,
             ILogger log)
         {
             log.LogInformation($"UpdateTrip starting....");
             // TODO: Update Cosmos directly or post to another function
-            await Notify(info.Trip);
-            return info.Trip;
+            await Notify(trip);
+            return trip;
+        }
+
+        [FunctionName("A_TM_NotifySelectedDriver")]
+        public static async Task NotifySelectedDriver([ActivityTrigger] TripItem trip,
+            ILogger log)
+        {
+            log.LogInformation($"NotifySelectedDriver starting....");
+            await Notify(trip.Driver, trip, true);
+        }
+
+        [FunctionName("A_TM_NotifyOtherDrivers")]
+        public static async Task NotifyOtherDrivers([ActivityTrigger] TripItem trip,
+            ILogger log)
+        {
+            log.LogInformation($"NotifyOtherDrivers starting....");
+            trip.AvailableDrivers.Remove(trip.Driver);
+            foreach (var driver in trip.AvailableDrivers)
+            {
+                await Notify(driver, trip, false);
+            }
         }
 
         [FunctionName("A_TM_NotifyPassenger")]
-        public static async Task NotifyPassenger([ActivityTrigger] TripInfo info,
+        public static async Task NotifyPassenger([ActivityTrigger] TripItem trip,
             ILogger log)
         {
             log.LogInformation($"NotifyPassenger starting....");
-            await Notify(info.Passenger, info.Trip);
+            await Notify(trip.Passenger, trip);
         }
 
-        [FunctionName("A_TM_NotifyExternal")]
+        [FunctionName("A_TM_Externalize")]
         public static async Task NotifyExternal([ActivityTrigger] TripItem trip,
             ILogger log)
         {
-            log.LogInformation($"NotifyExternal starting....");
+            log.LogInformation($"Externalize starting....");
             await Externalize(trip);
         }
 
@@ -174,45 +182,40 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"Cleanup for {trip.Code} starting....");
-            //TODO: 
+            trip.EndDate = DateTime.Now;
+            trip.IsAborted = true;
+            // TODO: Update Cosmos directly or post to another function
         }
 
         // *** PRIVATE ***//
-        private static async Task Notify(DriverItem driver)
+        private static async Task Notify(DriverItem driver, TripItem trip)
         {
-             //TODO: This will most likely enqueue an item to SignalR service via INotifyService  
-             //TODO: This could be an email as well with an Ok button to accept the ride
+            //OUT-OF-SCOPE: Used to notify a driver that a trip is up for grabs
+            //OUT-OF-SCOPE: The notification can be a SignalR push, push notification, SMS or Email
+            //OUT-OF-SCOPE: An email with an Ok button to accept the ride is probably good for demo
         }
 
-        private static async Task Notify(DriverItem driver, bool notSelected)
+        private static async Task Notify(DriverItem driver, TripItem trip, bool isSelected)
         {
-            //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
-            //TODO: This is used to let the other drivers that they were not selected
+            //OUT-OF-SCOPE: Used to notify an available driver that either he/she is selected or not selected for a trip           
+            //OUT-OF-SCOPE: If true, it is used to let the selected driver that he/she has been selected
+            //OUT-OF-SCOPE: If false, it is used to let the other drivers that they were not selected
         }
 
         private static async Task Notify(PassengerItem passenger, TripItem trip)
         {
-            //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
-            //TODO: This is used to let the passenger that the trip has been accepted
+            //OUT-OF-SCOPE: This is used to let the passenger that the trip has been accepted
+            //OUT-OF-SCOPE: The notification can be a SignalR push, push notification, SMS or Email
         }
 
         private static async Task Notify(TripItem trip)
         {
-            //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
-            //TODO: This is used to update the trip info i.e. Driver location for the passenger
+            //OUT-OF-SCOPE: This is used to update the trip info i.e. Driver location for all observers
         }
 
         private static async Task Externalize(TripItem trip)
         {
-            //TODO: This will most likely trigger an Event Grid topic           
-            //TODO: Most likely it will be processed by several listeners
+            //TODO: Trigger an Event Grid topic           
         }
     }
-}
-
-public class TripInfo
-{
-    public TripItem Trip { get; set; }
-    public PassengerItem Passenger { get; set; }
-    public DriverItem Driver { get; set; }
 }

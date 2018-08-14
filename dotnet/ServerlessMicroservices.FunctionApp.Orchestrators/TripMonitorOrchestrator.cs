@@ -22,22 +22,28 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
             try
             {
-                // Check every 5 seconds
+                // Monitor every x seconds
                 DateTime nextUpdate = context.CurrentUtcDateTime.AddSeconds(Constants.TRIP_UPDATE_INTERVAL_IN_SECONDS);
                 await context.CreateTimer(nextUpdate, CancellationToken.None);
+                trip.MonitorIterations++;
                 trip = await context.CallActivityAsync<TripItem>("A_TO_UpdateTrip", trip);
 
-                if (trip.EndDate == null)
+                // We do not allow the trip to hang forever.... 
+                if (trip.EndDate == null && trip.MonitorIterations < Constants.TRIP_MONITOR_MAX_ITERATIONS)
                 {
                     // Reload the instance with a new state
                     context.ContinueAsNew(trip);
-                } 
+                }
+
+                if (trip.EndDate == null)
+                    throw new Exception($"The trip did not complete in {Constants.TRIP_MONITOR_MAX_ITERATIONS} {Constants.TRIP_UPDATE_INTERVAL_IN_SECONDS} second terations!!");
             }
             catch (Exception e)
             {
                 if (!context.IsReplaying)
                     log.LogInformation($"Caught an error from an activity: {e.Message}");
 
+                trip.Error = e.Message;
                 await context.CallActivityAsync<string>("A_TO_Cleanup", trip);
 
                 return new
@@ -58,7 +64,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"UpdateTrip for {trip.Code} starting....");
-            //TODO: Update Cosmos
+            //TODO: Update Cosmos directly or post to another function
             await Notify(trip);
             return trip;
         }
@@ -68,7 +74,9 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"Cleanup for {trip.Code} starting....");
-            //TODO: 
+            trip.EndDate = DateTime.Now;
+            trip.IsAborted = true;
+            // TODO: Update Cosmos directly or post to another function
         }
 
         // *** PRIVATE ***//
