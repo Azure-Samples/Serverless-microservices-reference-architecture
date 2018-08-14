@@ -106,8 +106,11 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             log.LogInformation($"FindNNotifyDrivers for {trip.Code} starting....");
             // TODO: Query Cosmos
             List<DriverItem> availableDrivers = new List<DriverItem>();
-            // TODO: Send via SignalR
-            //...
+            foreach (var driver in availableDrivers)
+            {
+                await Notify(driver);
+            }
+
             return availableDrivers;
         }
 
@@ -116,8 +119,10 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"NotifyOtherDrivers starting....");
-            // TODO: Send via SignalR
-            //...
+            foreach (var driver in otherDrivers)
+            {
+                await Notify(driver);
+            }
         }
 
         [FunctionName("A_TM_UpdateTrip")]
@@ -125,7 +130,8 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"UpdateTrip starting....");
-            //...
+            // TODO: Update Cosmos
+            await Notify(info.Trip);
         }
 
         [FunctionName("A_TM_NotifyPassenger")]
@@ -133,17 +139,18 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"NotifyPassenger starting....");
-            // TODO: Send via SignalR
-            //...
+            await Notify(passenger);
         }
 
+        // Out does does not work in Async methods!!!
         [FunctionName("A_TM_CreateTripMonitor")]
-        public static async Task CreateTripMonitor([ActivityTrigger] TripItem trip,
+        public static void CreateTripMonitor([ActivityTrigger] TripItem trip,
+            [Queue("trip-monitors", Connection = "AzureWebJobsStorage")] out TripItem queueTrip,
             ILogger log)
         {
             log.LogInformation($"CreateTripMonitor starting....");
-            // TODO: We can get the host base url and trigger via the `TripMonitorOrchestratorTriggers`
-            //...
+            // Enqueue the trip to be monitored 
+            queueTrip = trip;
         }
 
         [FunctionName("A_TM_Cleanup")]
@@ -152,6 +159,22 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         {
             log.LogInformation($"Cleanup for {trip.Code} starting....");
             //TODO: 
+        }
+
+        // *** PRIVATE ***//
+        private static async Task Notify(DriverItem driver)
+        {
+             // This will most likely enqueue an item to SignalR service via INotifyService           
+        }
+
+        private static async Task Notify(PassengerItem passenger)
+        {
+            // This will most likely enqueue an item to SignalR service via INotifyService           
+        }
+
+        private static async Task Notify(TripItem driver)
+        {
+            // This will most likely enqueue an item to SignalR service via INotifyService           
         }
     }
 }

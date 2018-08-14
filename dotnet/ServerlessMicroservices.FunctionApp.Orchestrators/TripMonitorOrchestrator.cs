@@ -58,8 +58,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"UpdateTrip for {trip.Code} starting....");
-            // TODO: 
-            // TODO: Update passenger via SignalR
+            await Notify(trip);
             return trip;
         }
 
@@ -69,6 +68,12 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         {
             log.LogInformation($"Cleanup for {trip.Code} starting....");
             //TODO: 
+        }
+
+        // *** PRIVATE ***//
+        private static async Task Notify(TripItem driver)
+        {
+            // This will most likely enqueue an item to SignalR service via INotifyService           
         }
     }
 }

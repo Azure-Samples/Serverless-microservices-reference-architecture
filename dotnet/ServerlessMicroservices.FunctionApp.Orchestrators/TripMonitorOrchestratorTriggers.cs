@@ -14,8 +14,19 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 {
     public static class TripMonitorOrchestratorTriggers
     {
-        [FunctionName("StartTripMonitor")]
-        public static async Task<IActionResult> CreateTripManager([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors")] HttpRequest req,
+        [FunctionName("T_StartTripMonitorViaQueueTrigger")]
+        public static async Task StartTripMonitorViaQueueTrigger(
+            [OrchestrationClient] DurableOrchestrationClient context,
+            [QueueTrigger("trip-monitors", Connection = "AzureWebJobsStorage")] TripItem trip,
+            ILogger log)
+        {
+            // The monitor instance id is the trip code + -M. This is to make sure that a Trip Manager and a monitor can co-exist
+            var code = $"{trip.Code}-M";
+            await StartInstance(context, trip, code, log);
+        }
+
+        [FunctionName("T_StartTripMonitor")]
+        public static async Task<IActionResult> StartTripMonitor([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             ILogger log)
         {
@@ -33,7 +44,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             return (ActionResult)new OkObjectResult(res.Content);
         }
 
-        [FunctionName("GetTripMonitor")]
+        [FunctionName("T_GetTripMonitor")]
         public static async Task<IActionResult> GetTripMonitor([HttpTrigger(AuthorizationLevel.Function, "get", Route = "tripmonitors/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
@@ -52,7 +63,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        [FunctionName("TerminateTripMonitor")]
+        [FunctionName("T_TerminateTripMonitor")]
         public static async Task<IActionResult> TerminateTripMonitor([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors/{code}/terminate")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,

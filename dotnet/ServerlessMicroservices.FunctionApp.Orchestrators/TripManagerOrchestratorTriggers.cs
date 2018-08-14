@@ -14,8 +14,8 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 {
     public static class TripManagerOrchestratorTriggers
     {
-        [FunctionName("StartTripManager")]
-        public static async Task<IActionResult> CreateTripManager([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmanagers")] HttpRequest req,
+        [FunctionName("T_StartTripManager")]
+        public static async Task<IActionResult> StartTripManager([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmanagers")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             ILogger log)
         {
@@ -32,7 +32,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             return (ActionResult) new OkObjectResult(res.Content);
         }
 
-        [FunctionName("GetTripManager")]
+        [FunctionName("T_GetTripManager")]
         public static async Task<IActionResult> GetTripManager([HttpTrigger(AuthorizationLevel.Function, "get", Route = "tripmanagers/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
@@ -51,7 +51,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        [FunctionName("TerminateTripManager")]
+        [FunctionName("T_TerminateTripManager")]
         public static async Task<IActionResult> TerminateTripManager([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmanagers/{code}/terminate")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
@@ -70,7 +70,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        [FunctionName("AcknowledgeTrip")]
+        [FunctionName("T_AcknowledgeTrip")]
         public static async Task<IActionResult> AcknowledgeTrip([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmanagers/{code}/acknowledge/drivers/{drivercode}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
