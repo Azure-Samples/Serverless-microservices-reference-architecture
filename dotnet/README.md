@@ -6,8 +6,11 @@
 - Installed the `Micrsoft.Azure.WebJobs.Extension.DurableTask` Nuget package in the `ActiveDrivers` project to get it to compile
 - Created a `Shared` project that contains services and common code
 - Adjusted the `Models` project a bit by creating items and moved the existing entities to the `Entities` folder. The items will be used against the persistence layer. 
-- Installed the `Microsoft.Azure.DocumnentDB.Core` in the `Shared` project. This is an anomaly....the standard libraries require `core` and they don't work with the existing non-core DocumentDB library
-- The current `Microsoft.NET.Sdk.Functions` 1.0.14 comes bundled with `Newtonsoft.Json` version 11.0.2 while `Microsoft.NET.Sdk.Functions` 1.0.13 comes bundled with `Newtonsoft.Json` version 10.0.3. I will need to update all the other projects to 1.0.14 so we can match the version. 
+- Installed the `Microsoft.Azure.DocumentDB.Core` in the `Shared` project. 
+- Upgraded all projects to latest `Functions SDK` and `Newtonsoft.Json`
+- The latest Function SDK produces functions using the `ASP.NET Core` `HttpRequest` and `IActionResult` as opposed to `HttpReuestMessage` and `HttpResponseMessage`
+- The latest Function SDK produces functions using the `ILogger` as opposed to `TraceWriter`....this is a big improvement
+- I created a new project called `ServerlessMicroservices.FunctionApp.Orchestrators` that has durable orchestrator and activity functions. This new project has pseudo implementation for a `Trip Manager` and a `Trip Monitor` 
 
 ## Coding Notes
 
@@ -20,7 +23,8 @@
 - I also created two additional auxiliary services: `ILoggerService` and `IAnalyticService`. I did not implement them yet. I feel they are important...we can discuss. 
 - I used the concept if `ServiceFactory` to create instances. This is due to lack of `dependency injection` in `Functions`. At least I could not find a reasonable way to do it.
 - For now, I embedded `Car` within `Driver`. It can be separated if need be.
-- I used a naming convention in the function names i.e `G_Drivers`, `P_Drivers`, etc. This allows us to easily locate the function in the portal.
+- I used a naming convention in the orchestrator function names so they start with `O_` or `A_`. The first one denotes an orchestrator function i.e. `O_ManageTrip` and the second denotes an activity i.e. `A_TM_NotifyOtherDrivers`
+- I also used a naming convention in the orchestrator trigger function names so they start with `T_` i.e. `T_StartTripManager` 
 
 ## Provisioning
 
@@ -33,12 +37,12 @@ I provisioned the following resources under a resource group called `RideShare` 
 
 ## Publishing
 
-- I used `Visual Studio` to publish by right-clicking the functions app project and click publish. It worked the first time....they suggested that I allow `beta` in the app settings. They must have noticed the use of standard library.
-- Subsequent publishes failed for no good reason. I had to use `Kudu` for the rescue. So I went in there, stopped the functions app, deleted its content, re-started the app and re-published. This worked. Unfortunately it is a lot of work!!
+- I used `Visual Studio` to publish by right-clicking the functions app project and click publish. It worked the first time....they suggested that I allow `beta` in the app settings. 
+- Subsequent publishes, however, failed for no good reason. I had to use `Kudu` for the rescue. So I went in there, stopped the functions app, deleted its content, re-started the app and re-published. This worked. Unfortunately it is a lot of work!!
 - I manually updated the functions app settings in the portal. I store in there the Cosmos settings, app insights and others.
 - Later, perhaps we can use a more predictable method of publishing like `Cake` or something similar. 
 
-## APIs
+## Drivers API
 
 The following are currently finished and they seem to work:
 

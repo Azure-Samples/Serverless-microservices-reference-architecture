@@ -298,8 +298,11 @@ img {
 <li>Installed the <code>Micrsoft.Azure.WebJobs.Extension.DurableTask</code> Nuget package in the <code>ActiveDrivers</code> project to get it to compile</li>
 <li>Created a <code>Shared</code> project that contains services and common code</li>
 <li>Adjusted the <code>Models</code> project a bit by creating items and moved the existing entities to the <code>Entities</code> folder. The items will be used against the persistence layer. </li>
-<li>Installed the <code>Microsoft.Azure.DocumnentDB.Core</code> in the <code>Shared</code> project. This is an anomaly....the standard libraries require <code>core</code> and they don't work with the existing non-core DocumentDB library</li>
-<li>The current <code>Microsoft.NET.Sdk.Functions</code> 1.0.14 comes bundled with <code>Newtonsoft.Json</code> version 11.0.2 while <code>Microsoft.NET.Sdk.Functions</code> 1.0.13 comes bundled with <code>Newtonsoft.Json</code> version 10.0.3. I will need to update all the other projects to 1.0.14 so we can match the version. </li>
+<li>Installed the <code>Microsoft.Azure.DocumentDB.Core</code> in the <code>Shared</code> project. </li>
+<li>Upgraded all projects to latest <code>Functions SDK</code> and <code>Newtonsoft.Json</code></li>
+<li>The latest Function SDK produces functions using the <code>ASP.NET Core</code> <code>HttpRequest</code> and <code>IActionResult</code> as opposed to <code>HttpReuestMessage</code> and <code>HttpResponseMessage</code></li>
+<li>The latest Function SDK produces functions using the <code>ILogger</code> as opposed to <code>TraceWriter</code>....this is a big improvement</li>
+<li>I created a new project called <code>ServerlessMicroservices.FunctionApp.Orchestrators</code> that has durable orchestrator and activity functions. This new project has pseudo implementation for a <code>Trip Manager</code> and a <code>Trip Monitor</code> </li>
 </ul>
 <h2>Coding Notes</h2>
 <ul>
@@ -312,7 +315,8 @@ img {
 <li>I also created two additional auxiliary services: <code>ILoggerService</code> and <code>IAnalyticService</code>. I did not implement them yet. I feel they are important...we can discuss. </li>
 <li>I used the concept if <code>ServiceFactory</code> to create instances. This is due to lack of <code>dependency injection</code> in <code>Functions</code>. At least I could not find a reasonable way to do it.</li>
 <li>For now, I embedded <code>Car</code> within <code>Driver</code>. It can be separated if need be.</li>
-<li>I used a naming convention in the function names i.e <code>G_Drivers</code>, <code>P_Drivers</code>, etc. This allows us to easily locate the function in the portal.</li>
+<li>I used a naming convention in the orchestrator function names so they start with <code>O_</code> or <code>A_</code>. The first one denotes an orchestrator function i.e. <code>O_ManageTrip</code> and the second denotes an activity i.e. <code>A_TM_NotifyOtherDrivers</code></li>
+<li>I also used a naming convention in the orchestrator trigger function names so they start with <code>T_</code> i.e. <code>T_StartTripManager</code> </li>
 </ul>
 <h2>Provisioning</h2>
 <p>I provisioned the following resources under a resource group called <code>RideShare</code> in <code>Solliance-DEV</code> subscription:</p>
@@ -323,12 +327,12 @@ img {
 </ul>
 <h2>Publishing</h2>
 <ul>
-<li>I used <code>Visual Studio</code> to publish by right-clicking the functions app project and click publish. It worked the first time....they suggested that I allow <code>beta</code> in the app settings. They must have noticed the use of standard library.</li>
-<li>Subsequent publishes failed for no good reason. I had to use <code>Kudu</code> for the rescue. So I went in there, stopped the functions app, deleted its content, re-started the app and re-published. This worked. Unfortunately it is a lot of work!!</li>
+<li>I used <code>Visual Studio</code> to publish by right-clicking the functions app project and click publish. It worked the first time....they suggested that I allow <code>beta</code> in the app settings. </li>
+<li>Subsequent publishes, however, failed for no good reason. I had to use <code>Kudu</code> for the rescue. So I went in there, stopped the functions app, deleted its content, re-started the app and re-published. This worked. Unfortunately it is a lot of work!!</li>
 <li>I manually updated the functions app settings in the portal. I store in there the Cosmos settings, app insights and others.</li>
 <li>Later, perhaps we can use a more predictable method of publishing like <code>Cake</code> or something similar. </li>
 </ul>
-<h2>APIs</h2>
+<h2>Drivers API</h2>
 <p>The following are currently finished and they seem to work:</p>
 <h3>Get Drivers</h3>
 <p><code>https://ridesharedriversfunctionsapp.azurewebsites.net/api/drivers?code=9FirhFik9qEqaARWcYJy6m/J0TSKf45TaFHoDEBB1bOblxWZ934Cfw==</code></p>
