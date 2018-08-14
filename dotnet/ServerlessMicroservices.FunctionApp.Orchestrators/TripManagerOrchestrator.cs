@@ -37,7 +37,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 // Wait for either a timer or an external event to signal that a driver accepted the trip
                 using (var cts = new CancellationTokenSource())
                 {
-                    var timeoutAt = context.CurrentUtcDateTime.AddSeconds(120);
+                    var timeoutAt = context.CurrentUtcDateTime.AddSeconds(Constants.WAIT_FOR_DRIVERS_PERIOD_IN_SECONDS);
                     var timeoutTask = context.CreateTimer(timeoutAt, cts.Token);
                     var acknowledgeTask = context.WaitForExternalEvent<string>(Constants.TRIP_DRIVER_ACKNOWLEDGE);
 
@@ -65,7 +65,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 await context.CallActivityAsync("A_TM_NotifyOtherDrivers", otherDrivers);
 
                 // Update the trip
-                await context.CallActivityAsync("A_TM_UpdateTrip", new TripInfo
+                trip = await context.CallActivityAsync<TripItem>("A_TM_UpdateTrip", new TripInfo
                 {
                     Trip = trip,
                     Passenger = passenger,
@@ -73,9 +73,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 });
 
                 // Notify the passenger
-                await context.CallActivityAsync("A_TM_NotifyPassenger", passenger);
+                await context.CallActivityAsync("A_TM_NotifyPassenger", new TripInfo
+                {
+                    Trip = trip,
+                    Passenger = passenger,
+                    Driver = acceptedDriver
+                });
 
-                // Trigger to create a trip monitor orchestrator whose job is to monitor the driver updates
+                // Externalize the trip
+                await context.CallActivityAsync("A_TM_Externalize", trip);
+
+                // Trigger to create a trip monitor orchestrator whose job is to monitor the driver location every x seconds and update the trip
                 await context.CallActivityAsync("A_TM_CreateTripMonitor", trip);
             }
             catch (Exception e)
@@ -94,8 +102,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
             return new
             {
-                Trip = trip,
-                AcceptCode = driverAcceptCode
+                Trip = trip
             };
         }
 
@@ -104,7 +111,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"FindNNotifyDrivers for {trip.Code} starting....");
-            // TODO: Query Cosmos
+            // TODO: Query Cosmos directly or call another function to get the result
             List<DriverItem> availableDrivers = new List<DriverItem>();
             foreach (var driver in availableDrivers)
             {
@@ -121,25 +128,34 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             log.LogInformation($"NotifyOtherDrivers starting....");
             foreach (var driver in otherDrivers)
             {
-                await Notify(driver);
+                await Notify(driver, true);
             }
         }
 
         [FunctionName("A_TM_UpdateTrip")]
-        public static async Task UpdateTrip([ActivityTrigger] TripInfo info,
+        public static async Task<TripItem> UpdateTrip([ActivityTrigger] TripInfo info,
             ILogger log)
         {
             log.LogInformation($"UpdateTrip starting....");
-            // TODO: Update Cosmos
+            // TODO: Update Cosmos directly or post to another function
             await Notify(info.Trip);
+            return info.Trip;
         }
 
         [FunctionName("A_TM_NotifyPassenger")]
-        public static async Task NotifyPassenger([ActivityTrigger] PassengerItem passenger,
+        public static async Task NotifyPassenger([ActivityTrigger] TripInfo info,
             ILogger log)
         {
             log.LogInformation($"NotifyPassenger starting....");
-            await Notify(passenger);
+            await Notify(info.Passenger, info.Trip);
+        }
+
+        [FunctionName("A_TM_NotifyExternal")]
+        public static async Task NotifyExternal([ActivityTrigger] TripItem trip,
+            ILogger log)
+        {
+            log.LogInformation($"NotifyExternal starting....");
+            await Externalize(trip);
         }
 
         // Out does does not work in Async methods!!!
@@ -164,17 +180,32 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         // *** PRIVATE ***//
         private static async Task Notify(DriverItem driver)
         {
-             //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
+             //TODO: This will most likely enqueue an item to SignalR service via INotifyService  
+             //TODO: This could be an email as well with an Ok button to accept the ride
         }
 
-        private static async Task Notify(PassengerItem passenger)
+        private static async Task Notify(DriverItem driver, bool notSelected)
         {
             //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
+            //TODO: This is used to let the other drivers that they were not selected
         }
 
-        private static async Task Notify(TripItem driver)
+        private static async Task Notify(PassengerItem passenger, TripItem trip)
         {
             //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
+            //TODO: This is used to let the passenger that the trip has been accepted
+        }
+
+        private static async Task Notify(TripItem trip)
+        {
+            //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
+            //TODO: This is used to update the trip info i.e. Driver location for the passenger
+        }
+
+        private static async Task Externalize(TripItem trip)
+        {
+            //TODO: This will most likely trigger an Event Grid topic           
+            //TODO: Most likely it will be processed by several listeners
         }
     }
 }

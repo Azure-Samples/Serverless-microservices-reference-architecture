@@ -23,7 +23,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             try
             {
                 // Check every 5 seconds
-                DateTime nextUpdate = context.CurrentUtcDateTime.AddSeconds(5);
+                DateTime nextUpdate = context.CurrentUtcDateTime.AddSeconds(Constants.TRIP_UPDATE_INTERVAL_IN_SECONDS);
                 await context.CreateTimer(nextUpdate, CancellationToken.None);
                 trip = await context.CallActivityAsync<TripItem>("A_TO_UpdateTrip", trip);
 
@@ -58,6 +58,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"UpdateTrip for {trip.Code} starting....");
+            //TODO: Update Cosmos
             await Notify(trip);
             return trip;
         }
@@ -73,7 +74,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         // *** PRIVATE ***//
         private static async Task Notify(TripItem trip)
         {
-            //TODO: This will most likely enqueue an item to SignalR service via INotifyService           
+            //TODO: This will most likely enqueue an item to SignalR service via INotifyService to update the passenger          
         }
     }
 }
