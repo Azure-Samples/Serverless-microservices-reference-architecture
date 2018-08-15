@@ -17,31 +17,47 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         [FunctionName("T_StartTripMonitorViaQueueTrigger")]
         public static async Task StartTripMonitorViaQueueTrigger(
             [OrchestrationClient] DurableOrchestrationClient context,
-            [QueueTrigger("trip-monitors", Connection = "AzureWebJobsStorage")] TripItem trip,
+            [QueueTrigger("trip-monitors", Connection = "AzureWebJobsStorage")] string code,
             ILogger log)
         {
-            // The monitor instance id is the trip code + -M. This is to make sure that a Trip Manager and a monitor can co-exist
-            var code = $"{trip.Code}-M";
-            await StartInstance(context, trip, code, log);
+            try
+            {
+                // The monitor instance id is the trip code + -M. This is to make sure that a Trip Manager and a monitor can co-exist
+                var instanceId = $"{code}-M";
+                await StartInstance(context, code, instanceId, log);
+            }
+            catch (Exception ex)
+            {
+                var error = $"StartTripMonitorViaQueueTrigger failed: {ex.Message}";
+                log.LogError(error);
+            }
         }
 
         [FunctionName("T_StartTripMonitor")]
-        public static async Task<IActionResult> StartTripMonitor([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors")] HttpRequest req,
+        public static async Task<IActionResult> StartTripMonitor([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
+            string code,
             ILogger log)
         {
-            string requestBody = new StreamReader(req.Body).ReadToEnd();
-            TripItem trip = JsonConvert.DeserializeObject<TripItem>(requestBody);
+            try
+            {
+                // The monitor instance id is the trip code + -M. This is to make sure that a Trip Manager and a monitor can co-exist
+                var instanceId = $"{code}-M";
+                await StartInstance(context, code, instanceId, log);
 
-            // The monitor instance id is the trip code + -M. This is to make sure that a Trip Manager and a monitor can co-exist
-            var code = $"{trip.Code}-M";
-            await StartInstance(context, trip, code, log);
-
-            var reqMessage = req.ToHttpRequestMessage();
-            var res = context.CreateCheckStatusResponse(reqMessage, code);
-            res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
-            // TODO: So no retry header in Core?
-            return (ActionResult)new OkObjectResult(res.Content);
+                //NOTE: Unfortunately this does not work the same way as before when it was using HttpMessageResponse
+                //var reqMessage = req.ToHttpRequestMessage();
+                //var res = context.CreateCheckStatusResponse(reqMessage, trip.Code);
+                //res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
+                //return (ActionResult)new OkObjectResult(res.Content);
+                return (ActionResult)new OkObjectResult("NOTE: No status URLs are returned!");
+            }
+            catch (Exception ex)
+            {
+                var error = $"StartTripMonitor failed: {ex.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
         }
 
         [FunctionName("T_GetTripMonitor")]
@@ -50,14 +66,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
-            var status = await context.GetStatusAsync(code);
-            if (status != null)
+            try
             {
+                var status = await context.GetStatusAsync(code);
+                if (status == null)
+                    throw new Exception($"{code} does not exist!!");
+
                 return (ActionResult)new OkObjectResult(status);
             }
-            else
+            catch (Exception ex)
             {
-                var error = $"GetTripMonitor failed: {code} does not exist!!";
+                var error = $"GetTripMonitor failed: {ex.Message}";
                 log.LogError(error);
                 return new BadRequestObjectResult(error);
             }
@@ -85,18 +104,18 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         //TODO: Implement Get Trip Monitor Instances, Restart Trip Monitor Instances and Terminate Trip Monitor Instances if Persist to table storage if persist instances is activated
 
         /** PRIVATE **/
-        private static async Task StartInstance(DurableOrchestrationClient context, TripItem trip, string code, ILogger log)
+        private static async Task StartInstance(DurableOrchestrationClient context, string code, string instanceId, ILogger log)
         {
             try
             {
-                var reportStatus = await context.GetStatusAsync(code);
+                var reportStatus = await context.GetStatusAsync(instanceId);
                 string runningStatus = reportStatus == null ? "NULL" : reportStatus.RuntimeStatus.ToString();
                 log.LogInformation($"Instance running status: '{runningStatus}'.");
 
                 if (reportStatus == null || reportStatus.RuntimeStatus != OrchestrationRuntimeStatus.Running)
                 {
-                    await context.StartNewAsync("O_ActorTripMonitor", code, trip);
-                    log.LogInformation($"Started a new trip monitor = '{code}'.");
+                    await context.StartNewAsync("O_MonitorTrip", instanceId, code);
+                    log.LogInformation($"Started a new trip monitor = '{instanceId}'.");
 
                     // TODO: Persist to table storage if persist instances is activated
                 }
@@ -107,13 +126,13 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        private static async Task TeminateInstance(DurableOrchestrationClient context, string code, ILogger log)
+        private static async Task TeminateInstance(DurableOrchestrationClient context, string instanceId, ILogger log)
         {
             try
             {
                 // TODO: Remove from table storage if persist instances is activated
-                log.LogInformation($"Terminating trip monitor '{code}'.");
-                await context.TerminateAsync(code, "Via an API request");
+                log.LogInformation($"Terminating trip monitor '{instanceId}'.");
+                await context.TerminateAsync(instanceId, "Via an API request");
             }
             catch (Exception ex)
             {

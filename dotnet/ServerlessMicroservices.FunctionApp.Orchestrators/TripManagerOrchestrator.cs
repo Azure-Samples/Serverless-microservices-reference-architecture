@@ -1,6 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -26,8 +27,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
             try
             {
-                // TODO: Validate the trip's passenger
-                var passenger = new PassengerItem();
+                var passenger = trip.Passenger;
 
                 // Find and notify drivers
                 List<DriverItem> availableDrivers = await context.CallActivityAsync<List<DriverItem>>("A_TM_FindNNotifyDrivers", trip);
@@ -41,9 +41,9 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 // Wait for either a timer or an external event to signal that a driver accepted the trip
                 using (var cts = new CancellationTokenSource())
                 {
-                    var timeoutAt = context.CurrentUtcDateTime.AddSeconds(Constants.WAIT_FOR_DRIVERS_PERIOD_IN_SECONDS);
+                    var timeoutAt = context.CurrentUtcDateTime.AddSeconds(ServiceFactory.GetSettingService().GetDriversAcknowledgeMaxWaitPeriodInSeconds());
                     var timeoutTask = context.CreateTimer(timeoutAt, cts.Token);
-                    var acknowledgeTask = context.WaitForExternalEvent<string>(Constants.TRIP_DRIVER_ACKNOWLEDGE);
+                    var acknowledgeTask = context.WaitForExternalEvent<string>(Constants.TRIP_DRIVER_ACKNOWLEDGE_EVENT);
 
                     var winner = await Task.WhenAny(acknowledgeTask, timeoutTask);
                     if (winner == acknowledgeTask)
@@ -58,7 +58,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 }
 
                 if (driverAcceptCode == "Timed Out")
-                    throw new Exception($"Did not receive an ack from any driver in {Constants.WAIT_FOR_DRIVERS_PERIOD_IN_SECONDS} seconds!!");
+                    throw new Exception($"Did not receive an ack from any driver in {ServiceFactory.GetSettingService().GetDriversAcknowledgeMaxWaitPeriodInSeconds()} seconds!!");
 
                 var acceptedDriver = availableDrivers.SingleOrDefault(d => d.Code == driverAcceptCode);
                 if (acceptedDriver == null)
@@ -110,8 +110,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"FindNNotifyDrivers for {trip.Code} starting....");
-            // TODO: Query Cosmos directly or call another function to get the result
             List<DriverItem> availableDrivers = new List<DriverItem>();
+            if (ServiceFactory.GetSettingService().IsPersistDirectly())
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                availableDrivers = await persistenceService.RetrieveDrivers(trip.SourceLocation.Latitude, trip.SourceLocation.Longitude, ServiceFactory.GetSettingService().GetDriversLocationRadiusInMiles());
+            }
+            else
+            {
+                //TODO:
+            }
+
             foreach (var driver in availableDrivers)
             {
                 await Notify(driver, trip);
@@ -125,8 +134,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"UpdateTrip starting....");
-            // TODO: Update Cosmos directly or post to another function
-            await Notify(trip);
+            if (ServiceFactory.GetSettingService().IsPersistDirectly())
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                await persistenceService.UpsertTrip(trip, true);
+                await Notify(trip);
+            }
+            else
+            {
+                //TODO:
+            }
+
             return trip;
         }
 
@@ -135,7 +153,18 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"NotifySelectedDriver starting....");
-            await Notify(trip.Driver, trip, true);
+            if (ServiceFactory.GetSettingService().IsPersistDirectly())
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                var driver = await persistenceService.RetrieveDriver(trip.Driver.Code);
+                driver.IsAcceptingRides = false;
+                await persistenceService.UpsertDriver(trip.Driver, true);
+                await Notify(trip.Driver, trip, true);
+            }
+            else
+            {
+                //TODO:
+            }
         }
 
         [FunctionName("A_TM_NotifyOtherDrivers")]
@@ -169,12 +198,12 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         // Out does does not work in Async methods!!!
         [FunctionName("A_TM_CreateTripMonitor")]
         public static void CreateTripMonitor([ActivityTrigger] TripItem trip,
-            [Queue("trip-monitors", Connection = "AzureWebJobsStorage")] out TripItem queueTrip,
+            [Queue("trip-monitors", Connection = "AzureWebJobsStorage")] out string queueTripCode,
             ILogger log)
         {
             log.LogInformation($"CreateTripMonitor starting....");
             // Enqueue the trip to be monitored 
-            queueTrip = trip;
+            queueTripCode = trip.Code;
         }
 
         [FunctionName("A_TM_Cleanup")]
@@ -184,7 +213,25 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             log.LogInformation($"Cleanup for {trip.Code} starting....");
             trip.EndDate = DateTime.Now;
             trip.IsAborted = true;
-            // TODO: Update Cosmos directly or post to another function
+
+            if (ServiceFactory.GetSettingService().IsPersistDirectly())
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                await persistenceService.UpsertTrip(trip, true);
+                var driver = trip.Driver;
+                if (driver != null)
+                {
+                    driver = await persistenceService.RetrieveDriver(trip.Driver.Code);
+                    driver.IsAcceptingRides = true;
+                    await persistenceService.UpsertDriver(driver, true);
+                }
+            }
+            else
+            {
+                //TODO: 
+            }
+
+            await Externalize(trip);
         }
 
         // *** PRIVATE ***//

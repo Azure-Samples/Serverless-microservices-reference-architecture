@@ -1,0 +1,15 @@
+KEY,VALUE
+APPINSIGHTS_INSTRUMENTATIONKEY,dcf53fc8-47bf-45fb-a73e-ce140c32fd48
+DocDbApiKey,Rk7FOkrDhKcuuZwgpcKlYInJh9eXTfWAownU46NKyxiu3pu8AUdVFSROSx6YZu8if2vDX1gCRLeT1Kl6Oczxkg==
+DocDbConnectionStringKey,AccountEndpoint=https://rideshare.documents.azure.com:443/;AccountKey=Rk7FOkrDhKcuuZwgpcKlYInJh9eXTfWAownU46NKyxiu3pu8AUdVFSROSx6YZu8if2vDX1gCRLeT1Kl6Oczxkg==;
+DocDbEndpointUri,https://rideshare.documents.azure.com:443/
+DocDbRideShareDatabaseName,RideShare
+DocDbRideShareMainCollectionName,Main
+DocDbThroughput,400
+DriversAcknowledgeMaxWaitPeriodInSeconds,120
+DriversLocationRadiusInMiles,15
+TripMonitorIntervalInSeconds,10
+TripMonitorMaxIterations,20
+InsightsInstrumentationKey,dcf53fc8-47bf-45fb-a73e-ce140c32fd48
+IsPersistDirectly,true
+

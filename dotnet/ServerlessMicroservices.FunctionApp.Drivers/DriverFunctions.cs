@@ -22,12 +22,53 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers());
             }
             catch (Exception e)
             {
                 var error = $"GetDrivers failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("GetDriversWithinLocation")]
+        public static async Task<IActionResult> GetDriversWithinLocation([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{latitude}/{longitude}/{miles}")] HttpRequest req,
+            double latitude,
+            double longitude,
+            double miles, 
+            ILogger log)
+        {
+            log.LogInformation("GetDriversWithinLocation triggered....");
+
+            try
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers(latitude, longitude, miles));
+            }
+            catch (Exception e)
+            {
+                var error = $"GetDriversWithinLocation failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("GetActiveDrivers")]
+        public static async Task<IActionResult> GetActiveDrivers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "activedrivers")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("GetActiveDrivers triggered....");
+
+            try
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                return (ActionResult)new OkObjectResult(await persistenceService.RetrieveActiveDrivers());
+            }
+            catch (Exception e)
+            {
+                var error = $"GetActiveDrivers failed: {e.Message}";
                 log.LogError(error);
                 return new BadRequestObjectResult(error);
             }
@@ -42,7 +83,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDriver(code));
             }
             catch (Exception e)
@@ -63,7 +104,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverItem driver = JsonConvert.DeserializeObject<DriverItem>(requestBody);
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.UpsertDriver(driver));
             }
             catch (Exception e)
@@ -74,8 +115,29 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             }
         }
 
+        [FunctionName("UpdateDriver")]
+        public static async Task<IActionResult> UpdateDriver([HttpTrigger(AuthorizationLevel.Function, "put", Route = "drivers")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("UpdateDriver triggered....");
+
+            try
+            {
+                string requestBody = new StreamReader(req.Body).ReadToEnd();
+                DriverItem driver = JsonConvert.DeserializeObject<DriverItem>(requestBody);
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                return (ActionResult)new OkObjectResult(await persistenceService.UpsertDriver(driver, true));
+            }
+            catch (Exception e)
+            {
+                var error = $"UpdateDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
         [FunctionName("UpdateDriverLocation")]
-        public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Function, "put", Route = "drivers")] HttpRequest req,
+        public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Function, "put", Route = "driverlocations")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("UpdateDriverLocation triggered....");
@@ -84,7 +146,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverLocationItem driverLocation = JsonConvert.DeserializeObject<DriverLocationItem>(requestBody);
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.UpsertDriverLocation(driverLocation));
             }
             catch (Exception e)
@@ -104,7 +166,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDriverLocations(code));
             }
             catch (Exception e)
@@ -124,7 +186,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 await persistenceService.DeleteDriver(code);
                 return (ActionResult)new OkObjectResult("Ok");
             }

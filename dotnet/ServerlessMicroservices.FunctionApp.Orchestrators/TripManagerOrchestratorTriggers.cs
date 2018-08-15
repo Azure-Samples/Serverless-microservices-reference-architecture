@@ -14,22 +14,52 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 {
     public static class TripManagerOrchestratorTriggers
     {
+        [FunctionName("T_StartTripManagerViaQueueTrigger")]
+        public static async Task StartTripManagerViaQueueTrigger(
+            [OrchestrationClient] DurableOrchestrationClient context,
+            [QueueTrigger("trip-managers", Connection = "AzureWebJobsStorage")] TripItem trip,
+            ILogger log)
+        {
+            try
+            {
+                // The manager instance id is the trip code
+                var instanceId = trip.Code;
+                await StartInstance(context, trip, instanceId, log);
+            }
+            catch (Exception ex)
+            {
+                var error = $"StartTripManagerViaQueueTrigger failed: {ex.Message}";
+                log.LogError(error);
+            }
+        }
+
         [FunctionName("T_StartTripManager")]
         public static async Task<IActionResult> StartTripManager([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmanagers")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             ILogger log)
         {
-            string requestBody = new StreamReader(req.Body).ReadToEnd();
-            TripItem trip = JsonConvert.DeserializeObject<TripItem>(requestBody);
+            try
+            {
+                string requestBody = new StreamReader(req.Body).ReadToEnd();
+                TripItem trip = JsonConvert.DeserializeObject<TripItem>(requestBody);
 
-            // The manager instance id is the trip code
-            await StartInstance(context, trip, trip.Code, log);
+                // The manager instance id is the trip code
+                var instanceId = trip.Code;
+                await StartInstance(context, trip, instanceId, log);
 
-            var reqMessage = req.ToHttpRequestMessage();
-            var res = context.CreateCheckStatusResponse(reqMessage, trip.Code);
-            res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
-            // TODO: So no retry header in Core?
-            return (ActionResult) new OkObjectResult(res.Content);
+                //NOTE: Unfortunately this does not work the same way as before when it was using HttpMessageResponse
+                //var reqMessage = req.ToHttpRequestMessage();
+                //var res = context.CreateCheckStatusResponse(reqMessage, trip.Code);
+                //res.Headers.RetryAfter = new RetryConditionHeaderValue(TimeSpan.FromSeconds(10));
+                //return (ActionResult)new OkObjectResult(res.Content);
+                return (ActionResult)new OkObjectResult("NOTE: No status URLs are returned!");
+            }
+            catch (Exception ex)
+            {
+                var error = $"StartTripManager failed: {ex.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
         }
 
         [FunctionName("T_GetTripManager")]
@@ -38,14 +68,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
-            var status = await context.GetStatusAsync(code);
-            if (status != null)
+            try
             {
+                var status = await context.GetStatusAsync(code);
+                if (status == null)
+                    throw new Exception($"{code} does not exist!!");
+
                 return (ActionResult)new OkObjectResult(status);
             }
-            else
+            catch (Exception ex)
             {
-                var error = $"GetTripManager failed: {code} does not exist!!";
+                var error = $"GetTripManager failed: {ex.Message}";
                 log.LogError(error);
                 return new BadRequestObjectResult(error);
             }
@@ -79,7 +112,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         {
             try
             {
-                await context.RaiseEventAsync(code, Constants.TRIP_DRIVER_ACKNOWLEDGE, drivercode);
+                await context.RaiseEventAsync(code, Constants.TRIP_DRIVER_ACKNOWLEDGE_EVENT, drivercode);
                 return (ActionResult)new OkObjectResult("Ok");
             }
             catch (Exception ex)
@@ -93,18 +126,18 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         //TODO: Implement Get Trip Manager Instances, Restart Trip Manager Instances and Terminate Trip Manager Instances if Persist to table storage if persist instances is activated
 
         /** PRIVATE **/
-        private static async Task StartInstance(DurableOrchestrationClient context, TripItem trip, string code, ILogger log)
+        private static async Task StartInstance(DurableOrchestrationClient context, TripItem trip, string instanceId, ILogger log)
         {
             try
             {
-                var reportStatus = await context.GetStatusAsync(code);
+                var reportStatus = await context.GetStatusAsync(instanceId);
                 string runningStatus = reportStatus == null ? "NULL" : reportStatus.RuntimeStatus.ToString();
                 log.LogInformation($"Instance running status: '{runningStatus}'.");
 
                 if (reportStatus == null || reportStatus.RuntimeStatus != OrchestrationRuntimeStatus.Running)
                 {
-                    await context.StartNewAsync("O_ActorTripManager", code, trip);
-                    log.LogInformation($"Started a new trip manager = '{code}'.");
+                    await context.StartNewAsync("O_ManageTrip", instanceId, trip);
+                    log.LogInformation($"Started a new trip manager = '{instanceId}'.");
 
                     // TODO: Persist to table storage if persist instances is activated
                 }
@@ -115,13 +148,13 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        private static async Task TeminateInstance(DurableOrchestrationClient context, string code, ILogger log)
+        private static async Task TeminateInstance(DurableOrchestrationClient context, string instanceId, ILogger log)
         {
             try
             {
                 // TODO: Remove from table storage if persist instances is activated
-                log.LogInformation($"Terminating trip manager '{code}'.");
-                await context.TerminateAsync(code, "Via an API request");
+                log.LogInformation($"Terminating trip manager '{instanceId}'.");
+                await context.TerminateAsync(instanceId, "Via an API request");
             }
             catch (Exception ex)
             {

@@ -27,12 +27,14 @@ namespace ServerlessMicroservices.Shared.Services
         private ISettingService _settingService;
         private ILoggerService _loggerService;
         private IAnalyticService _analyticService;
+        private IChangeNotifierService _changeNotifierService;
 
-        public CosmosPersistenceService(ISettingService setting, ILoggerService logger, IAnalyticService anayltic)
+        public CosmosPersistenceService(ISettingService setting, ILoggerService logger, IAnalyticService anayltic, IChangeNotifierService changeService)
         {
             _settingService = setting;
             _loggerService = logger;
             _analyticService = anayltic;
+            _changeNotifierService = changeService;
 
             _docDbEndpointUri = _settingService.GetDocDbEndpointUri();
             _docDbPrimaryKey = _settingService.GetDocDbApiKey();
@@ -41,6 +43,7 @@ namespace ServerlessMicroservices.Shared.Services
             _docDbDigitalMainCollectionName = _settingService.GetDocDbMainCollectionName();
         }
 
+        // Drivers
         public async Task<DriverItem> RetrieveDriver(string code)
         {
             var error = "";
@@ -121,6 +124,53 @@ namespace ServerlessMicroservices.Shared.Services
             }
         }
 
+        public async Task<List<DriverItem>> RetrieveDrivers(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS)
+        {
+            //TODO: For now, call the main `RetrieveDrivers` method
+            return await RetrieveActiveDrivers(max);
+        }
+
+        public async Task<List<DriverItem>> RetrieveActiveDrivers(int max = Constants.MAX_RETRIEVE_DOCS)
+        {
+            var error = "";
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+
+                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
+                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                                .Where(e => e.CollectionType == ItemCollectionTypes.Driver && e.IsAcceptingRides == true)
+                                .OrderByDescending(e => e.UpsertDate)
+                                .Take(max)
+                                .AsDocumentQuery();
+
+                List<DriverItem> allDocuments = new List<DriverItem>();
+                while (query.HasMoreResults)
+                {
+                    var queryResult = await query.ExecuteNextAsync<DriverItem>();
+                    cost += queryResult.RequestCharge;
+                    allDocuments.AddRange(queryResult.ToList());
+                }
+
+                return allDocuments;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+        }
+
         public async Task<int> RetrieveDriversCount()
         {
             var error = "";
@@ -151,11 +201,10 @@ namespace ServerlessMicroservices.Shared.Services
             }
         }
 
-        public async Task<string> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false)
+        public async Task<DriverItem> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false)
         {
             var error = "";
             double cost = 0;
-            string resourceId = "";
 
             try
             {
@@ -167,14 +216,19 @@ namespace ServerlessMicroservices.Shared.Services
                 driver.UpsertDate = DateTime.Now;
 
                 if (driver.Id == "")
+                {
+                    if (string.IsNullOrEmpty(driver.Code))
+                        driver.Code = Utilities.GenerateRandomAlphaNumeric(8);
+
                     driver.Id = $"{driver.Code}-{driver.CollectionType}";
+                }
 
                 var response = await(await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), driver);
                 cost = response.RequestCharge;
 
                 if (!isIgnoreChangeFeed)
                 {
-                    //TODO: This is one way we can react to changes in Cosmos and perhaps enqueue a message or whatever
+                    await _changeNotifierService.DriverChanged(driver);
                 }
             }
             catch (Exception ex)
@@ -187,7 +241,7 @@ namespace ServerlessMicroservices.Shared.Services
                 // TODO: Do something with the cost and error 
             }
 
-            return resourceId;
+            return driver;
         }
 
         public async Task<string> UpsertDriverLocation(DriverLocationItem location, bool isIgnoreChangeFeed = false)
@@ -299,6 +353,242 @@ namespace ServerlessMicroservices.Shared.Services
                 cost += response.RequestCharge;
 
                 //TODO: Also delete the associated driver location items
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+        }
+
+        // Trips
+        public async Task<TripItem> RetrieveTrip(string code)
+        {
+            var error = "";
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(code))
+                    throw new Exception("Code is null or empty string!!");
+
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                // NOTE: ReadDocumentAsync is really fast in Cosmos as it bypasses all indexing...but it requires the doc ID
+                var docId = $"{code.ToUpper()}-{ItemCollectionTypes.Trip}";
+                RequestOptions options = new RequestOptions() { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<TripItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId)/*, options*/);
+                cost = request.Result.RequestCharge;
+                return request.Result;
+            }
+            catch (Exception ex)
+            {
+                // Detect a `Resource Not Found` exception...do not treat it as error
+                if (ex.InnerException != null && !string.IsNullOrEmpty(ex.InnerException.Message) && ex.InnerException.Message.IndexOf("Resource Not Found") != -1)
+                {
+                    return null;
+                }
+                else
+                {
+                    error = ex.Message;
+                    throw ex;
+                }
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+        }
+
+        public async Task<List<TripItem>> RetrieveTrips(int max = Constants.MAX_RETRIEVE_DOCS)
+        {
+            var error = "";
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+
+                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
+                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                                .Where(e => e.CollectionType == ItemCollectionTypes.Trip)
+                                .OrderByDescending(e => e.UpsertDate)
+                                .Take(max)
+                                .AsDocumentQuery();
+
+                List<TripItem> allDocuments = new List<TripItem>();
+                while (query.HasMoreResults)
+                {
+                    var queryResult = await query.ExecuteNextAsync<TripItem>();
+                    cost += queryResult.RequestCharge;
+                    allDocuments.AddRange(queryResult.ToList());
+                }
+
+                return allDocuments;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+        }
+
+        public async Task<List<TripItem>> RetrieveTrips(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS)
+        {
+            //TODO: For now, call the main `RetrieveTrips` method
+            return await RetrieveTrips(max);
+        }
+
+        public async Task<List<TripItem>> RetrieveActiveTrips(int max = Constants.MAX_RETRIEVE_DOCS)
+        {
+            var error = "";
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+
+                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
+                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                                .Where(e => e.CollectionType == ItemCollectionTypes.Trip && e.EndDate == null)
+                                .OrderByDescending(e => e.UpsertDate)
+                                .Take(max)
+                                .AsDocumentQuery();
+
+                List<TripItem> allDocuments = new List<TripItem>();
+                while (query.HasMoreResults)
+                {
+                    var queryResult = await query.ExecuteNextAsync<TripItem>();
+                    cost += queryResult.RequestCharge;
+                    allDocuments.AddRange(queryResult.ToList());
+                }
+
+                return allDocuments;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+        }
+
+        public async Task<int> RetrieveTripsCount()
+        {
+            var error = "";
+            // NOTE: Unfortunately I could not find a way to get the cost when performing `count` against Cosmos
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1 };
+
+                return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
+                            UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                            .Where(e => e.CollectionType == ItemCollectionTypes.Trip)
+                            .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+        }
+
+        public async Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false)
+        {
+            var error = "";
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                // Just making sure...
+                trip.CollectionType = ItemCollectionTypes.Trip;
+                trip.UpsertDate = DateTime.Now;
+
+                bool blInsert = false;
+                if (trip.Id == "")
+                {
+                    trip.Code = Utilities.GenerateRandomAlphaNumeric(8);
+                    trip.Id = $"{trip.Code}-{trip.CollectionType}";
+                    blInsert = true;
+                }
+
+                if (trip.EndDate != null)
+                    trip.Duration = ((DateTime)trip.EndDate - trip.StartDate).TotalSeconds;
+
+                var response = await (await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), trip);
+                cost = response.RequestCharge;
+
+                if (!isIgnoreChangeFeed && blInsert)
+                {
+                    await _changeNotifierService.TripCreated(trip);
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the cost and error 
+            }
+
+            return trip;
+        }
+
+        public async Task DeleteTrip(string code)
+        {
+            var error = "";
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                var trip = await RetrieveTrip(code);
+                if (trip == null)
+                    throw new Exception($"Unable to locate a trip with code {code}");
+
+                var link = (string)trip.Self;
+                //RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(driver.Code.ToUpper()) };
+                var response = await (await GetDocDBClient(_settingService)).DeleteDocumentAsync(link /*,requestOptions*/);
+                cost += response.RequestCharge;
+
+                await _changeNotifierService.TripDeleted(trip);
             }
             catch (Exception ex)
             {

@@ -52,7 +52,10 @@ namespace ServerlessMicroservices.Models
 
     public class TripLocation
     {
+        [JsonProperty(PropertyName = "latitude")]
         public double Latitude { get; set; } = 0;
+
+        [JsonProperty(PropertyName = "longitude")]
         public double Longitude { get; set; } = 0;
     }
 }

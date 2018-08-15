@@ -35,7 +35,7 @@ namespace ServerlessMicroservices.Shared.Services
             throw new NotImplementedException();
         }
 
-        public Task<string> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false)
+        public Task<DriverItem> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false)
         {
             throw new NotImplementedException();
         }
@@ -51,6 +51,51 @@ namespace ServerlessMicroservices.Shared.Services
         }
 
         public Task DeleteDriver(string code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<DriverItem>> RetrieveDrivers(double latitude, double longitude, double miles, int max = 20)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<DriverItem>> RetrieveActiveDrivers(int max = 20)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TripItem> RetrieveTrip(string code)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TripItem>> RetrieveTrips(int max = 20)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TripItem>> RetrieveTrips(double latitude, double longitude, double miles, int max = 20)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<List<TripItem>> RetrieveActiveTrips(int max = 20)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<int> RetrieveTripsCount()
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task DeleteTrip(string code)
         {
             throw new NotImplementedException();
         }

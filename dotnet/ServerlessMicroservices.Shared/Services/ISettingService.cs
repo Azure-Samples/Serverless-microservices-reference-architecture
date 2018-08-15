@@ -4,6 +4,13 @@
     {
         string GetSiteName();
 
+        // Management    
+        bool IsPersistDirectly();
+        int GetDriversAcknowledgeMaxWaitPeriodInSeconds();
+        double GetDriversLocationRadiusInMiles();
+        int GetTripMonitorIntervalInSeconds();
+        int GetTripMonitorMaxIterations();
+
         // App Insights
         string GetInsightsInstrumentationKey();
 
@@ -14,5 +21,13 @@
         string GetDocDbRideShareDatabaseName();
         string GetDocDbMainCollectionName();
         int GetDocDbThroughput();
+
+        // Orchestrators
+        string GetStartTripManagerOrchestratorBaseUrl();
+        string GetStartTripManagerOrchestratorApiKey();
+        string GetTerminateTripManagerOrchestratorBaseUrl();
+        string GetTerminateTripManagerOrchestratorApiKey();
+        string GetTerminateTripMonitorOrchestratorBaseUrl();
+        string GetTerminateTripMonitorOrchestratorApiKey();
     }
 }
