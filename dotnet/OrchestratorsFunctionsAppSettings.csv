@@ -12,4 +12,6 @@ TripMonitorIntervalInSeconds,10
 TripMonitorMaxIterations,20
 InsightsInstrumentationKey,dcf53fc8-47bf-45fb-a73e-ce140c32fd48
 IsPersistDirectly,true
+TripExternalizationsEventGridTopicUrl,https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events
+TripExternalizationsEventGridTopicApiKey,uO6W2tZmHhcb6ItypRcQpF6ROSlZ0HCKkizYSbTYDPQ=
 

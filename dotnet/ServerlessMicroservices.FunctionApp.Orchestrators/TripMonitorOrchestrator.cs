@@ -1,6 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
 using System.Threading;
@@ -31,11 +32,14 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 if (trip.Driver == null)
                     throw new Exception($"Trip with code {code} has no driver!");
 
+                // Start a trip...
+                await context.CallActivityAsync<TripItem>("A_TO_StartTrip", trip);
+
                 // Monitor every x seconds
                 DateTime nextUpdate = context.CurrentUtcDateTime.AddSeconds(ServiceFactory.GetSettingService().GetTripMonitorIntervalInSeconds());
                 await context.CreateTimer(nextUpdate, CancellationToken.None);
                 trip.MonitorIterations++;
-                trip = await context.CallActivityAsync<TripItem>("A_TO_UpdateTrip", trip);
+                trip = await context.CallActivityAsync<TripItem>("A_TO_CheckTripCompletion", trip);
 
                 // We do not allow the trip to hang forever.... 
                 if (trip.EndDate == null && trip.MonitorIterations < ServiceFactory.GetSettingService().GetTripMonitorMaxIterations())
@@ -48,11 +52,11 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                     if (trip.EndDate == null)
                         throw new Exception($"The trip did not complete in {ServiceFactory.GetSettingService().GetTripMonitorMaxIterations() * ServiceFactory.GetSettingService().GetTripMonitorIntervalInSeconds()} seconds!!");
 
-                    // Let the driver be back in the available pool
-                    await context.CallActivityAsync<TripItem>("A_TO_UpdateDriver", trip);
+                    // Recycle the driver back in the available pool
+                    await context.CallActivityAsync<TripItem>("A_TO_RecycleTripDriver", trip);
 
                     // Externalize the trip
-                    await context.CallActivityAsync<TripItem>("A_TO_Externalize", trip);
+                    await context.CallActivityAsync<TripItem>("A_TO_CompleteTrip", trip);
                 }
             }
             catch (Exception e)
@@ -98,22 +102,24 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             return trip;
         }
 
-        [FunctionName("A_TO_UpdateTrip")]
-        public static async Task<TripItem> UpdateTrip([ActivityTrigger] TripItem trip,
+        [FunctionName("A_TO_StartTrip")]
+        public static async Task StartTrip([ActivityTrigger] TripItem trip,
             ILogger log)
         {
-            log.LogInformation($"UpdateTrip for {trip.Code} starting....");
+            log.LogInformation($"StartTrip starting....");
+            await Externalize(trip, Constants.EVG_SUBJECT_TRIP_STARTING);
+        }
+
+        [FunctionName("A_TO_CheckTripCompletion")]
+        public static async Task<TripItem> CheckTripCompletion([ActivityTrigger] TripItem trip,
+            ILogger log)
+        {
+            log.LogInformation($"CheckTripCompletion for {trip.Code} starting....");
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                // NOTE: We need a way to determine when the trip is over
-                // It is ridiculous, but for now, I am checking to see if the driver location equals the trip destination location :-)
-                var driver = await persistenceService.RetrieveDriver(trip.Driver.Code);
-                if (driver != null && driver.Latitude == trip.Destination.Latitude && driver.Longitude == trip.Destination.Longitude)
-                    trip.EndDate = DateTime.Now;
-
-                trip = await persistenceService.UpsertTrip(trip, true);
-                await Notify(trip);
+                await persistenceService.CheckTripCompletion(trip);
+                await Externalize(trip, Constants.EVG_SUBJECT_TRIP_RUNNING);
             }
             else
             {
@@ -123,21 +129,15 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             return trip;
         }
 
-        [FunctionName("A_TO_UpdateDriver")]
-        public static async Task UpdateDriver([ActivityTrigger] TripItem trip,
+        [FunctionName("A_TO_RecycleTripDriver")]
+        public static async Task RecycleTripDriver([ActivityTrigger] TripItem trip,
             ILogger log)
         {
-            log.LogInformation($"UpdateDriver for {trip.Code} starting....");
+            log.LogInformation($"RecycleTripDriver for {trip.Code} starting....");
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                var driver = trip.Driver;
-                if (driver != null)
-                {
-                    driver = await persistenceService.RetrieveDriver(trip.Driver.Code);
-                    driver.IsAcceptingRides = true;
-                    await persistenceService.UpsertDriver(driver, true);
-                }
+                await persistenceService.RecycleTripDriver(trip);
             }
             else
             {
@@ -145,12 +145,12 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        [FunctionName("A_TO_Externalize")]
-        public static async Task Externalize([ActivityTrigger] TripItem trip,
+        [FunctionName("A_TO_CompleteTrip")]
+        public static async Task CompleteTrip([ActivityTrigger] TripItem trip,
             ILogger log)
         {
-            log.LogInformation($"Externalize for {trip.Code} starting....");
-            await Externalize(trip);
+            log.LogInformation($"CompleteTrip for {trip.Code} starting....");
+            await Externalize(trip, Constants.EVG_SUBJECT_TRIP_COMPLETED);
         }
 
         [FunctionName("A_TO_Cleanup")]
@@ -158,37 +158,24 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"Cleanup for {trip.Code} starting....");
-            trip.EndDate = DateTime.Now;
-            trip.IsAborted = true;
 
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                await persistenceService.UpsertTrip(trip, true);
-                var driver = trip.Driver;
-                if (driver != null)
-                {
-                    driver.IsAcceptingRides = true;
-                    await persistenceService.UpsertDriver(driver, true);
-                }
+                trip = await persistenceService.AbortTrip(trip);
             }
             else
             {
                 //TODO:
             }
 
-            await Externalize(trip);
+            await Externalize(trip, Constants.EVG_SUBJECT_TRIP_ABORTED);
         }
 
         // *** PRIVATE ***//
-        private static async Task Notify(TripItem trip)
+        private static async Task Externalize(TripItem trip, string subject)
         {
-            //OUT-OF-SCOPE: This is used to update the trip info i.e. Driver location for all observers
-        }
-
-        private static async Task Externalize(TripItem trip)
-        {
-            //TODO: Trigger an Event Grid topic           
+            await Utilities.TriggerEventGridTopic<TripItem>(null, trip, Constants.EVG_EVENT_TYPE_MONITOR_TRIP, subject, ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicUrl(), ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicApiKey());
         }
     }
 }

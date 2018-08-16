@@ -5,9 +5,9 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Helpers;
 using System;
 using System.IO;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
 
 namespace ServerlessMicroservices.FunctionApp.Orchestrators
@@ -112,7 +112,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         {
             try
             {
-                await context.RaiseEventAsync(code, Constants.TRIP_DRIVER_ACKNOWLEDGE_EVENT, drivercode);
+                await context.RaiseEventAsync(code, Constants.TRIP_DRIVER_ACCEPT_EVENT, drivercode);
                 return (ActionResult)new OkObjectResult("Ok");
             }
             catch (Exception ex)

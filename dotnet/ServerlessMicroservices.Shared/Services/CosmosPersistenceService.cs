@@ -601,6 +601,139 @@ namespace ServerlessMicroservices.Shared.Services
             }
         }
 
+
+        // High-level methods
+        public async Task<TripItem> AssignTripAvailableDrivers(TripItem trip, List<DriverItem> drivers)
+        {
+            var error = "";
+
+            try
+            {
+                trip.AvailableDrivers = drivers;
+                trip = await UpsertTrip(trip, true);
+                return trip;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the error 
+            }
+        }
+
+        public async Task<TripItem> AssignTripDriver(TripItem trip, string driverCode)
+        {
+            var error = "";
+
+            try
+            {
+                var driver = await RetrieveDriver(driverCode);
+                driver.IsAcceptingRides = false;
+                await UpsertDriver(driver, true);
+
+                trip.Driver = driver;
+                trip.AcceptDate = DateTime.Now;
+                trip = await UpsertTrip(trip, true);
+                return trip;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the error 
+            }
+        }
+
+        public async Task RecycleTripDriver(TripItem trip)
+        {
+            var error = "";
+
+            try
+            {
+                var driver = trip.Driver;
+                if (driver != null)
+                {
+                    driver = await RetrieveDriver(trip.Driver.Code);
+                    driver.IsAcceptingRides = true;
+                    await UpsertDriver(driver, true);
+                }
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the error 
+            }
+        }
+
+        public async Task<TripItem> CheckTripCompletion(TripItem trip)
+        {
+            var error = "";
+
+            try
+            {
+                // TODO: We need a way to determine when the trip is over
+                // TODO: It is ridiculous, but for now, I am checking to see if the driver location equals the trip destination location :-)
+                var driver = await RetrieveDriver(trip.Driver.Code);
+                if (driver != null && driver.Latitude == trip.Destination.Latitude && driver.Longitude == trip.Destination.Longitude)
+                {
+                    trip.EndDate = DateTime.Now;
+                    trip = await UpsertTrip(trip, true);
+                }
+
+                return trip;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the error 
+            }
+        }
+
+        public async Task<TripItem> AbortTrip(TripItem trip)
+        {
+            var error = "";
+
+            try
+            {
+                trip.EndDate = DateTime.Now;
+                trip.IsAborted = true;
+                trip = await UpsertTrip(trip, true);
+
+                var driver = trip.Driver;
+                if (driver != null)
+                {
+                    driver = await RetrieveDriver(trip.Driver.Code);
+                    driver.IsAcceptingRides = true;
+                    await UpsertDriver(driver, true);
+                }
+
+                return trip;
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                // TODO: Do something with the error 
+            }
+        }
+
         //**** PRIVATE METHODS ****//
         private static async Task<DocumentClient> GetDocDBClient(ISettingService settingService)
         {

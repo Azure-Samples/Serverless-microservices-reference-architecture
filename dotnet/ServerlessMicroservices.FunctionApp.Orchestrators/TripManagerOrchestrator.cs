@@ -1,6 +1,7 @@
 using Microsoft.Azure.WebJobs;
 using Microsoft.Extensions.Logging;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
 using System.Collections.Generic;
@@ -27,23 +28,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
             try
             {
-                var passenger = trip.Passenger;
-
                 // Find and notify drivers
-                List<DriverItem> availableDrivers = await context.CallActivityAsync<List<DriverItem>>("A_TM_FindNNotifyDrivers", trip);
-                if (availableDrivers.Count == 0)
+                trip = await context.CallActivityAsync<TripItem>("A_TM_FindNNotifyDrivers", trip);
+                if (trip.AvailableDrivers.Count == 0)
                     throw new Exception("No drivers available!!");
-
-                // Update the trip
-                trip.AvailableDrivers = availableDrivers;
-                trip = await context.CallActivityAsync<TripItem>("A_TM_UpdateTrip", trip);
 
                 // Wait for either a timer or an external event to signal that a driver accepted the trip
                 using (var cts = new CancellationTokenSource())
                 {
                     var timeoutAt = context.CurrentUtcDateTime.AddSeconds(ServiceFactory.GetSettingService().GetDriversAcknowledgeMaxWaitPeriodInSeconds());
                     var timeoutTask = context.CreateTimer(timeoutAt, cts.Token);
-                    var acknowledgeTask = context.WaitForExternalEvent<string>(Constants.TRIP_DRIVER_ACKNOWLEDGE_EVENT);
+                    var acknowledgeTask = context.WaitForExternalEvent<string>(Constants.TRIP_DRIVER_ACCEPT_EVENT);
 
                     var winner = await Task.WhenAny(acknowledgeTask, timeoutTask);
                     if (winner == acknowledgeTask)
@@ -60,28 +55,24 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 if (driverAcceptCode == "Timed Out")
                     throw new Exception($"Did not receive an ack from any driver in {ServiceFactory.GetSettingService().GetDriversAcknowledgeMaxWaitPeriodInSeconds()} seconds!!");
 
-                var acceptedDriver = availableDrivers.SingleOrDefault(d => d.Code == driverAcceptCode);
+                var acceptedDriver = trip.AvailableDrivers.SingleOrDefault(d => d.Code == driverAcceptCode);
                 if (acceptedDriver == null)
                     throw new Exception($"Data integrity - received an ack from an invalid driver {driverAcceptCode}!!");
 
-                // Update the trip
-                trip.Driver = acceptedDriver;
-                trip.AcceptDate = context.CurrentUtcDateTime;
-                trip = await context.CallActivityAsync<TripItem>("A_TM_UpdateTrip", trip);
+                // Assign trip driver
+                trip = await context.CallActivityAsync<TripItem>("A_TM_AssignTripDriver",  new TripInfo
+                {
+                    Trip = trip,
+                    Driver = acceptedDriver
+                });
 
-                // Notify the selected driver
-                await context.CallActivityAsync("A_TM_NotifySelectedDriver", trip);
-
-                // Remove selected and notify other drivers
+                // Notify other drivers that their service is no longer needed
                 await context.CallActivityAsync("A_TM_NotifyOtherDrivers", trip);
 
-                // Notify the passenger
+                // Notify the passenger that the trip is starting
                 await context.CallActivityAsync("A_TM_NotifyPassenger", trip);
 
-                // Externalize the trip
-                await context.CallActivityAsync("A_TM_Externalize", trip);
-
-                // Trigger to create a trip monitor orchestrator whose job is to monitor the driver location every x seconds and update the trip
+                // Trigger to create a trip monitor orchestrator whose job is to monitor the trip for completion
                 await context.CallActivityAsync("A_TM_CreateTripMonitor", trip);
             }
             catch (Exception e)
@@ -106,15 +97,18 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         }
 
         [FunctionName("A_TM_FindNNotifyDrivers")]
-        public static async Task<List<DriverItem>> FindNNotifyDrivers([ActivityTrigger] TripItem trip,
+        public static async Task<TripItem> FindNNotifyDrivers([ActivityTrigger] TripItem trip,
             ILogger log)
         {
             log.LogInformation($"FindNNotifyDrivers for {trip.Code} starting....");
             List<DriverItem> availableDrivers = new List<DriverItem>();
+
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 availableDrivers = await persistenceService.RetrieveDrivers(trip.SourceLocation.Latitude, trip.SourceLocation.Longitude, ServiceFactory.GetSettingService().GetDriversLocationRadiusInMiles());
+                if (availableDrivers.Count > 0)
+                    trip = await persistenceService.AssignTripAvailableDrivers(trip, availableDrivers);
             }
             else
             {
@@ -123,48 +117,33 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
             foreach (var driver in availableDrivers)
             {
-                await Notify(driver, trip);
+                //TODO: Out of scope
             }
 
-            return availableDrivers;
-        }
-
-        [FunctionName("A_TM_UpdateTrip")]
-        public static async Task<TripItem> UpdateTrip([ActivityTrigger] TripItem trip,
-            ILogger log)
-        {
-            log.LogInformation($"UpdateTrip starting....");
-            if (ServiceFactory.GetSettingService().IsPersistDirectly())
-            {
-                var persistenceService = ServiceFactory.GetPersistenceService();
-                await persistenceService.UpsertTrip(trip, true);
-                await Notify(trip);
-            }
-            else
-            {
-                //TODO:
-            }
+            if (availableDrivers.Count > 0)
+                await Externalize(trip, Constants.EVG_SUBJECT_TRIP_DRIVERS_NOTIFIED);
 
             return trip;
         }
 
-        [FunctionName("A_TM_NotifySelectedDriver")]
-        public static async Task NotifySelectedDriver([ActivityTrigger] TripItem trip,
+        [FunctionName("A_TM_AssignTripDriver")]
+        public static async Task<TripItem> AssignTripDriver([ActivityTrigger] TripInfo tripInfo,
             ILogger log)
         {
-            log.LogInformation($"NotifySelectedDriver starting....");
+            log.LogInformation($"AssignTripDriver starting....");
+            var trip = tripInfo.Trip;
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                var driver = await persistenceService.RetrieveDriver(trip.Driver.Code);
-                driver.IsAcceptingRides = false;
-                await persistenceService.UpsertDriver(trip.Driver, true);
-                await Notify(trip.Driver, trip, true);
+                trip = await persistenceService.AssignTripDriver(trip, tripInfo.Driver.Code);
             }
             else
             {
                 //TODO:
             }
+
+            await Externalize(trip, Constants.EVG_SUBJECT_TRIP_DRIVER_PICKED);
+            return trip;
         }
 
         [FunctionName("A_TM_NotifyOtherDrivers")]
@@ -175,7 +154,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             trip.AvailableDrivers.Remove(trip.Driver);
             foreach (var driver in trip.AvailableDrivers)
             {
-                await Notify(driver, trip, false);
+                //TODO: Out of scope
             }
         }
 
@@ -184,15 +163,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"NotifyPassenger starting....");
-            await Notify(trip.Passenger, trip);
-        }
-
-        [FunctionName("A_TM_Externalize")]
-        public static async Task NotifyExternal([ActivityTrigger] TripItem trip,
-            ILogger log)
-        {
-            log.LogInformation($"Externalize starting....");
-            await Externalize(trip);
+            //TODO: Out of scope
         }
 
         // Out does does not work in Async methods!!!
@@ -202,7 +173,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"CreateTripMonitor starting....");
-            // Enqueue the trip to be monitored 
+            // Enqueue the trip code to be monitored 
             queueTripCode = trip.Code;
         }
 
@@ -211,58 +182,30 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             ILogger log)
         {
             log.LogInformation($"Cleanup for {trip.Code} starting....");
-            trip.EndDate = DateTime.Now;
-            trip.IsAborted = true;
 
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                await persistenceService.UpsertTrip(trip, true);
-                var driver = trip.Driver;
-                if (driver != null)
-                {
-                    driver = await persistenceService.RetrieveDriver(trip.Driver.Code);
-                    driver.IsAcceptingRides = true;
-                    await persistenceService.UpsertDriver(driver, true);
-                }
+                trip = await persistenceService.AbortTrip(trip);
             }
             else
             {
                 //TODO: 
             }
 
-            await Externalize(trip);
+            await Externalize(trip, Constants.EVG_SUBJECT_TRIP_ABORTED);
         }
 
         // *** PRIVATE ***//
-        private static async Task Notify(DriverItem driver, TripItem trip)
+        private static async Task Externalize(TripItem trip, string subject)
         {
-            //OUT-OF-SCOPE: Used to notify a driver that a trip is up for grabs
-            //OUT-OF-SCOPE: The notification can be a SignalR push, push notification, SMS or Email
-            //OUT-OF-SCOPE: An email with an Ok button to accept the ride is probably good for demo
+            await Utilities.TriggerEventGridTopic<TripItem>(null, trip, Constants.EVG_EVENT_TYPE_MANAGER_TRIP, subject, ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicUrl(), ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicApiKey());
         }
+    }
 
-        private static async Task Notify(DriverItem driver, TripItem trip, bool isSelected)
-        {
-            //OUT-OF-SCOPE: Used to notify an available driver that either he/she is selected or not selected for a trip           
-            //OUT-OF-SCOPE: If true, it is used to let the selected driver that he/she has been selected
-            //OUT-OF-SCOPE: If false, it is used to let the other drivers that they were not selected
-        }
-
-        private static async Task Notify(PassengerItem passenger, TripItem trip)
-        {
-            //OUT-OF-SCOPE: This is used to let the passenger that the trip has been accepted
-            //OUT-OF-SCOPE: The notification can be a SignalR push, push notification, SMS or Email
-        }
-
-        private static async Task Notify(TripItem trip)
-        {
-            //OUT-OF-SCOPE: This is used to update the trip info i.e. Driver location for all observers
-        }
-
-        private static async Task Externalize(TripItem trip)
-        {
-            //TODO: Trigger an Event Grid topic           
-        }
+    public class TripInfo
+    {
+        public TripItem Trip { get; set; }
+        public DriverItem Driver { get; set; }
     }
 }

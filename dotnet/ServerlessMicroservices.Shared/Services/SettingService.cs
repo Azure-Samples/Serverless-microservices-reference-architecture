@@ -34,6 +34,10 @@ namespace ServerlessMicroservices.Shared.Services
         private const string TerminateTripMonitorOrchestratorBaseUrlKey = "TerminateTripMonitorOrchestratorBaseUrl";
         private const string TerminateTripMonitorOrchestratorApiKey = "TerminateTripMonitorOrchestratorApiKey";
 
+        // Event Grid
+        private const string TripExternalizationsEventGridTopicUrlKey = "TripExternalizationsEventGridTopicUrl";
+        private const string TripExternalizationsEventGridTopicApiKey = "TripExternalizationsEventGridTopicApiKey";
+
         public string GetSiteName()
         {
             return GetEnvironmentVariable("WEBSITE_SITE_NAME");
@@ -140,6 +144,17 @@ namespace ServerlessMicroservices.Shared.Services
         public string GetTerminateTripMonitorOrchestratorApiKey()
         {
             return GetEnvironmentVariable(TerminateTripMonitorOrchestratorApiKey);
+        }
+
+        // Event Grid Urls
+        public string GetTripExternalizationsEventGridTopicUrl()
+        {
+            return GetEnvironmentVariable(TripExternalizationsEventGridTopicUrlKey);
+        }
+
+        public string GetTripExternalizationsEventGridTopicApiKey()
+        {
+            return GetEnvironmentVariable(TripExternalizationsEventGridTopicApiKey);
         }
 
         //*** PRIVATE ***//

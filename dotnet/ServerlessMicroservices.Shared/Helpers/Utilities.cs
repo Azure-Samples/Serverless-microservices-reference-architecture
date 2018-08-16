@@ -66,6 +66,40 @@ namespace ServerlessMicroservices.Shared.Helpers
             return rndString.ToUpper();
         }
 
+        public static async Task TriggerEventGridTopic<T>(HttpClient httpClient, T request, string eventType, string eventSubject, string eventGridTopicUrl, string eventGridTopicApiKey)
+        {
+            var error = "";
+
+            try
+            {
+                if (string.IsNullOrEmpty(eventType) || string.IsNullOrEmpty(eventSubject) || string.IsNullOrEmpty(eventGridTopicUrl) || string.IsNullOrEmpty(eventGridTopicApiKey))
+                    return;
+
+                var events = new List<dynamic>
+                {
+                    new
+                    {
+                        EventType = eventType,
+                        EventTime = DateTime.UtcNow,
+                        Id = Guid.NewGuid().ToString(),
+                        Subject = eventSubject,
+                        Data = request
+                    }
+                };
+
+                var headers = new Dictionary<string, string>() {
+                    { "aeg-sas-key", eventGridTopicApiKey }
+                };
+
+                await Post<dynamic, dynamic>(httpClient, events, eventGridTopicUrl, headers);
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw ex;
+            }
+        }
+
         public static async Task<TResponse> Get<TResponse>(HttpClient httpClient, string url, Dictionary<string, string> headers, string userId = null, string password = null)
         {
             var error = "";

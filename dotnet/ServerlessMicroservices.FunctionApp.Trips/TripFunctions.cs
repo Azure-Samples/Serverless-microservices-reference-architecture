@@ -1,16 +1,16 @@
-
-using System.IO;
-using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.WebJobs;
-using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Host;
-using Newtonsoft.Json;
+using Microsoft.AspNetCore.Mvc;
+using Microsoft.Azure.EventGrid.Models;
+using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.EventGrid;
+using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using System.Threading.Tasks;
-using System;
+using Newtonsoft.Json;
 using ServerlessMicroservices.Models;
 using ServerlessMicroservices.Shared.Services;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ServerlessMicroservices.FunctionApp.Trips
 {
@@ -98,6 +98,60 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                 var error = $"CreateTrip failed: {e.Message}";
                 log.LogError(error);
                 return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("EVGH_TripExternalizations2SignalR")]
+        public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] EventGridEvent eventGridEvent,
+            ILogger log)
+        {
+            log.LogInformation($"ProcessTripExternalizations2SignalR triggered....EventGridEvent" +
+                            $"\n\tId:{eventGridEvent.Id}" +
+                            $"\n\tTopic:{eventGridEvent.Topic}" +
+                            $"\n\tSubject:{eventGridEvent.Subject}" +
+                            $"\n\tType:{eventGridEvent.EventType}" +
+                            $"\n\tData:{eventGridEvent.Data}");
+
+            try
+            {
+                TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+
+                //TODO: Do something with the trip
+                //TODO: We can also do different processing based on the event subject
+                //TODO: Event subjects are defined in ServerlessMicroservices.Shared.Helpers.Constants
+            }
+            catch (Exception e)
+            {
+                var error = $"ProcessTripExternalizations2SignalR failed: {e.Message}";
+                log.LogError(error);
+                throw e;
+            }
+        }
+
+        [FunctionName("EVGH_TripExternalizations2PowerBI")]
+        public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] EventGridEvent eventGridEvent,
+            ILogger log)
+        {
+            log.LogInformation($"ProcessTripExternalizations2PowerBI triggered....EventGridEvent" +
+                            $"\n\tId:{eventGridEvent.Id}" +
+                            $"\n\tTopic:{eventGridEvent.Topic}" +
+                            $"\n\tSubject:{eventGridEvent.Subject}" +
+                            $"\n\tType:{eventGridEvent.EventType}" +
+                            $"\n\tData:{eventGridEvent.Data}");
+
+            try
+            {
+                TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+
+                //TODO: Do something with the trip
+                //TODO: We can also do different processing based on the event subject
+                //TODO: Event subjects are defined in ServerlessMicroservices.Shared.Helpers.Constants
+            }
+            catch (Exception e)
+            {
+                var error = $"ProcessTripExternalizations2PowerBI failed: {e.Message}";
+                log.LogError(error);
+                throw e;
             }
         }
     }

@@ -26,5 +26,12 @@ namespace ServerlessMicroservices.Shared.Services
         Task<int> RetrieveTripsCount();
         Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false);
         Task DeleteTrip(string code);
+
+        // High-level methods
+        Task<TripItem> AssignTripAvailableDrivers(TripItem trip, List<DriverItem> drivers);
+        Task<TripItem> AssignTripDriver(TripItem trip, string driverCode);
+        Task RecycleTripDriver(TripItem trip);
+        Task<TripItem> CheckTripCompletion(TripItem trip);
+        Task<TripItem> AbortTrip(TripItem trip);
     }
 }

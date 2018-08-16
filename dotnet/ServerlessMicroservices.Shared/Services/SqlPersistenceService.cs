@@ -99,5 +99,30 @@ namespace ServerlessMicroservices.Shared.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<TripItem> AssignTripAvailableDrivers(TripItem trip, List<DriverItem> drivers)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TripItem> AssignTripDriver(TripItem trip, string driverCode)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task RecycleTripDriver(TripItem trip)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TripItem> CheckTripCompletion(TripItem trip)
+        {
+            throw new NotImplementedException();
+        }
+
+        public Task<TripItem> AbortTrip(TripItem trip)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

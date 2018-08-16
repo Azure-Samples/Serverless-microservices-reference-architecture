@@ -19,6 +19,7 @@ bld/
 [Oo]bj/
 .idea/
 .vs/
+.vscode/
 
 # MSTest test Results
 [Tt]est[Rr]esult*/

@@ -29,5 +29,9 @@
         string GetTerminateTripManagerOrchestratorApiKey();
         string GetTerminateTripMonitorOrchestratorBaseUrl();
         string GetTerminateTripMonitorOrchestratorApiKey();
+
+        // Event Grid Urls
+        string GetTripExternalizationsEventGridTopicUrl();
+        string GetTripExternalizationsEventGridTopicApiKey();
     }
 }
