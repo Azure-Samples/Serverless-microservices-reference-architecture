@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>netstandard2.0</TargetFramework>
+    <AzureFunctionsVersion>v2</AzureFunctionsVersion>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.Azure.WebJobs.Extensions.DurableTask" Version="1.5.0" />
+    <PackageReference Include="Microsoft.NET.Sdk.Functions" Version="1.0.14" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Update="host.json">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\ServerlessMicroservices.Models\ServerlessMicroservices.Models.csproj" />
+    <ProjectReference Include="..\ServerlessMicroservices.Shared\ServerlessMicroservices.Shared.csproj" />
+  </ItemGroup>
+</Project>

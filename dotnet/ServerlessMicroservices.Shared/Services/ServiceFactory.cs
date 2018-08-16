@@ -6,6 +6,7 @@
         private static ISettingService _settingService = null;
         private static ILoggerService _loggerService = null;
         private static IAnalyticService _analyticService = null;
+        private static IChangeNotifierService _changeNotifierService = null;
         private static IPersistenceService _persistenceService = null;
 
         public static ISettingService GetSettingService()
@@ -32,10 +33,18 @@
             return _analyticService;
         }
 
-        public static IPersistenceService GetPersistenceService(ISettingService setting, ILoggerService logger, IAnalyticService analytic)
+        public static IChangeNotifierService GetChangeNotifierService()
+        {
+            if (_changeNotifierService == null)
+                _changeNotifierService = new ChangeNotifierService(GetSettingService(), GetLoggerService());
+
+            return _changeNotifierService;
+        }
+
+        public static IPersistenceService GetPersistenceService()
         {
             if (_persistenceService == null)
-                _persistenceService = new CosmosPersistenceService(setting, logger, analytic);
+                _persistenceService = new CosmosPersistenceService(GetSettingService(), GetLoggerService(), GetAnalyticService(), GetChangeNotifierService());
 
             return _persistenceService;
         }

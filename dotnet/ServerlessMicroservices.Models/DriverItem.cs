@@ -21,6 +21,9 @@ namespace ServerlessMicroservices.Models
 
         [JsonProperty(PropertyName = "car")]
         public CarItem Car { get; set; } = new CarItem();
+
+        [JsonProperty(PropertyName = "isAcceptingRides")]
+        public bool IsAcceptingRides { get; set; } = true;
     }
 
     public class DriverLocationItem : BaseItem

@@ -8,6 +8,12 @@ namespace ServerlessMicroservices.Shared.Services
 
         //*** These settings must exist in the FunctionsApp App Settings ***//
 
+        private const string IsPersistDirectlyKey = "IsPersistDirectly";
+        private const string DriversAcknowledgeMaxWaitPeriodInSecondsKey = "DriversAcknowledgeMaxWaitPeriodInSeconds";
+        private const string DriversLocationRadiusInMilesKey = "DriversLocationRadiusInMiles";
+        private const string TripMonitorIntervalInSecondsKey = "TripMonitorIntervalInSeconds";
+        private const string TripMonitorMaxIterationsKey = "TripMonitorMaxIterations";
+
         // Insights Keys - this for the settings. The Functions App needs it also in APPINSIGHTS_INSTRUMENTATIONKEY
         // https://github.com/Azure/Azure-Functions/wiki/App-Insights
         private const string InsightsInstrumentationKey = "InsightsInstrumentationKey";
@@ -20,9 +26,56 @@ namespace ServerlessMicroservices.Shared.Services
         private const string DocDbRideShareMainCollectionNameKey = "DocDbRideShareMainCollectionName";
         private const string DocDbThroughput = "DocDbThroughput";
 
+        // Orchestrators
+        private const string StartTripManagerOrchestratorBaseUrlKey = "StartTripManagerOrchestratorBaseUrl";
+        private const string startTripManagerOrchestratorApiKey = "StartTripManagerOrchestratorApiKey";
+        private const string TerminateTripManagerOrchestratorBaseUrlKey = "TerminateTripManagerOrchestratorBaseUrl";
+        private const string TerminateTripManagerOrchestratorApiKey = "TerminateTripManagerOrchestratorApiKey";
+        private const string TerminateTripMonitorOrchestratorBaseUrlKey = "TerminateTripMonitorOrchestratorBaseUrl";
+        private const string TerminateTripMonitorOrchestratorApiKey = "TerminateTripMonitorOrchestratorApiKey";
+
+        // Event Grid
+        private const string TripExternalizationsEventGridTopicUrlKey = "TripExternalizationsEventGridTopicUrl";
+        private const string TripExternalizationsEventGridTopicApiKey = "TripExternalizationsEventGridTopicApiKey";
+
         public string GetSiteName()
         {
             return GetEnvironmentVariable("WEBSITE_SITE_NAME");
+        }
+
+        // Management
+        public bool IsPersistDirectly()
+        {
+            if (
+                GetEnvironmentVariable(IsPersistDirectlyKey) != null &&
+                !string.IsNullOrEmpty(GetEnvironmentVariable(IsPersistDirectlyKey).ToString()) &&
+                GetEnvironmentVariable(IsPersistDirectlyKey).ToString().ToLower() == "true"
+                )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public int GetDriversAcknowledgeMaxWaitPeriodInSeconds()
+        {
+            return GetEnvironmentVariable(DriversAcknowledgeMaxWaitPeriodInSecondsKey) != null ? Int32.Parse(GetEnvironmentVariable(DriversAcknowledgeMaxWaitPeriodInSecondsKey)) : 120;
+        }
+
+        public double GetDriversLocationRadiusInMiles()
+        {
+            return GetEnvironmentVariable(DriversLocationRadiusInMilesKey) != null ? Double.Parse(GetEnvironmentVariable(DriversLocationRadiusInMilesKey)) : 15;
+        }
+
+        public int GetTripMonitorIntervalInSeconds()
+        {
+            return GetEnvironmentVariable(TripMonitorIntervalInSecondsKey) != null ? Int32.Parse(GetEnvironmentVariable(TripMonitorIntervalInSecondsKey)) : 10;
+        }
+
+        public int GetTripMonitorMaxIterations()
+        {
+            return GetEnvironmentVariable(TripMonitorMaxIterationsKey) != null ? Int32.Parse(GetEnvironmentVariable(TripMonitorMaxIterationsKey)) : 20;
         }
 
         // App Insights
@@ -60,6 +113,48 @@ namespace ServerlessMicroservices.Shared.Services
         public int GetDocDbThroughput()
         {
             return GetEnvironmentVariable(DocDbThroughput) != null ? Int32.Parse(GetEnvironmentVariable(DocDbThroughput)) : 400;
+        }
+
+        // Trip Manager Orchestrator
+        public string GetStartTripManagerOrchestratorBaseUrl()
+        {
+            return GetEnvironmentVariable(StartTripManagerOrchestratorBaseUrlKey);
+        }
+
+        public string GetStartTripManagerOrchestratorApiKey()
+        {
+            return GetEnvironmentVariable(startTripManagerOrchestratorApiKey);
+        }
+
+        public string GetTerminateTripManagerOrchestratorBaseUrl()
+        {
+            return GetEnvironmentVariable(TerminateTripManagerOrchestratorBaseUrlKey);
+        }
+
+        public string GetTerminateTripManagerOrchestratorApiKey()
+        {
+            return GetEnvironmentVariable(TerminateTripManagerOrchestratorApiKey);
+        }
+
+        public string GetTerminateTripMonitorOrchestratorBaseUrl()
+        {
+            return GetEnvironmentVariable(TerminateTripMonitorOrchestratorBaseUrlKey);
+        }
+
+        public string GetTerminateTripMonitorOrchestratorApiKey()
+        {
+            return GetEnvironmentVariable(TerminateTripMonitorOrchestratorApiKey);
+        }
+
+        // Event Grid Urls
+        public string GetTripExternalizationsEventGridTopicUrl()
+        {
+            return GetEnvironmentVariable(TripExternalizationsEventGridTopicUrlKey);
+        }
+
+        public string GetTripExternalizationsEventGridTopicApiKey()
+        {
+            return GetEnvironmentVariable(TripExternalizationsEventGridTopicApiKey);
         }
 
         //*** PRIVATE ***//

@@ -1,132 +1,200 @@
-using System.IO;
+using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
-using Microsoft.AspNetCore.Http;
-using Microsoft.Azure.WebJobs.Host;
+using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
-using System;
-using ServerlessMicroservices.Shared.Services;
-using System.Threading.Tasks;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Services;
+using System;
+using System.IO;
+using System.Threading.Tasks;
 
 namespace ServerlessMicroservices.FunctionApp.Drivers
 {
     public static class DriverFunctions
     {
-        [FunctionName("G_Drivers")]
+        [FunctionName("GetDrivers")]
         public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers")] HttpRequest req, 
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("G_Drivers triggered....");
+            log.LogInformation("GetDrivers triggered....");
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers());
             }
             catch (Exception e)
             {
-                log.Error($"G_Drivers failed: {e.Message}");
-                return new BadRequestObjectResult($"G_Drivers failed: {e.Message}");
+                var error = $"GetDrivers failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("G_Driver")]
-        public static async Task<IActionResult> GetDriver([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{code}")] HttpRequest req,
-            string code,
-            TraceWriter log)
+        [FunctionName("GetDriversWithinLocation")]
+        public static async Task<IActionResult> GetDriversWithinLocation([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{latitude}/{longitude}/{miles}")] HttpRequest req,
+            double latitude,
+            double longitude,
+            double miles, 
+            ILogger log)
         {
-            log.Info("G_Driver triggered....");
+            log.LogInformation("GetDriversWithinLocation triggered....");
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers(latitude, longitude, miles));
+            }
+            catch (Exception e)
+            {
+                var error = $"GetDriversWithinLocation failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("GetActiveDrivers")]
+        public static async Task<IActionResult> GetActiveDrivers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "activedrivers")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("GetActiveDrivers triggered....");
+
+            try
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                return (ActionResult)new OkObjectResult(await persistenceService.RetrieveActiveDrivers());
+            }
+            catch (Exception e)
+            {
+                var error = $"GetActiveDrivers failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("GetDriver")]
+        public static async Task<IActionResult> GetDriver([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{code}")] HttpRequest req,
+            string code,
+            ILogger log)
+        {
+            log.LogInformation("GetDriver triggered....");
+
+            try
+            {
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDriver(code));
             }
             catch (Exception e)
             {
-                log.Error($"G_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"G_Driver failed: {e.Message}");
+                var error = $"GetDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("P_Driver")]
-        public static async Task<IActionResult> PostDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "drivers")] HttpRequest req,
-            TraceWriter log)
+        [FunctionName("CreateDriver")]
+        public static async Task<IActionResult> CreateDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "drivers")] HttpRequest req,
+            ILogger log)
         {
-            log.Info("P_Driver triggered....");
+            log.LogInformation("CreateDriver triggered....");
 
             try
             {
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverItem driver = JsonConvert.DeserializeObject<DriverItem>(requestBody);
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.UpsertDriver(driver));
             }
             catch (Exception e)
             {
-                log.Error($"P_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"P_Driver failed: {e.Message}");
+                var error = $"CreateDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("U_Driver")]
-        public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Function, "put", Route = "drivers")] HttpRequest req,
-            TraceWriter log)
+        [FunctionName("UpdateDriver")]
+        public static async Task<IActionResult> UpdateDriver([HttpTrigger(AuthorizationLevel.Function, "put", Route = "drivers")] HttpRequest req,
+            ILogger log)
         {
-            log.Info("U_Driver triggered....");
+            log.LogInformation("UpdateDriver triggered....");
+
+            try
+            {
+                string requestBody = new StreamReader(req.Body).ReadToEnd();
+                DriverItem driver = JsonConvert.DeserializeObject<DriverItem>(requestBody);
+                var persistenceService = ServiceFactory.GetPersistenceService();
+                return (ActionResult)new OkObjectResult(await persistenceService.UpsertDriver(driver, true));
+            }
+            catch (Exception e)
+            {
+                var error = $"UpdateDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("UpdateDriverLocation")]
+        public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Function, "put", Route = "driverlocations")] HttpRequest req,
+            ILogger log)
+        {
+            log.LogInformation("UpdateDriverLocation triggered....");
 
             try
             {
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverLocationItem driverLocation = JsonConvert.DeserializeObject<DriverLocationItem>(requestBody);
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.UpsertDriverLocation(driverLocation));
             }
             catch (Exception e)
             {
-                log.Error($"U_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"U_Driver failed: {e.Message}");
+                var error = $"UpdateDriverLocation failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("G_DriverLocations")]
+        [FunctionName("GetDriverLocations")]
         public static async Task<IActionResult> GetDriverLocations([HttpTrigger(AuthorizationLevel.Function, "get", Route = "driverlocations/{code}")] HttpRequest req,
             string code,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("G_DriverLocations triggered....");
+            log.LogInformation("GetDriverLocations triggered....");
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDriverLocations(code));
             }
             catch (Exception e)
             {
-                log.Error($"G_DriverLocations failed: {e.Message}");
-                return new BadRequestObjectResult($"G_DriverLocations failed: {e.Message}");
+                var error = $"GetDriverLocations failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
 
-        [FunctionName("D_Driver")]
+        [FunctionName("DeleteDriver")]
         public static async Task<IActionResult> DeleteDriver([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "drivers/{code}")] HttpRequest req,
             string code,
-            TraceWriter log)
+            ILogger log)
         {
-            log.Info("D_Driver triggered....");
+            log.LogInformation("DeleteDriver triggered....");
 
             try
             {
-                var persistenceService = ServiceFactory.GetPersistenceService(ServiceFactory.GetSettingService(), ServiceFactory.GetLoggerService(), ServiceFactory.GetAnalyticService());
+                var persistenceService = ServiceFactory.GetPersistenceService();
                 await persistenceService.DeleteDriver(code);
                 return (ActionResult)new OkObjectResult("Ok");
             }
             catch (Exception e)
             {
-                log.Error($"D_Driver failed: {e.Message}");
-                return new BadRequestObjectResult($"D_Driver failed: {e.Message}");
+                var error = $"DeleteDriver failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
             }
         }
     }
