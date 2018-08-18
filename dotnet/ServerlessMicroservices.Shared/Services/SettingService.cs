@@ -37,6 +37,11 @@ namespace ServerlessMicroservices.Shared.Services
         // Event Grid
         private const string TripExternalizationsEventGridTopicUrlKey = "TripExternalizationsEventGridTopicUrl";
         private const string TripExternalizationsEventGridTopicApiKey = "TripExternalizationsEventGridTopicApiKey";
+        
+        // B2C
+        private const string AuthorityUrlKey = "AuthorityUrl";
+        private const string ApiApplicationIdKey = "ApiApplicationId";
+        private const string ApiScopeNameKey = "ApiScopeName";
 
         public string GetSiteName()
         {
@@ -157,10 +162,27 @@ namespace ServerlessMicroservices.Shared.Services
             return GetEnvironmentVariable(TripExternalizationsEventGridTopicApiKey);
         }
 
+        // B2C
+        public string GetAuthorityUrl()
+        {
+            return GetEnvironmentVariable(AuthorityUrlKey);
+        }
+
+        public string GetApiApplicationId()
+        {
+            return GetEnvironmentVariable(ApiApplicationIdKey);
+        }
+
+        public string GetApiScopeName()
+        {
+            return GetEnvironmentVariable(ApiScopeNameKey);
+        }
+
         //*** PRIVATE ***//
         private static string GetEnvironmentVariable(string name)
         {
             return System.Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
         }
+
     }
 }

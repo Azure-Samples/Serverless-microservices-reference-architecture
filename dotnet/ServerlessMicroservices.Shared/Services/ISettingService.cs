@@ -33,5 +33,10 @@
         // Event Grid Urls
         string GetTripExternalizationsEventGridTopicUrl();
         string GetTripExternalizationsEventGridTopicApiKey();
+
+        // B2C settings
+        string GetAuthorityUrl();
+        string GetApiApplicationId();
+        string GetApiScopeName();
     }
 }
