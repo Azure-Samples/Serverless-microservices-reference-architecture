@@ -2,7 +2,7 @@ import Vue from 'vue';
 import Router from 'vue-router';
 import Home from '@/views/Home.vue';
 import Trip from '@/views/Trip.vue';
-import Riders from '@/views/Riders.vue';
+import Passengers from '@/views/Passengers.vue';
 import Drivers from '@/views/Drivers.vue';
 
 Vue.use(Router);
@@ -22,9 +22,9 @@ export default new Router({
       component: Trip
     },
     {
-      path: '/riders',
-      name: 'riders',
-      component: Riders
+      path: '/passengers',
+      name: 'passengers',
+      component: Passengers
     },
     {
       path: '/drivers',

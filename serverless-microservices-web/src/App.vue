@@ -2,7 +2,7 @@
   <div>
     <nav v-scroll="handleScroll" class="navbar navbar-light navbar-expand-lg fixed-top" id="mainNav">
       <div class="container">
-        <router-link :to="{ name: 'home' }" active-class="active" class="navbar-brand">Rideshare</router-link>
+        <router-link :to="{ name: 'home' }" class="navbar-brand">Rideshare by Relecloud</router-link>
         <button class="navbar-toggler float-right" data-toggle="collapse"
           data-target="#navbarResponsive" aria-controls="navbarResponsive"
           aria-expanded="false" aria-label="Toggle navigation"><i class="fa fa-bars"></i>
@@ -14,7 +14,7 @@
                     <router-link :to="{ name: 'trip' }" class="nav-link">My Trip</router-link>
                   </li>
                   <li class="nav-item" role="presentation">
-                    <router-link :to="{ name: 'riders' }" class="nav-link">Riders</router-link>
+                    <router-link :to="{ name: 'passengers' }" class="nav-link">Passengers</router-link>
                   </li>
                   <li class="nav-item" role="presentation">
                     <router-link :to="{ name: 'drivers' }" class="nav-link">Drivers</router-link>
