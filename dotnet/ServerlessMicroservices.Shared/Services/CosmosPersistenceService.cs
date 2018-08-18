@@ -687,9 +687,10 @@ namespace ServerlessMicroservices.Shared.Services
                 if (driver != null && driver.Latitude == trip.Destination.Latitude && driver.Longitude == trip.Destination.Longitude)
                 {
                     trip.EndDate = DateTime.Now;
-                    trip = await UpsertTrip(trip, true);
                 }
 
+                trip.MonitorIterations++;
+                trip = await UpsertTrip(trip, true);
                 return trip;
             }
             catch (Exception ex)
