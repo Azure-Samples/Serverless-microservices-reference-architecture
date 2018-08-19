@@ -632,6 +632,9 @@ namespace ServerlessMicroservices.Shared.Services
             {
                 var driver = await RetrieveDriver(driverCode);
                 driver.IsAcceptingRides = false;
+                // NOTE: Make sure the driver is not at the destination already!!!
+                driver.Latitude = trip.Source.Latitude;
+                driver.Longitude = trip.Source.Longitude;
                 await UpsertDriver(driver, true);
 
                 trip.Driver = driver;

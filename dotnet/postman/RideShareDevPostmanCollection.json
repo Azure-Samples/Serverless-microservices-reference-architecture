@@ -428,22 +428,51 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmonitors/QB8V3XAB-M?code=rvs09FKaOa7sqFOyGlMVxVEENhBoNw/1zEKXMaPC28Rxo7z56zBv7Q==",
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripmonitors/{code}?code=IXaLuEU/UqWIRFJFgn9kaJmvitGhCteJDLPYbUL7ktWUJaeJ7P8VOQ==",
 							"protocol": "https",
 							"host": [
-								"rideshareorchestratorsfunctionsapp",
+								"rideshareorchestratorsfunctionappdev",
 								"azurewebsites",
 								"net"
 							],
 							"path": [
 								"api",
 								"tripmonitors",
-								"QB8V3XAB-M"
+								"{code}"
 							],
 							"query": [
 								{
 									"key": "code",
-									"value": "rvs09FKaOa7sqFOyGlMVxVEENhBoNw/1zEKXMaPC28Rxo7z56zBv7Q=="
+									"value": "IXaLuEU/UqWIRFJFgn9kaJmvitGhCteJDLPYbUL7ktWUJaeJ7P8VOQ=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip Demo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripdemos/{code}?code=aOsIAzsC0uukKxdPdFlZjkdJaCY0pdLBWwYYK0sHiH7tErQmeJLBBw==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionappdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripdemos",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "aOsIAzsC0uukKxdPdFlZjkdJaCY0pdLBWwYYK0sHiH7tErQmeJLBBw=="
 								}
 							]
 						}
@@ -559,23 +588,53 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmonitors/HIWO5FX4-M/terminate?code=wloyvlK3XRGKOMEqHO2O5HaVR3knCrwAgWQMcjMbtGvS5mCXaxVNVQ==",
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripmonitors/{code}/terminate?code=UA5YZdRaOy9AyovRME2ACEGq83XeGAZPz6QQpsj5cyKO0AwbMBZIuw==",
 							"protocol": "https",
 							"host": [
-								"rideshareorchestratorsfunctionsapp",
+								"rideshareorchestratorsfunctionappdev",
 								"azurewebsites",
 								"net"
 							],
 							"path": [
 								"api",
 								"tripmonitors",
-								"HIWO5FX4-M",
+								"{code}",
 								"terminate"
 							],
 							"query": [
 								{
 									"key": "code",
-									"value": "wloyvlK3XRGKOMEqHO2O5HaVR3knCrwAgWQMcjMbtGvS5mCXaxVNVQ=="
+									"value": "UA5YZdRaOy9AyovRME2ACEGq83XeGAZPz6QQpsj5cyKO0AwbMBZIuw=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Terminate Trip Demo",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripdemos/{code}/terminate?code=pEOVGr2o1FOYc0ASr3M/XRxyz0d8yugBdfqpjs0BtYqkPW48Vg/3Zg==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionappdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripdemos",
+								"{code}",
+								"terminate"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "pEOVGr2o1FOYc0ASr3M/XRxyz0d8yugBdfqpjs0BtYqkPW48Vg/3Zg=="
 								}
 							]
 						}
@@ -798,6 +857,35 @@
 								{
 									"key": "code",
 									"value": "YxQqagYJ4sAQRimkp6X3ZuN1J6w8VOsf/D5ZWISJZNZ/YVI68m0soQ=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip Demo",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripdemos/{code}?code=aOsIAzsC0uukKxdPdFlZjkdJaCY0pdLBWwYYK0sHiH7tErQmeJLBBw==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionappdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripdemos",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "aOsIAzsC0uukKxdPdFlZjkdJaCY0pdLBWwYYK0sHiH7tErQmeJLBBw=="
 								}
 							]
 						}

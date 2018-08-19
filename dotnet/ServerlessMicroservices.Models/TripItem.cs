@@ -4,6 +4,12 @@ using System.Collections.Generic;
 
 namespace ServerlessMicroservices.Models
 {
+    public enum TripTypes
+    {
+        Normal,
+        Demo
+    }
+
     public class TripItem : BaseItem
     {
         [JsonProperty(PropertyName = "code")]
@@ -22,7 +28,7 @@ namespace ServerlessMicroservices.Models
         public List<DriverItem> AvailableDrivers { get; set; } = new List<DriverItem>();
         
         [JsonProperty(PropertyName = "source")]
-        public TripLocation SourceLocation { get; set; } = new TripLocation();
+        public TripLocation Source { get; set; } = new TripLocation();
 
         [JsonProperty(PropertyName = "destination")]
         public TripLocation Destination { get; set; } = new TripLocation();
@@ -48,6 +54,9 @@ namespace ServerlessMicroservices.Models
 
         [JsonProperty(PropertyName = "error")]
         public string Error { get; set; } = "";
+
+        [JsonProperty(PropertyName = "type")]
+        public TripTypes Type { get; set; } = TripTypes.Normal;
     }
 
     public class TripLocation
@@ -57,5 +66,23 @@ namespace ServerlessMicroservices.Models
 
         [JsonProperty(PropertyName = "longitude")]
         public double Longitude { get; set; } = 0;
+    }
+
+    public class TripDemoState
+    {
+        [JsonProperty(PropertyName = "code")]
+        public string Code { get; set; } = "";
+
+        [JsonProperty(PropertyName = "source")]
+        public TripLocation Source { get; set; } = new TripLocation();
+
+        [JsonProperty(PropertyName = "destination")]
+        public TripLocation Destination { get; set; } = new TripLocation();
+
+        [JsonProperty(PropertyName = "routeLocations")]
+        public List<TripLocation> RouteLocations { get; set; } = new List<TripLocation>();
+
+        [JsonProperty(PropertyName = "currentRouteIndex")]
+        public int CurrentRouteIndex { get; set; } = 0;
     }
 }

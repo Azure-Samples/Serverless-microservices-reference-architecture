@@ -35,6 +35,20 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("Trip manager orchestrator base URL and key must be both provided");
 
                 await Utilities.Post<dynamic, dynamic>(null, trip, $"{baseUrl}/tripmanagers?code={key}", new Dictionary<string, string>());
+
+                if (trip.Type == TripTypes.Demo)
+                {
+                    baseUrl = _settingService.GetStartTripDemoOrchestratorBaseUrl();
+                    key = _settingService.GetStartTripDemoOrchestratorApiKey();
+                    if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
+                        throw new Exception("Trip demo orchestrator base URL and key must be both provided");
+
+                    var tripDemoState = new TripDemoState();
+                    tripDemoState.Code = trip.Code;
+                    tripDemoState.Source = new TripLocation() { Latitude = trip.Source.Latitude, Longitude = trip.Source.Longitude };
+                    tripDemoState.Destination = new TripLocation() { Latitude = trip.Destination.Latitude, Longitude = trip.Destination.Longitude };
+                    await Utilities.Post<dynamic, dynamic>(null, tripDemoState, $"{baseUrl}/tripdemos?code={key}", new Dictionary<string, string>());
+                }
             }
             catch (Exception ex)
             {

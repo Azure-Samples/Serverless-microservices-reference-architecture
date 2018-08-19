@@ -32,12 +32,8 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 if (trip.Driver == null)
                     throw new Exception($"Trip with code {code} has no driver!");
 
-                //NOTE: Unfortunately this does not work:
-                // 1. If I remove the IsReplaying, I get a start trip message on every function reload
-                // 2. If I keep the IsReplaying, I get a NULL Exception somewhere in their code :-)
-                // Start a trip...
-                //if (!context.IsReplaying)
-                //    await context.CallActivityAsync<TripItem>("A_TO_StartTrip", trip);
+                if (trip.MonitorIterations == 0)
+                    await context.CallActivityAsync<TripItem>("A_TO_StartTrip", trip);
 
                 // Retrieve time settings
                 var settings = await context.CallActivityAsync<TripTimeSettings>("A_TO_RetrieveSettings", code);

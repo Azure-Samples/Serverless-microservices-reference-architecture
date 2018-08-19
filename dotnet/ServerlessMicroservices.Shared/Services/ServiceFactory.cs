@@ -8,6 +8,7 @@
         private static IAnalyticService _analyticService = null;
         private static IChangeNotifierService _changeNotifierService = null;
         private static IPersistenceService _persistenceService = null;
+        private static IRoutesService _routesService = null;
 
         public static ISettingService GetSettingService()
         {
@@ -47,6 +48,14 @@
                 _persistenceService = new CosmosPersistenceService(GetSettingService(), GetLoggerService(), GetAnalyticService(), GetChangeNotifierService());
 
             return _persistenceService;
+        }
+
+        public static IRoutesService GetRoutesService()
+        {
+            if (_routesService == null)
+                _routesService = new RoutesService(GetSettingService(), GetLoggerService());
+
+            return _routesService;
         }
     }
 }

@@ -25,6 +25,8 @@
         // Orchestrators
         string GetStartTripManagerOrchestratorBaseUrl();
         string GetStartTripManagerOrchestratorApiKey();
+        string GetStartTripDemoOrchestratorBaseUrl();
+        string GetStartTripDemoOrchestratorApiKey();
         string GetTerminateTripManagerOrchestratorBaseUrl();
         string GetTerminateTripManagerOrchestratorApiKey();
         string GetTerminateTripMonitorOrchestratorBaseUrl();
