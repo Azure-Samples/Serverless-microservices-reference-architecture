@@ -32,17 +32,23 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 if (trip.Driver == null)
                     throw new Exception($"Trip with code {code} has no driver!");
 
+                //NOTE: Unfortunately this does not work:
+                // 1. If I remove the IsReplaying, I get a start trip message on every function reload
+                // 2. If I keep the IsReplaying, I get a NULL Exception somewhere in their code :-)
                 // Start a trip...
-                await context.CallActivityAsync<TripItem>("A_TO_StartTrip", trip);
+                //if (!context.IsReplaying)
+                //    await context.CallActivityAsync<TripItem>("A_TO_StartTrip", trip);
+
+                // Retrieve time settings
+                var settings = await context.CallActivityAsync<TripTimeSettings>("A_TO_RetrieveSettings", code);
 
                 // Monitor every x seconds
-                DateTime nextUpdate = context.CurrentUtcDateTime.AddSeconds(ServiceFactory.GetSettingService().GetTripMonitorIntervalInSeconds());
+                DateTime nextUpdate = context.CurrentUtcDateTime.AddSeconds(settings.IntervalInSeconds);
                 await context.CreateTimer(nextUpdate, CancellationToken.None);
-                trip.MonitorIterations++;
                 trip = await context.CallActivityAsync<TripItem>("A_TO_CheckTripCompletion", trip);
 
                 // We do not allow the trip to hang forever.... 
-                if (trip.EndDate == null && trip.MonitorIterations < ServiceFactory.GetSettingService().GetTripMonitorMaxIterations())
+                if (trip.EndDate == null && trip.MonitorIterations < settings.MaxIterations)
                 {
                     // Reload the instance with a new state
                     context.ContinueAsNew(trip.Code);
@@ -50,7 +56,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 else
                 {
                     if (trip.EndDate == null)
-                        throw new Exception($"The trip did not complete in {ServiceFactory.GetSettingService().GetTripMonitorMaxIterations() * ServiceFactory.GetSettingService().GetTripMonitorIntervalInSeconds()} seconds!!");
+                        throw new Exception($"The trip did not complete in {settings.MaxIterations * settings.IntervalInSeconds} seconds!!");
 
                     // Recycle the driver back in the available pool
                     await context.CallActivityAsync<TripItem>("A_TO_RecycleTripDriver", trip);
@@ -110,6 +116,17 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_STARTING);
         }
 
+        [FunctionName("A_TO_RetrieveSettings")]
+        public static async Task<TripTimeSettings> RetrieveSettings([ActivityTrigger] string ignore,
+            ILogger log)
+        {
+            log.LogInformation($"RetrieveSettings starting....");
+            TripTimeSettings settings = new TripTimeSettings();
+            settings.IntervalInSeconds = ServiceFactory.GetSettingService().GetTripMonitorIntervalInSeconds();
+            settings.MaxIterations = ServiceFactory.GetSettingService().GetTripMonitorMaxIterations();
+            return settings;
+        }
+
         [FunctionName("A_TO_CheckTripCompletion")]
         public static async Task<TripItem> CheckTripCompletion([ActivityTrigger] TripItem trip,
             ILogger log)
@@ -118,7 +135,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                await persistenceService.CheckTripCompletion(trip);
+                trip = await persistenceService.CheckTripCompletion(trip);
                 await Externalize(trip, Constants.EVG_SUBJECT_TRIP_RUNNING);
             }
             else
@@ -177,5 +194,11 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         {
             await Utilities.TriggerEventGridTopic<TripItem>(null, trip, Constants.EVG_EVENT_TYPE_MONITOR_TRIP, subject, ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicUrl(), ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicApiKey());
         }
+    }
+
+    public class TripTimeSettings
+    {
+        public int IntervalInSeconds { get; set; } = 10;
+        public int MaxIterations { get; set; } = 20;
     }
 }
