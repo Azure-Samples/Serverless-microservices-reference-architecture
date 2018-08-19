@@ -25,6 +25,9 @@
                     <li>
                         <button @click="logout()">Logout</button>
                     </li>
+                    <li>
+                        <button @click="retrieveDrivers()">Get Drivers</button>
+                    </li>
                 </ul>
             </div>
         </section>
@@ -66,13 +69,20 @@ export default {
         .catch(err => {
           this.message = 'error renewing token: ' + err;
         });
-      getDrivers().then(response => {
-        this.drivers = response.data;
-      });
     },
     logout() {
       this.message = 'logging out...';
       auth.logout();
+    },
+    retrieveDrivers() {
+      getDrivers()
+        .then(response => {
+          this.drivers = response.data;
+        })
+        .catch(err => {
+          // If we are here, the token is most likely expired.
+          this.message = err.response;
+        });
     }
   }
 };

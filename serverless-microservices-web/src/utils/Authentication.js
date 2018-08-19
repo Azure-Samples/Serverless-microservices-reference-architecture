@@ -1,5 +1,10 @@
 import { UserAgentApplication, Logger } from 'msal';
 
+const ACCESS_TOKEN = 'rideshare_access_token';
+const ID_TOKEN = 'rideshare_id_token';
+const EXPIRES_AT = 'rideshare_expires_at';
+const USER_DETAILS = 'rideshare_user_details';
+
 let logger = new Logger((level, message, containsPii) => {
   console.log(message);
 });
@@ -21,20 +26,27 @@ export class Authentication {
       cb,
       opts
     );
-
-    this._user = this._userAgentApplication.getUser();
   }
 
   _tokenCallback(errorDesc, token, error, tokenType) {
     this._error = error;
-    console.log(tokenType);
-    if (tokenType === '') {
+    if (tokenType === 'access_token') {
+      //localStorage.setItem(ACCESS_TOKEN, token);
+      // Please note: do NOT do this in production! Should grab this value from the auth service.
+      //let expiresAt = 60 * 1000 + new Date().getTime();
+      //localStorage.setItem(EXPIRES_AT, expiresAt);
       this._token = token;
+    } else {
+      //localStorage.removeItem(ACCESS_TOKEN);
     }
   }
 
   getUser() {
-    return this._user;
+    return this._userAgentApplication.getUser();
+  }
+
+  getError() {
+    return this._error;
   }
 
   getAccessToken() {
@@ -46,11 +58,42 @@ export class Authentication {
   }
 
   logout() {
+    localStorage.removeItem(ACCESS_TOKEN);
+    localStorage.removeItem(EXPIRES_AT);
     this._userAgentApplication.logout();
   }
 
-  authenticated() {
-    // TODO: complete logic
-    return true;
+  isAuthenticated() {
+    return !!this.getUser();
   }
+
+  getAccessTokenOrLoginWithPopup() {
+    return this._userAgentApplication
+      .acquireTokenSilent(this._scopes)
+      .catch(err => {
+        return this._userAgentApplication.loginPopup().then(() => {
+          return this._userAgentApplication.acquireTokenSilent(this._scopes);
+        });
+      });
+  }
+}
+
+export function requireAuth(to, from, next) {
+  const auth = new Authentication();
+  if (!auth.isAuthenticated()) {
+    next({
+      path: '/',
+      query: { redirect: to.fullPath }
+    });
+  } else {
+    next();
+  }
+}
+
+export function getToken() {
+  return localStorage.getItem(ACCESS_TOKEN);
+}
+
+export function getUserDetails() {
+  return JSON.parse(localStorage.getItem(USER_DETAILS));
 }

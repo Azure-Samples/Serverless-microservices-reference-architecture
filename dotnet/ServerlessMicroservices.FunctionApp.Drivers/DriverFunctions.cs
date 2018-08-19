@@ -15,10 +15,18 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
     public static class DriverFunctions
     {
         [FunctionName("GetDrivers")]
-        public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers")] HttpRequest req, 
+        public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get", 
+                Route = "drivers")] HttpRequest req, 
             ILogger log)
         {
             log.LogInformation("GetDrivers triggered....");
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null)
+            {
+                return new StatusCodeResult(401);
+            }
 
             try
             {

@@ -1,5 +1,6 @@
 import axios from 'axios';
-import { getAccessToken } from '@/utils/Authentication';
+import { Authentication } from '@/utils/Authentication';
+const auth = new Authentication();
 
 // const http = axios.create({
 //   baseURL: window.apiBaseUrl
@@ -11,14 +12,19 @@ const validStatuses = [200, 201, 202, 203, 204, 300, 301, 302, 303, 304];
  * Returns default headers list
  * which will be used with every request.
  */
-function getHeaders() {
+function getHeaders(token) {
   let defaultHeaders = '';
-  //let token = getAccessToken();
-  let token;
 
+  // auth.getAccessToken().then(token => {
+  //   if (token) {
+  //     defaultHeaders = {
+  //       Authorization: `Bearer ${token}`
+  //     };
+  //   }
+  // });
   if (token) {
     defaultHeaders = {
-      Authorization: `JWT ${token}`
+      Authorization: `Bearer ${token}`
     };
   }
 
@@ -113,10 +119,11 @@ export function get(uri, data = {}) {
   if (Object.keys(data).length > 0) {
     uri = `${uri}?${qs(data)}`;
   }
-
-  return axios.get(uri, {
-    headers: getHeaders(),
-    withCredentials: false
+  return auth.getAccessTokenOrLoginWithPopup().then(token => {
+    return axios.get(uri, {
+      headers: getHeaders(token),
+      withCredentials: false
+    });
   });
 }
 
