@@ -26,13 +26,29 @@
         </div>
       </div>
     </nav>
-      <router-view></router-view>
+      <router-view
+        :authenticated="authenticated"
+      ></router-view>
   </div>
 </template>
 
 <script>
+import { Authentication } from '@/utils/Authentication';
+const auth = new Authentication();
+const { login, logout, getUser, getAccessToken, authenticated } = auth;
+
 export default {
-  name: 'App'
+  name: 'App',
+  data() {
+    return {
+      auth,
+      authenticated
+    };
+  },
+  methods: {
+    login,
+    logout
+  }
 };
 </script>
 
