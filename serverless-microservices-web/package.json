@@ -1,6 +1,8 @@
 {
   "name": "servereless-microservices-web",
-  "version": "0.1.0",
+  "version": "1.0.0",
+  "description": "Serverless microservices reference architecture sample ride share website",
+  "author": "joelhulen <joelhulen@gmail.com>",
   "private": true,
   "scripts": {
     "serve": "vue-cli-service serve",

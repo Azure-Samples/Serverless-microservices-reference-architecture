@@ -1,0 +1,17 @@
+KEY|VALUE
+APPINSIGHTS_INSTRUMENTATIONKEY|09cc6a39-b3d4-409b-b411-3e4c04f4ef2c
+FUNCTIONS_EXTENSION_VERSION|beta
+DocDbApiKey|QGwfwS1QQDgfmiE7PFwZoAZwtwdB3yzZT3A5LgeXe0Go4WRqYbnXurlcHbOUnpwTVrhNPF3azgd6c6GDMp6X4w==
+DocDbEndpointUri|https://ridesharedev.documents.azure.com:443/
+DocDbRideShareDatabaseName|RideShare
+DocDbRideShareMainCollectionName|Main
+DocDbThroughput|400
+DriversAcknowledgeMaxWaitPeriodInSeconds|120
+DriversLocationRadiusInMiles|15
+TripMonitorIntervalInSeconds|10
+TripMonitorMaxIterations|20
+InsightsInstrumentationKey|09cc6a39-b3d4-409b-b411-3e4c04f4ef2c
+IsPersistDirectly|true
+TripExternalizationsEventGridTopicUrl|https://ridesharetripexternalizationsdev.eastus-1.eventgrid.azure.net/api/events
+TripExternalizationsEventGridTopicApiKey|8fM+W112h6rxNvLtxL/yZAGA4KgfiSjQqsct+HeKjTY=
+

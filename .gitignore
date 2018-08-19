@@ -1,2 +1,13 @@
 #Docs/
 #.vscode/
+
+# Exclude temporary files:
+*.tmp
+# Word temporary
+~$*.doc*
+# Excel temporary
+~$*.xls*
+# PowerPoint temporary
+~$*.ppt*
+# Visio autosave temporary files
+*.~vsd*

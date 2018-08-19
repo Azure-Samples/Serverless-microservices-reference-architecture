@@ -1,0 +1,11 @@
+KEY|VALUE
+APPINSIGHTS_INSTRUMENTATIONKEY|e8b63d8b-73e1-45e1-a32b-ff1aad0c4251
+FUNCTIONS_EXTENSION_VERSION|beta
+DocDbApiKey|QGwfwS1QQDgfmiE7PFwZoAZwtwdB3yzZT3A5LgeXe0Go4WRqYbnXurlcHbOUnpwTVrhNPF3azgd6c6GDMp6X4w==
+DocDbEndpointUri|https://ridesharedev.documents.azure.com:443/
+DocDbRideShareDatabaseName|RideShare
+DocDbRideShareMainCollectionName|Main
+DocDbThroughput|400
+InsightsInstrumentationKey|e8b63d8b-73e1-45e1-a32b-ff1aad0c4251
+IsPersistDirectly|true
+

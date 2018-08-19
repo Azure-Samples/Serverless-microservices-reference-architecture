@@ -21,6 +21,12 @@ bld/
 .vs/
 .vscode/
 
+# CAKE
+tools/
+build/
+dist/
+*authfile.txt
+
 # MSTest test Results
 [Tt]est[Rr]esult*/
 [Bb]uild[Ll]og.*

@@ -1,0 +1,810 @@
+{
+	"info": {
+		"_postman_id": "3d4eeafe-e0d8-4985-95dd-349464d30522",
+		"name": "RideShareProd",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json"
+	},
+	"item": [
+		{
+			"name": "Drivers",
+			"item": [
+				{
+					"name": "Get Drivers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/drivers?code=5mh8d73e273vsa4ZeJTj5lC4dSm50JRfeyaGmECt5HDU//wFzPV93A==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "5mh8d73e273vsa4ZeJTj5lC4dSm50JRfeyaGmECt5HDU//wFzPV93A=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Drivers",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/activedrivers?code=ZkwEqrEbSuJ/4Hfbfbpb7uS/EKUiQblk68qhFfZkVxTdcms3Z6NaOQ==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"activedrivers"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "ZkwEqrEbSuJ/4Hfbfbpb7uS/EKUiQblk68qhFfZkVxTdcms3Z6NaOQ=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Drivers within Location",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/drivers/{latitude}/{longitude}/{miles}?code=rDDZr9uJTnYcS4kqYVXYf/i8ArxqK95goma5xRYfaznvze5gW3ymLQ==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"drivers",
+								"{latitude}",
+								"{longitude}",
+								"{miles}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "rDDZr9uJTnYcS4kqYVXYf/i8ArxqK95goma5xRYfaznvze5gW3ymLQ=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Driver Location Changes",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/driverlocations/{code}?code=jAg1ebPhYy4lWaNcMka3jV1lea2XETOOmj00CuP9GLhIdhBSFWnpAA==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"driverlocations",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "jAg1ebPhYy4lWaNcMka3jV1lea2XETOOmj00CuP9GLhIdhBSFWnpAA=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Driver",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/drivers/{code}?code=gq9IhFf24ywXYsiAVpr90KtEyXBfDpubeOT3RJvbIpTSda/FAPN3ug==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"drivers",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "gq9IhFf24ywXYsiAVpr90KtEyXBfDpubeOT3RJvbIpTSda/FAPN3ug=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Driver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"code\": \"AA100\",\n\t\"firstName\": \"James\",\n\t\"lastName\": \"Beaky\",\n\t\"latitude\": 32.7174,\n\t\"longitude\": -117.1628,\n\t\"car\": {\n\t\t\"driverCode\": \"AA100\",\n\t\t\"make\": \"BMW\",\n\t\t\"model\": \"735\",\n\t\t\"color\": \"Black\",\n\t\t\"licensePlate\": \"CA-8900\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/drivers?code=Bw4vhJJBlDeayvPJnZbyKyvbdSszR9PI8uSzw5BWENyqdUdW3JT1Zg==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "Bw4vhJJBlDeayvPJnZbyKyvbdSszR9PI8uSzw5BWENyqdUdW3JT1Zg=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Driver Location",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"driverCode\": \"AA100\",\n\t\"latitude\": -32,\n\t\"longitude\": 60\n}"
+						},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/driverlocations?code=VXKDjgfL5zNa4yPrbg3OcjYEa7awQJzHwbA1MhTjFsNRkVjALq5QMA==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"driverlocations"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "VXKDjgfL5zNa4yPrbg3OcjYEa7awQJzHwbA1MhTjFsNRkVjALq5QMA=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Driver",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"code\": \"AA100\",\n\t\"firstName\": \"James\",\n\t\"lastName\": \"Beaky\",\n\t\"latitude\": 32.7174,\n\t\"longitude\": -117.1628,\n\t\"isAcceptingRides\": true,\n\t\"car\": {\n\t\t\"driverCode\": \"AA100\",\n\t\t\"make\": \"BMW\",\n\t\t\"model\": \"735\",\n\t\t\"color\": \"Black\",\n\t\t\"licensePlate\": \"CA-8900\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/drivers?code=OBfl9i2vHz7uB7aiK2xttXkUOakJuvVL7reZdbSGz8RyUM5WFjn6Jw==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "OBfl9i2vHz7uB7aiK2xttXkUOakJuvVL7reZdbSGz8RyUM5WFjn6Jw=="
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Trips",
+			"item": [
+				{
+					"name": "Get Trips",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/trips?code=hTDLEmQUydVm3ZYYp6aLrF6mZaDKYifJoawNz/KNamPg/ynQNSsDrg==",
+							"protocol": "https",
+							"host": [
+								"ridesharetripsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"trips"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "hTDLEmQUydVm3ZYYp6aLrF6mZaDKYifJoawNz/KNamPg/ynQNSsDrg=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Single Trip",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/trips/{code}?code=HzL1cuSoqZXnhB3cPFBd74YTa5RF9xAKA8p2VaezpQWeWxPcI8c2TA==",
+							"protocol": "https",
+							"host": [
+								"ridesharetripsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "HzL1cuSoqZXnhB3cPFBd74YTa5RF9xAKA8p2VaezpQWeWxPcI8c2TA=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Active Trips",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/activetrips?code=pziYnSiajkT8usN2ukQXbaH7ngiwHMaT2JSuwL/C5VuvA71p4UX5Ig==",
+							"protocol": "https",
+							"host": [
+								"ridesharetripsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"activetrips"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "pziYnSiajkT8usN2ukQXbaH7ngiwHMaT2JSuwL/C5VuvA71p4UX5Ig=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Trip",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"passenger\": {\n\t\t\"code\": \"joe@gmail.com\",\n\t\t\"firstName\": \"Joe\",\n\t\t\"lastName\": \"James\",\n\t\t\"mobileNumber\": \"+13105551212\",\n\t\t\"email\": \"joe@gmail.com\"\n\t},\n\t\"source\": {\n\t\t\"latitude\": -31,\n\t\t\"longitude\": 54\n\t},\n\t\"destination\": {\n\t\t\"latitude\": -32,\n\t\t\"longitude\": 60\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/trips?code=Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg==",
+							"protocol": "https",
+							"host": [
+								"ridesharetripsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"trips"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg=="
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Orchestrators",
+			"item": [
+				{
+					"name": "Get Trip Manager",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmanagers/HR5FCR0S?code=/PHaiKjuXMJMNGkxuXz9ZXWhbJz29UZIvDGWGaC34zQgBywF38iUKw==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionsapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmanagers",
+								"HR5FCR0S"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "/PHaiKjuXMJMNGkxuXz9ZXWhbJz29UZIvDGWGaC34zQgBywF38iUKw=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip Monitor",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripmonitors/{code}?code=IXaLuEU/UqWIRFJFgn9kaJmvitGhCteJDLPYbUL7ktWUJaeJ7P8VOQ==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionappdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmonitors",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "IXaLuEU/UqWIRFJFgn9kaJmvitGhCteJDLPYbUL7ktWUJaeJ7P8VOQ=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start Trip Manager",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n    \"code\": \"HIWO5FX4\",\n    \"passenger\": {\n        \"code\": \"joe@gmail.com\",\n        \"firstName\": \"Joe\",\n        \"lastName\": \"James\",\n        \"mobileNumber\": \"+13105551212\",\n        \"email\": \"joe@gmail.com\",\n        \"id\": \"\",\n        \"_self\": \"\",\n        \"correlationId\": \"\",\n        \"upsertDate\": \"2018-08-15T13:34:37.1111966+00:00\",\n        \"collectionType\": 0\n    },\n    \"driver\": null,\n    \"availableDrivers\": [],\n    \"source\": {\n        \"latitude\": -31,\n        \"longitude\": 54\n    },\n    \"destination\": {\n        \"latitude\": -31,\n        \"longitude\": 54\n    },\n    \"acceptDate\": null,\n    \"startDate\": \"2018-08-15T13:34:37.1112072+00:00\",\n    \"endDate\": null,\n    \"duration\": 0,\n    \"monitorIterations\": 0,\n    \"isAborted\": false,\n    \"error\": \"\",\n    \"id\": \"HIWO5FX4-Trip\",\n    \"_self\": \"dbs/pGdxAA==/colls/pGdxAObIQoI=/docs/pGdxAObIQoIDAAAAAAAAAA==/\",\n    \"correlationId\": \"\",\n    \"upsertDate\": \"2018-08-15T13:34:37.5638054+00:00\",\n    \"collectionType\": 3,\n    \"_rid\": \"pGdxAObIQoIDAAAAAAAAAA==\",\n    \"_etag\": \"\\\"0000ae1f-0000-0000-0000-5b742bee0000\\\"\",\n    \"_attachments\": \"attachments/\",\n    \"_ts\": 1534340078\n}"
+						},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmanagers?code=t88B9H2PaiUIKlyhqTpjuA3/6VTMxt/aJwfmYK0jFiSv8JV7giVE0g==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionsapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmanagers"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "t88B9H2PaiUIKlyhqTpjuA3/6VTMxt/aJwfmYK0jFiSv8JV7giVE0g=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Start Trip Monitor",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": ""
+						},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmonitors?code=WYXPnZkiaxhiv37YQnAWCfMpJmV8lb8lNRNklPQah5J5q4zSldhaig==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionsapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmonitors"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "WYXPnZkiaxhiv37YQnAWCfMpJmV8lb8lNRNklPQah5J5q4zSldhaig=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Terminate Trip Manager",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmanagers/HIWO5FX4/terminate?code=WJwsRNRoeUoOTAlaDcLtUAaPkzAlW32Yrtp9s3tgeYN67zqBHS9K0w==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionsapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmanagers",
+								"HIWO5FX4",
+								"terminate"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "WJwsRNRoeUoOTAlaDcLtUAaPkzAlW32Yrtp9s3tgeYN67zqBHS9K0w=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Terminate Trip Monitor",
+					"request": {
+						"method": "POST",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api/tripmonitors/{code}/terminate?code=UA5YZdRaOy9AyovRME2ACEGq83XeGAZPz6QQpsj5cyKO0AwbMBZIuw==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionappdev",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmonitors",
+								"{code}",
+								"terminate"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "UA5YZdRaOy9AyovRME2ACEGq83XeGAZPz6QQpsj5cyKO0AwbMBZIuw=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Accept Trip by Driver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n}"
+						},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionapp.azurewebsites.net/api/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code=2bTHzb1TxQGQvxC6nQ2MdL6A5x5a0ZSMao0eaaSW4KhoIaBMW7ZxrA==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmanagers",
+								"{code}",
+								"acknowledge",
+								"drivers",
+								"{drivercode}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "2bTHzb1TxQGQvxC6nQ2MdL6A5x5a0ZSMao0eaaSW4KhoIaBMW7ZxrA=="
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		},
+		{
+			"name": "Demo",
+			"item": [
+				{
+					"name": "Create Driver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"code\": \"AA100\",\n\t\"firstName\": \"James\",\n\t\"lastName\": \"Beaky\",\n\t\"latitude\": 32.7174,\n\t\"longitude\": -117.1628,\n\t\"car\": {\n\t\t\"driverCode\": \"AA100\",\n\t\t\"make\": \"BMW\",\n\t\t\"model\": \"735\",\n\t\t\"color\": \"Black\",\n\t\t\"licensePlate\": \"CA-8900\"\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/drivers?code=Bw4vhJJBlDeayvPJnZbyKyvbdSszR9PI8uSzw5BWENyqdUdW3JT1Zg==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"drivers"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "Bw4vhJJBlDeayvPJnZbyKyvbdSszR9PI8uSzw5BWENyqdUdW3JT1Zg=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Create Trip",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"passenger\": {\n\t\t\"code\": \"joe@gmail.com\",\n\t\t\"firstName\": \"Joe\",\n\t\t\"lastName\": \"James\",\n\t\t\"mobileNumber\": \"+13105551212\",\n\t\t\"email\": \"joe@gmail.com\"\n\t},\n\t\"source\": {\n\t\t\"latitude\": -31,\n\t\t\"longitude\": 54\n\t},\n\t\"destination\": {\n\t\t\"latitude\": -32,\n\t\t\"longitude\": 60\n\t}\n}"
+						},
+						"url": {
+							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/trips?code=Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg==",
+							"protocol": "https",
+							"host": [
+								"ridesharetripsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"trips"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Get Trip",
+					"request": {
+						"method": "GET",
+						"header": [],
+						"body": {},
+						"url": {
+							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/trips/{code}?code=HzL1cuSoqZXnhB3cPFBd74YTa5RF9xAKA8p2VaezpQWeWxPcI8c2TA==",
+							"protocol": "https",
+							"host": [
+								"ridesharetripsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"trips",
+								"{code}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "HzL1cuSoqZXnhB3cPFBd74YTa5RF9xAKA8p2VaezpQWeWxPcI8c2TA=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Assign a Driver",
+					"request": {
+						"method": "POST",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\n}"
+						},
+						"url": {
+							"raw": "https://rideshareorchestratorsfunctionapp.azurewebsites.net/api/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code=2bTHzb1TxQGQvxC6nQ2MdL6A5x5a0ZSMao0eaaSW4KhoIaBMW7ZxrA==",
+							"protocol": "https",
+							"host": [
+								"rideshareorchestratorsfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"tripmanagers",
+								"{code}",
+								"acknowledge",
+								"drivers",
+								"{drivercode}"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "2bTHzb1TxQGQvxC6nQ2MdL6A5x5a0ZSMao0eaaSW4KhoIaBMW7ZxrA=="
+								}
+							]
+						}
+					},
+					"response": []
+				},
+				{
+					"name": "Update Driver Location",
+					"request": {
+						"method": "PUT",
+						"header": [
+							{
+								"key": "Content-Type",
+								"value": "application/json"
+							}
+						],
+						"body": {
+							"mode": "raw",
+							"raw": "{\n\t\"driverCode\": \"AA100\",\n\t\"latitude\": -32,\n\t\"longitude\": 60\n}"
+						},
+						"url": {
+							"raw": "https://ridesharedriversfunctionapp.azurewebsites.net/api/driverlocations?code=VXKDjgfL5zNa4yPrbg3OcjYEa7awQJzHwbA1MhTjFsNRkVjALq5QMA==",
+							"protocol": "https",
+							"host": [
+								"ridesharedriversfunctionapp",
+								"azurewebsites",
+								"net"
+							],
+							"path": [
+								"api",
+								"driverlocations"
+							],
+							"query": [
+								{
+									"key": "code",
+									"value": "VXKDjgfL5zNa4yPrbg3OcjYEa7awQJzHwbA1MhTjFsNRkVjALq5QMA=="
+								}
+							]
+						}
+					},
+					"response": []
+				}
+			]
+		}
+	]
+}

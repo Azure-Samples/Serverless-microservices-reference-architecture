@@ -115,6 +115,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             try
             {
                 TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+                log.LogInformation($"ProcessTripExternalizations2SignalR trip code {trip.Code}");
 
                 //TODO: Do something with the trip
                 //TODO: We can also do different processing based on the event subject
@@ -142,6 +143,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             try
             {
                 TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+                log.LogInformation($"ProcessTripExternalizations2PowerBI trip code {trip.Code}");
 
                 //TODO: Do something with the trip
                 //TODO: We can also do different processing based on the event subject
