@@ -16,6 +16,8 @@ namespace ServerlessMicroservices.Shared.Services
         const string BearerScheme = "bearer";
         const string ScopeClainType = "scp";
         const string SigningKeyUseType = "sig";
+        const string NameClaimType = "displayName";
+        const string RoleClaimType = "role";
 
         private ILoggerService _loggerService;
         private DiscoveryCache _discoveryCache;
@@ -115,7 +117,9 @@ namespace ServerlessMicroservices.Shared.Services
             {
                 ValidIssuer = disco.Issuer,
                 ValidAudience = _audience,
-                IssuerSigningKeys = keys
+                IssuerSigningKeys = keys,
+                NameClaimType = NameClaimType,
+                RoleClaimType = RoleClaimType
             };
         }
     }
