@@ -9,6 +9,7 @@
         private static IChangeNotifierService _changeNotifierService = null;
         private static IPersistenceService _persistenceService = null;
         private static ITokenValidationService _tokenValidationService = null;
+        private static IRoutesService _routesService = null;
 
         public static ISettingService GetSettingService()
         {
@@ -56,6 +57,14 @@
                 _tokenValidationService = new TokenValidationService(GetSettingService(), GetLoggerService());
 
             return _tokenValidationService;
+        }
+        
+        public static IRoutesService GetRoutesService()
+        {
+            if (_routesService == null)
+                _routesService = new RoutesService(GetSettingService(), GetLoggerService());
+
+            return _routesService;
         }
     }
 }

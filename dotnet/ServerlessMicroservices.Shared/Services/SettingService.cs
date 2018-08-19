@@ -29,6 +29,8 @@ namespace ServerlessMicroservices.Shared.Services
         // Orchestrators
         private const string StartTripManagerOrchestratorBaseUrlKey = "StartTripManagerOrchestratorBaseUrl";
         private const string startTripManagerOrchestratorApiKey = "StartTripManagerOrchestratorApiKey";
+        private const string StartTripDemoOrchestratorBaseUrlKey = "StartTripDemoOrchestratorBaseUrl";
+        private const string startTripDemoOrchestratorApiKey = "StartTripDemoOrchestratorApiKey";
         private const string TerminateTripManagerOrchestratorBaseUrlKey = "TerminateTripManagerOrchestratorBaseUrl";
         private const string TerminateTripManagerOrchestratorApiKey = "TerminateTripManagerOrchestratorApiKey";
         private const string TerminateTripMonitorOrchestratorBaseUrlKey = "TerminateTripMonitorOrchestratorBaseUrl";
@@ -129,6 +131,16 @@ namespace ServerlessMicroservices.Shared.Services
         public string GetStartTripManagerOrchestratorApiKey()
         {
             return GetEnvironmentVariable(startTripManagerOrchestratorApiKey);
+        }
+
+        public string GetStartTripDemoOrchestratorBaseUrl()
+        {
+            return GetEnvironmentVariable(StartTripDemoOrchestratorBaseUrlKey);
+        }
+
+        public string GetStartTripDemoOrchestratorApiKey()
+        {
+            return GetEnvironmentVariable(startTripDemoOrchestratorApiKey);
         }
 
         public string GetTerminateTripManagerOrchestratorBaseUrl()

@@ -106,7 +106,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             if (ServiceFactory.GetSettingService().IsPersistDirectly())
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
-                availableDrivers = await persistenceService.RetrieveDrivers(trip.SourceLocation.Latitude, trip.SourceLocation.Longitude, ServiceFactory.GetSettingService().GetDriversLocationRadiusInMiles());
+                availableDrivers = await persistenceService.RetrieveDrivers(trip.Source.Latitude, trip.Source.Longitude, ServiceFactory.GetSettingService().GetDriversLocationRadiusInMiles());
                 if (availableDrivers.Count > 0)
                     trip = await persistenceService.AssignTripAvailableDrivers(trip, availableDrivers);
             }

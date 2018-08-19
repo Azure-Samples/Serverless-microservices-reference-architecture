@@ -123,6 +123,23 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
+        [FunctionName("T_AcknowledgeTripViaQueueTrigger")]
+        public static async Task AcknowledgeTripViaQueueTrigger(
+            [OrchestrationClient] DurableOrchestrationClient context,
+            [QueueTrigger("trip-drivers", Connection = "AzureWebJobsStorage")] TripDriver info,
+            ILogger log)
+        {
+            try
+            {
+                await context.RaiseEventAsync(info.TripCode, Constants.TRIP_DRIVER_ACCEPT_EVENT, info.DriverCode);
+            }
+            catch (Exception ex)
+            {
+                var error = $"AcknowledgeTripViaQueueTrigger failed: {ex.Message}";
+                log.LogError(error);
+            }
+        }
+
         //TODO: Implement Get Trip Manager Instances, Restart Trip Manager Instances and Terminate Trip Manager Instances if Persist to table storage if persist instances is activated
 
         /** PRIVATE **/
@@ -161,5 +178,11 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 throw ex;
             }
         }
+    }
+
+    public class TripDriver
+    {
+        public string TripCode { get; set; } = "";
+        public string DriverCode { get; set; } = "";
     }
 }

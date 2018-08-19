@@ -675,7 +675,7 @@
 						],
 						"body": {
 							"mode": "raw",
-							"raw": "{\n\t\"passenger\": {\n\t\t\"code\": \"joe@gmail.com\",\n\t\t\"firstName\": \"Joe\",\n\t\t\"lastName\": \"James\",\n\t\t\"mobileNumber\": \"+13105551212\",\n\t\t\"email\": \"joe@gmail.com\"\n\t},\n\t\"source\": {\n\t\t\"latitude\": -31,\n\t\t\"longitude\": 54\n\t},\n\t\"destination\": {\n\t\t\"latitude\": -32,\n\t\t\"longitude\": 60\n\t}\n}"
+							"raw": "{\n\t\"passenger\": {\n\t\t\"code\": \"joe@gmail.com\",\n\t\t\"firstName\": \"Joe\",\n\t\t\"lastName\": \"James\",\n\t\t\"mobileNumber\": \"+13105551212\",\n\t\t\"email\": \"joe@gmail.com\"\n\t},\n\t\"source\": {\n\t\t\"latitude\": -31,\n\t\t\"longitude\": 54\n\t},\n\t\"destination\": {\n\t\t\"latitude\": -32,\n\t\t\"longitude\": 60\n\t},\n\t\"type\": 1\n}"
 						},
 						"url": {
 							"raw": "https://ridesharetripsfunctionapp.azurewebsites.net/api/trips?code=Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg==",
