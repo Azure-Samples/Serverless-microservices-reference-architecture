@@ -2,10 +2,6 @@ import axios from 'axios';
 import { Authentication } from '@/utils/Authentication';
 const auth = new Authentication();
 
-// const http = axios.create({
-//   baseURL: window.apiBaseUrl
-// });
-
 const validStatuses = [200, 201, 202, 203, 204, 300, 301, 302, 303, 304];
 
 /*
@@ -15,13 +11,6 @@ const validStatuses = [200, 201, 202, 203, 204, 300, 301, 302, 303, 304];
 function getHeaders(token) {
   let defaultHeaders = '';
 
-  // auth.getAccessToken().then(token => {
-  //   if (token) {
-  //     defaultHeaders = {
-  //       Authorization: `Bearer ${token}`
-  //     };
-  //   }
-  // });
   if (token) {
     defaultHeaders = {
       Authorization: `Bearer ${token}`
@@ -81,9 +70,11 @@ export function qs(params) {
  * calls with data
  */
 export function post(uri, data) {
-  return axios.post(uri, data, {
-    headers: getHeaders(),
-    withCredentials: false
+  return auth.getAccessTokenOrLoginWithPopup().then(token => {
+    return axios.post(uri, data, {
+      headers: getHeaders(token),
+      withCredentials: false
+    });
   });
 }
 
@@ -93,9 +84,11 @@ export function post(uri, data) {
  * calls with data
  */
 export function put(uri, data) {
-  return axios.put(uri, data, {
-    headers: getHeaders(),
-    withCredentials: false
+  return auth.getAccessTokenOrLoginWithPopup().then(token => {
+    return axios.put(uri, data, {
+      headers: getHeaders(token),
+      withCredentials: false
+    });
   });
 }
 
@@ -104,9 +97,11 @@ export function put(uri, data) {
  * more convenient delete method
  */
 export function remove(uri) {
-  return axios.delete(uri, {
-    headers: getHeaders(),
-    withCredentials: false
+  return auth.getAccessTokenOrLoginWithPopup().then(token => {
+    return axios.delete(uri, {
+      headers: getHeaders(token),
+      withCredentials: false
+    });
   });
 }
 
