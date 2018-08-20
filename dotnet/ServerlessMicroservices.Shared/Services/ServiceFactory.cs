@@ -9,6 +9,8 @@
         private static IChangeNotifierService _changeNotifierService = null;
         private static IPersistenceService _persistenceService = null;
         private static ITokenValidationService _tokenValidationService = null;
+        private static IUserService _userService = null;
+
 
         public static ISettingService GetSettingService()
         {
@@ -56,6 +58,14 @@
                 _tokenValidationService = new TokenValidationService(GetSettingService(), GetLoggerService());
 
             return _tokenValidationService;
+        }
+
+        public static IUserService GetUserService()
+        {
+            if (_userService == null)
+                _userService = new UserService(GetSettingService());
+
+            return _userService;
         }
     }
 }
