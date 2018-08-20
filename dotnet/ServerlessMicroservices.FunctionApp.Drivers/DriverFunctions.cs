@@ -28,6 +28,9 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
                 return new StatusCodeResult(401);
             }
 
+            var passengers = ServiceFactory.GetUserService();
+            var (users, p_error) = await passengers.GetUsers();
+
             try
             {
                 var persistenceService = ServiceFactory.GetPersistenceService();
