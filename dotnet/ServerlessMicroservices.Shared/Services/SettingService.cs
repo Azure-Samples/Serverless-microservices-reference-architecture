@@ -48,6 +48,12 @@ namespace ServerlessMicroservices.Shared.Services
         private const string ApiApplicationIdKey = "ApiApplicationId";
         private const string ApiScopeNameKey = "ApiScopeName";
 
+        // graph settings
+        private const string GraphTenantId = "GraphTenantId";
+        private const string GraphClientId = "GraphClientId";
+        private const string GraphClientSecret = "GraphClientSecret";
+
+
         public string GetSiteName()
         {
             return GetEnvironmentVariable("WEBSITE_SITE_NAME");
@@ -207,11 +213,26 @@ namespace ServerlessMicroservices.Shared.Services
             return GetEnvironmentVariable(ApiScopeNameKey);
         }
 
+        // graph
+        public string GetGraphTenantId()
+        {
+            return GetEnvironmentVariable(GraphTenantId);
+        }
+
+        public string GetGraphClientId()
+        {
+            return GetEnvironmentVariable(GraphClientId);
+        }
+
+        public string GetGraphClientSecret()
+        {
+            return GetEnvironmentVariable(GraphClientSecret);
+        }
+
         //*** PRIVATE ***//
         private static string GetEnvironmentVariable(string name)
         {
             return System.Environment.GetEnvironmentVariable(name, EnvironmentVariableTarget.Process);
         }
-
     }
 }

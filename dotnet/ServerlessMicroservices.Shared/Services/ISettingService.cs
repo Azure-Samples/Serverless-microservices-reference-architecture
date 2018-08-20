@@ -43,5 +43,10 @@
         string GetAuthorityUrl();
         string GetApiApplicationId();
         string GetApiScopeName();
+        
+        // graph settings
+        string GetGraphTenantId();
+        string GetGraphClientId();
+        string GetGraphClientSecret();
     }
 }
