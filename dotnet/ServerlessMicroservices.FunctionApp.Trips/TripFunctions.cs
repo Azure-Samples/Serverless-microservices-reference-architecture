@@ -21,6 +21,13 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             ILogger log)
         {
             log.LogInformation("GetTrips triggered....");
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
 
             try
             {
@@ -40,6 +47,13 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             ILogger log)
         {
             log.LogInformation("GetActiveTrips triggered....");
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
 
             try
             {
@@ -60,6 +74,13 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             ILogger log)
         {
             log.LogInformation("GetTrip triggered....");
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
 
             try
             {
@@ -79,6 +100,13 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             ILogger log)
         {
             log.LogInformation("CreateTrip triggered....");
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
 
             try
             {

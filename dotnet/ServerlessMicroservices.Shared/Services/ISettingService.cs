@@ -4,6 +4,9 @@
     {
         string GetSiteName();
 
+        // Global
+        bool EnableAuth();
+
         // Management    
         bool IsPersistDirectly();
         int GetDriversAcknowledgeMaxWaitPeriodInSeconds();

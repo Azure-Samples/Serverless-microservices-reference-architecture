@@ -24,6 +24,12 @@ namespace ServerlessMicroservices.Shared.Services
         private string _audience;
         private string _scope;
 
+        /// <summary>
+        /// Configured by the function app settings. If false, validation is skipped.
+        /// </summary>
+        /// <returns></returns>
+        public bool AuthEnabled { get; }
+
         public TokenValidationService(ISettingService settingService, ILoggerService loggerService)
         {
             _loggerService = loggerService;
@@ -36,6 +42,7 @@ namespace ServerlessMicroservices.Shared.Services
 
             _audience = settingService.GetApiApplicationId();
             _scope = settingService.GetApiScopeName();
+            AuthEnabled = settingService.EnableAuth();
         }
 
         public async Task<ClaimsPrincipal> AuthenticateRequest(HttpRequest request)

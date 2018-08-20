@@ -8,6 +8,9 @@ namespace ServerlessMicroservices.Shared.Services
 
         //*** These settings must exist in the FunctionsApp App Settings ***//
 
+        // Global
+        private const string EnableAuthKey = "EnableAuth";
+
         private const string IsPersistDirectlyKey = "IsPersistDirectly";
         private const string DriversAcknowledgeMaxWaitPeriodInSecondsKey = "DriversAcknowledgeMaxWaitPeriodInSeconds";
         private const string DriversLocationRadiusInMilesKey = "DriversLocationRadiusInMiles";
@@ -48,6 +51,20 @@ namespace ServerlessMicroservices.Shared.Services
         public string GetSiteName()
         {
             return GetEnvironmentVariable("WEBSITE_SITE_NAME");
+        }
+
+        public bool EnableAuth()
+        {
+            if (
+                GetEnvironmentVariable(EnableAuthKey) != null &&
+                !string.IsNullOrEmpty(GetEnvironmentVariable(EnableAuthKey).ToString()) &&
+                GetEnvironmentVariable(EnableAuthKey).ToString().ToLower() == "true"
+            )
+            {
+                return true;
+            }
+
+            return false;
         }
 
         // Management

@@ -9,6 +9,7 @@ using System;
 using System.IO;
 using System.Net.Http.Headers;
 using System.Threading.Tasks;
+using ServerlessMicroservices.Shared.Services;
 
 namespace ServerlessMicroservices.FunctionApp.Orchestrators
 {
@@ -39,6 +40,14 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
+
             try
             {
                 // The monitor instance id is the trip code + -M. This is to make sure that a Trip Manager and a monitor can co-exist
@@ -66,6 +75,14 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
+
             try
             {
                 var status = await context.GetStatusAsync(code);
@@ -88,6 +105,14 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
+
             try
             {
                 await TeminateInstance(context, code, log);
