@@ -1,5 +1,7 @@
 # Serverless Microservices reference architecture
 
+View the [documentation](./documentation)
+
 ## Contents
 
 - [Docs](./Docs): Contains project information such as architecture design documents, diagrams, and source images
