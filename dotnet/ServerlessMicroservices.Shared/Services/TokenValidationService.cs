@@ -19,6 +19,7 @@ namespace ServerlessMicroservices.Shared.Services
         const string NameClaimType = "displayName";
         const string RoleClaimType = "role";
 
+        private ISettingService _settingService;
         private ILoggerService _loggerService;
         private DiscoveryCache _discoveryCache;
         private string _audience;
@@ -32,6 +33,7 @@ namespace ServerlessMicroservices.Shared.Services
 
         public TokenValidationService(ISettingService settingService, ILoggerService loggerService)
         {
+            _settingService = settingService;
             _loggerService = loggerService;
 
             _discoveryCache = new DiscoveryCache(settingService.GetAuthorityUrl(), policy: new DiscoveryPolicy

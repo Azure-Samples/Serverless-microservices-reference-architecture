@@ -7,8 +7,10 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using System.Threading.Tasks;
 
@@ -124,6 +126,40 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             catch (Exception e)
             {
                 var error = $"CreateTrip failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("AssignTripDriver")]
+        public static async Task<IActionResult> AssignTripDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "trips/{code}/drivers/{drivercode}")] HttpRequest req,
+            string code,
+            string drivercode,
+            ILogger log)
+        {
+            log.LogInformation("AssignTripDriver triggered....");
+            var validationService = ServiceFactory.GetTokenValidationService();
+            var user = await validationService.AuthenticateRequest(req);
+
+            if (user == null && validationService.AuthEnabled)
+            {
+                return new StatusCodeResult(401);
+            }
+
+            try
+            {
+                // Send over to the trip manager 
+                var baseUrl = ServiceFactory.GetSettingService().GetStartTripManagerOrchestratorBaseUrl();
+                var key = ServiceFactory.GetSettingService().GetStartTripManagerOrchestratorApiKey();
+                if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
+                    throw new Exception("Trip manager orchestrator base URL and key must be both provided");
+
+                await Utilities.Post<dynamic, dynamic>(null, null, $"{baseUrl}/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code={key}", new Dictionary<string, string>());
+                return (ActionResult)new OkObjectResult("Ok");
+            }
+            catch (Exception e)
+            {
+                var error = $"AssignTripDriver failed: {e.Message}";
                 log.LogError(error);
                 return new BadRequestObjectResult(error);
             }
