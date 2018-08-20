@@ -16,3 +16,7 @@ TerminateTripManagerOrchestratorApiKey|6cWSa2Y1s2lbg30JL1hJemOMTMxzW2jWB2QVLufq4
 TerminateTripManagerOrchestratorBaseUrl|https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api
 TerminateTripMonitorOrchestratorApiKey|UA5YZdRaOy9AyovRME2ACEGq83XeGAZPz6QQpsj5cyKO0AwbMBZIuw==
 TerminateTripMonitorOrchestratorBaseUrl|https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api
+AuthorityUrl|https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0
+ApiApplicationId|8df6f6dc-01f9-49d0-a49e-f23e29e71af5
+ApiScopeName|rideshare
+EnableAuth|true
