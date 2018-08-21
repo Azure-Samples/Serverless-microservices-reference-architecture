@@ -2,11 +2,11 @@
   <div>
     <section id="contact" class="contact bg-primary">
         <div class="container">
-            <h2><span>We&nbsp;</span><i class="fa fa-heart"></i><span>&nbsp;new friends!</span></h2>
+            <h2><span>We&nbsp;</span><i class="fas fa-heart" style="color:#d73925"></i><span>&nbsp;new friends!</span></h2>
             <ul class="list-inline list-social">
-                <li class="list-inline-item social-twitter"><a href="#"><i class="fa fa-twitter"></i></a></li>
-                <li class="list-inline-item social-facebook"><a href="#"><i class="fa fa-facebook"></i></a></li>
-                <li class="list-inline-item social-google-plus"><a href="#"><i class="fa fa-google-plus"></i></a></li>
+                <li class="list-inline-item social-twitter"><a href="#"><i class="fab fa-twitter"></i></a></li>
+                <li class="list-inline-item social-facebook"><a href="#"><i class="fab fa-facebook-f"></i></a></li>
+                <li class="list-inline-item social-google-plus"><a href="#"><i class="fab fa-google-plus"></i></a></li>
             </ul>
         </div>
     </section>
