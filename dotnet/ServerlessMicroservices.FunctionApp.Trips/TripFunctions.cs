@@ -18,7 +18,6 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 {
     public static class TripFunctions
     {
-        //[B2cValidation]
         [FunctionName("GetTrips")]
         public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Function, "get", Route = "trips")] HttpRequest req,
             ILogger log)
@@ -148,7 +147,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                 log.LogInformation($"ProcessTripExternalizations2SignalR trip code {trip.Code}");
 
                 //TODO: Do something with the trip
-                //TODO: We can also do different processing based on the event subject
+                //TODO: We can do different processing based on the event subject
                 //TODO: Event subjects are defined in ServerlessMicroservices.Shared.Helpers.Constants
             }
             catch (Exception e)
@@ -176,7 +175,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                 log.LogInformation($"ProcessTripExternalizations2PowerBI trip code {trip.Code}");
 
                 //TODO: Do something with the trip
-                //TODO: We can also do different processing based on the event subject
+                //TODO: We can do different processing based on the event subject
                 //TODO: Event subjects are defined in ServerlessMicroservices.Shared.Helpers.Constants
             }
             catch (Exception e)

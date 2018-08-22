@@ -10,7 +10,9 @@ namespace ServerlessMicroservices.Shared.Filters
 {
     /*
      * Filters are nice....but I could not find a way to abort the executing context if, for example, validation fails
-     * I will leave this code as a reference
+     * I will leave this code as a reference.
+     * 
+     * To activate, we can decorate an API method with the [B2cValidation] attribute
      */
     public class B2cValidationAttribute : FunctionInvocationFilterAttribute
     {
