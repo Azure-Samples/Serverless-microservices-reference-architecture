@@ -13,6 +13,9 @@ namespace ServerlessMicroservices.Models
         [JsonProperty(PropertyName = "model")]
         public string Model { get; set; } = "";
 
+        [JsonProperty(PropertyName = "year")]
+        public string Year { get; set; } = "";
+
         [JsonProperty(PropertyName = "color")]
         public string Color { get; set; } = "";
 

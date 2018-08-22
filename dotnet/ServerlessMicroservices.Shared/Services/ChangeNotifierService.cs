@@ -8,6 +8,8 @@ namespace ServerlessMicroservices.Shared.Services
 {
     public class ChangeNotifierService : IChangeNotifierService
     {
+        public const string LOG_TAG = "ChangeNotifierService";
+
         private ISettingService _settingService;
         private ILoggerService _loggerService;
 
@@ -57,7 +59,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with error 
+                _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
             }
         }
 
@@ -108,7 +110,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with error 
+                _loggerService.Log($"{LOG_TAG} - TripDeleted - Error: {error}");
             }
         }
 

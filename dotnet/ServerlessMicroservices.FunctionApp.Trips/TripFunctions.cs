@@ -12,6 +12,7 @@ using ServerlessMicroservices.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Text;
 using System.Threading.Tasks;
 
 namespace ServerlessMicroservices.FunctionApp.Trips
@@ -130,6 +131,48 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             }
         }
 
+        [FunctionName("StoreTripTestParameters")]
+        public static async Task<IActionResult> StoreTripTestParameters([HttpTrigger(AuthorizationLevel.Function, "post", Route = "triptestparameters")] HttpRequest req,
+            [Blob("trips/testparams.json", FileAccess.Write, Connection = "AzureWebJobsStorage")] Stream outBlob,
+            ILogger log)
+        {
+            log.LogInformation("StoreTripTestParameters triggered....");
+
+            try
+            {
+                var requestBody = new StreamReader(req.Body).ReadToEnd();
+                byte[] byteArray = Encoding.UTF8.GetBytes(requestBody);
+                await outBlob.WriteAsync(byteArray, 0, byteArray.Length);
+                return (ActionResult)new OkObjectResult("Ok");
+            }
+            catch (Exception e)
+            {
+                var error = $"StoreTripTestParameters failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("RetrieveTripTestParameters")]
+        public static IActionResult RetrieveTripTestParameters([HttpTrigger(AuthorizationLevel.Function, "get", Route = "triptestparameters")] HttpRequest req,
+            [Blob("trips/testparams.json", FileAccess.Read, Connection = "AzureWebJobsStorage")] Stream inBlob,
+            ILogger log)
+        {
+            log.LogInformation("RetrieveTripTestParameters triggered....");
+
+            try
+            {
+                StreamReader reader = new StreamReader(inBlob);
+                return (ActionResult)new OkObjectResult(JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd()));
+            }
+            catch (Exception e)
+            {
+                var error = $"RetrieveTripTestParameters failed: {e.Message}";
+                log.LogError(error);
+                return new BadRequestObjectResult(error);
+            }
+        }
+
         [FunctionName("EVGH_TripExternalizations2SignalR")]
         public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] EventGridEvent eventGridEvent,
             ILogger log)
@@ -144,6 +187,9 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             try
             {
                 TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+                if (trip == null)
+                    throw new Exception("Trip i snull!");
+
                 log.LogInformation($"ProcessTripExternalizations2SignalR trip code {trip.Code}");
 
                 //TODO: Do something with the trip
@@ -172,11 +218,21 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             try
             {
                 TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+                if (trip == null)
+                    throw new Exception("Trip is null!");
+
                 log.LogInformation($"ProcessTripExternalizations2PowerBI trip code {trip.Code}");
 
                 //TODO: Do something with the trip
                 //TODO: We can do different processing based on the event subject
                 //TODO: Event subjects are defined in ServerlessMicroservices.Shared.Helpers.Constants
+
+                if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_ABORTED ||
+                    eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_COMPLETED)
+                {
+                    var archiveService = ServiceFactory.GetArchiveService();
+                    await archiveService.UpsertTrip(trip);
+                }
             }
             catch (Exception e)
             {

@@ -6,6 +6,7 @@ DocDbEndpointUri|https://ridesharedev.documents.azure.com:443/
 DocDbRideShareDatabaseName|RideShare
 DocDbRideShareMainCollectionName|Main
 DocDbThroughput|400
+SqlConnectionString|Server=tcp:rideshare-db-dev.database.windows.net,1433;Initial Catalog=RideShare;Persist Security Info=False;User ID=rideshareadm!n;Password=rideShareS3cureP@ssword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
 InsightsInstrumentationKey|f66e5448-9973-43bd-a522-7721ce14c433
 IsPersistDirectly|true
 StartTripManagerOrchestratorApiKey|Ag8n7DW3edadHVSnPkBpMDeypEDD5idrfpENLMHND7XzTmlTK6HvNA==
@@ -16,7 +17,3 @@ TerminateTripManagerOrchestratorApiKey|6cWSa2Y1s2lbg30JL1hJemOMTMxzW2jWB2QVLufq4
 TerminateTripManagerOrchestratorBaseUrl|https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api
 TerminateTripMonitorOrchestratorApiKey|UA5YZdRaOy9AyovRME2ACEGq83XeGAZPz6QQpsj5cyKO0AwbMBZIuw==
 TerminateTripMonitorOrchestratorBaseUrl|https://rideshareorchestratorsfunctionappdev.azurewebsites.net/api
-AuthorityUrl|https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0
-ApiApplicationId|8df6f6dc-01f9-49d0-a49e-f23e29e71af5
-ApiScopeName|rideshare
-EnableAuth|false

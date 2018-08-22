@@ -1,0 +1,7 @@
+{
+  "profiles": {
+    "ServerlessMicroservices.FunctionApp.Trips": {
+      "commandName": "Project"
+    }
+  }
+}

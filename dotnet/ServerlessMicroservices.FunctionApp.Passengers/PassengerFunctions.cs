@@ -18,13 +18,6 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
             ILogger log)
         {
             log.LogInformation("GetPassengers triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -52,13 +45,6 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
             ILogger log)
         {
             log.LogInformation("GetPassenger triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
