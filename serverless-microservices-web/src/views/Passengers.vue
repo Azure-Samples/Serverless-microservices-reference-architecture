@@ -47,11 +47,27 @@
             </div>
         </div>
     </section>
+    <!-- Passenger information modal -->
+    <b-modal id="passengerInformationModal"
+            ref="modal"
+            title="Passenger information"
+            header-bg-variant="warning"
+            header-text-variant="dark"
+            footer-bg-variant="light">
+      <div>
+        {{selectedPassenger.email}}
+      </div>
+    </b-modal>
   </div>
 </template>
 
 <script>
-import { getPassengers, getPassenger } from '@/api/passengers';
+import { createNamespacedHelpers } from 'vuex';
+const { mapGetters: commonGetters } = createNamespacedHelpers('common');
+const {
+  mapGetters: passengerGetters,
+  mapActions: passengerActions
+} = createNamespacedHelpers('passengers');
 
 export default {
   name: 'Passengers',
@@ -60,8 +76,6 @@ export default {
     return {
       message: '',
       passengers: [],
-      selectedPassenger: null,
-      passengerInfo: null,
       html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
       fields: [
         { key: 'givenName', label: 'First Name', sortable: true },
@@ -81,23 +95,30 @@ export default {
     };
   },
   computed: {
+    ...commonGetters(['notificationSystem']),
+    ...passengerGetters(['selectedPassenger', 'contentLoading']),
     totalRows() {
       return this.passengers.length;
     }
   },
   methods: {
+    ...passengerActions(['getPassengers', 'setSelectedPassenger']),
     retrievePassengers() {
-      getPassengers()
+      this.getPassengers()
         .then(response => {
-          this.passengers = response.data;
+          this.passengers = response;
         })
         .catch(err => {
-          // If we are here, the token is most likely expired.
-          this.message = err.response;
+          this.$toast.error(
+            err.response ? err.response : err.message ? err.message : err,
+            'Error',
+            this.notificationSystem.options.error
+          );
         });
     },
     selectPassenger(passenger) {
-      this.selectedPassenger = passenger;
+      this.setSelectedPassenger(passenger);
+      this.$refs.modal.show();
     }
   },
   mounted() {
