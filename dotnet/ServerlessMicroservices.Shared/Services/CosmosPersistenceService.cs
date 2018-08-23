@@ -26,14 +26,12 @@ namespace ServerlessMicroservices.Shared.Services
 
         private ISettingService _settingService;
         private ILoggerService _loggerService;
-        private IAnalyticService _analyticService;
         private IChangeNotifierService _changeNotifierService;
 
-        public CosmosPersistenceService(ISettingService setting, ILoggerService logger, IAnalyticService anayltic, IChangeNotifierService changeService)
+        public CosmosPersistenceService(ISettingService setting, ILoggerService logger, IChangeNotifierService changeService)
         {
             _settingService = setting;
             _loggerService = logger;
-            _analyticService = anayltic;
             _changeNotifierService = changeService;
 
             _docDbEndpointUri = _settingService.GetDocDbEndpointUri();
@@ -79,7 +77,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveDriver - Error: {error}");
             }
         }
 
@@ -120,7 +118,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveDrivers - Error: {error}");
             }
         }
 
@@ -167,7 +165,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveDrivers - Error: {error}");
             }
         }
 
@@ -197,7 +195,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveDriversCount - Error: {error}");
             }
         }
 
@@ -238,7 +236,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - UpsertDriver - Error: {error}");
             }
 
             return driver;
@@ -286,7 +284,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - UpsertDriverLocation - Error: {error}");
             }
 
             return resourceId;
@@ -329,7 +327,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveDriverLocations - Error: {error}");
             }
         }
 
@@ -361,7 +359,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - DeleteDriver - Error: {error}");
             }
         }
 
@@ -401,7 +399,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveTrip - Error: {error}");
             }
         }
 
@@ -442,7 +440,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveTrips - Error: {error}");
             }
         }
 
@@ -489,7 +487,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveTrips - Error: {error}");
             }
         }
 
@@ -519,7 +517,37 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - RetrieveTripsCount - Error: {error}");
+            }
+        }
+
+        public async Task<int> RetrieveActiveTripsCount()
+        {
+            var error = "";
+            // NOTE: Unfortunately I could not find a way to get the cost when performing `count` against Cosmos
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1 };
+
+                return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
+                            UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                            .Where(e => e.CollectionType == ItemCollectionTypes.Trip & e.EndDate == null)
+                            .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                _loggerService.Log($"{LOG_TAG} - RetrieveActiveTripsCount - Error: {error}");
             }
         }
 
@@ -553,7 +581,7 @@ namespace ServerlessMicroservices.Shared.Services
 
                 if (!isIgnoreChangeFeed && blInsert)
                 {
-                    await _changeNotifierService.TripCreated(trip);
+                    await _changeNotifierService.TripCreated(trip, await RetrieveActiveTripsCount());
                 }
             }
             catch (Exception ex)
@@ -563,7 +591,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - UpsertTrip - Error: {error}");
             }
 
             return trip;
@@ -597,7 +625,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the cost and error 
+                _loggerService.Log($"{LOG_TAG} - DeleteTrip - Error: {error}");
             }
         }
 
@@ -620,7 +648,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the error 
+                _loggerService.Log($"{LOG_TAG} - AssignTripAvailableDrivers - Error: {error}");
             }
         }
 
@@ -649,7 +677,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the error 
+                _loggerService.Log($"{LOG_TAG} - AssignTripDriver - Error: {error}");
             }
         }
 
@@ -674,7 +702,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the error 
+                _loggerService.Log($"{LOG_TAG} - RecycleTripDriver - Error: {error}");
             }
         }
 
@@ -703,7 +731,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the error 
+                _loggerService.Log($"{LOG_TAG} - CheckTripCompletion - Error: {error}");
             }
         }
 
@@ -734,7 +762,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with the error 
+                _loggerService.Log($"{LOG_TAG} - AbortTrip - Error: {error}");
             }
         }
 

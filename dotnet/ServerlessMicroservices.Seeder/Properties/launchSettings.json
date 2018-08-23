@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ServerlessMicroservices.Seeder": {
+      "commandName": "Project",
+      "commandLineArgs": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/triptestparameters?code=gzVVXPbyDPvJRxpXcL7xovItZGbQEPZWBSrZuZOaMKgnEMDvYqBRMg=="
+    }
+  }
+}

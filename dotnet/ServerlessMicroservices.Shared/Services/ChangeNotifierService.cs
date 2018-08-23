@@ -8,6 +8,8 @@ namespace ServerlessMicroservices.Shared.Services
 {
     public class ChangeNotifierService : IChangeNotifierService
     {
+        public const string LOG_TAG = "ChangeNotifierService";
+
         private ISettingService _settingService;
         private ILoggerService _loggerService;
 
@@ -19,10 +21,10 @@ namespace ServerlessMicroservices.Shared.Services
 
         public async Task DriverChanged(DriverItem driver)
         {
-            //TODO: Nothing to do
+            //TODO: React to `Driver` changes 
         }
 
-        public async Task TripCreated(TripItem trip)
+        public async Task TripCreated(TripItem trip, int activeTrips)
         {
             var error = "";
 
@@ -35,6 +37,18 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("Trip manager orchestrator base URL and key must be both provided");
 
                 await Utilities.Post<dynamic, dynamic>(null, trip, $"{baseUrl}/tripmanagers?code={key}", new Dictionary<string, string>());
+
+                // Send an event telemetry
+                _loggerService.Log("Trip created", new Dictionary<string, string>
+                {
+                    {"Code", trip.Code },
+                    {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
+                    {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
+                    {"Mode", $"{trip.Type}" }
+                });
+
+                // Send a metric telemetry
+                _loggerService.Log("Active trips", activeTrips);
 
                 if (trip.Type == TripTypes.Demo)
                 {
@@ -57,7 +71,7 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with error 
+                _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
             }
         }
 
@@ -108,13 +122,13 @@ namespace ServerlessMicroservices.Shared.Services
             }
             finally
             {
-                // TODO: Do something with error 
+                _loggerService.Log($"{LOG_TAG} - TripDeleted - Error: {error}");
             }
         }
 
         public async Task PassengerChanged(PassengerItem trip)
         {
-            //TODO: Nothing to do
+            //TODO: React to `Passenger` changes 
         }
     }
 }

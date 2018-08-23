@@ -4,6 +4,10 @@ Brief introduction
 
 ## Step 1: Create the Azure function apps
 
+**--FORMAT-- Have intro under each step explaining the concepts, what they're doing, and why. Link to associated section in [Introduction](./introduction.md)**
+
+**-- Show code snippets within a section if appropriate. Like when provisioning Event Grid and creating topics, maybe show code snippet or two from functions where the topics are being used --**
+
 In this step, you will be creating six new function apps in the Azure portal. There are many ways this can be accomplished, such as [publishing from Visual Studio](), [Visual Studio Code](), the [Azure CLI](), Azure [Cloud Shell](), an [Azure Resource Manager (ARM) template](), and through the Azure portal.
 
 Each of these function apps act as a hosting platform for one or more functions. In our solution, they double as microservices with each function serving as an endpoint or method. Having functions distributed amongst multiple function apps enables isolation, providing physical boundaries between the microservices, as well as independent release schedules, administration, and scaling.

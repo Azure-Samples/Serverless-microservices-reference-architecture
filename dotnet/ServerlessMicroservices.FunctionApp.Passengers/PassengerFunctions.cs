@@ -3,11 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using ServerlessMicroservices.Models;
 using ServerlessMicroservices.Shared.Services;
 using System;
-using System.IO;
 using System.Linq;
 using System.Threading.Tasks;
 
@@ -21,13 +18,6 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
             ILogger log)
         {
             log.LogInformation("GetPassengers triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -55,13 +45,6 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
             ILogger log)
         {
             log.LogInformation("GetPassenger triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {

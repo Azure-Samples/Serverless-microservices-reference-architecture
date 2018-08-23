@@ -10,6 +10,12 @@ using Microsoft.IdentityModel.Tokens;
 
 namespace ServerlessMicroservices.Shared.Services
 {
+    /*
+     * This is a GWT token validator. It is used by the B2cValidationAttribute filter to handle security cross-cutting concerns. 
+     * 
+     * Because filters seem to be not fully baked in Azure Functions yet, I opted to use an APIM policy to verify the GWT token prior 
+     * to hitting the API.
+     */
     public class TokenValidationService : ITokenValidationService
     {
         const string AuthorizationHeaderName = "authorization";
@@ -19,6 +25,7 @@ namespace ServerlessMicroservices.Shared.Services
         const string NameClaimType = "displayName";
         const string RoleClaimType = "role";
 
+        private ISettingService _settingService;
         private ILoggerService _loggerService;
         private DiscoveryCache _discoveryCache;
         private string _audience;
@@ -32,6 +39,7 @@ namespace ServerlessMicroservices.Shared.Services
 
         public TokenValidationService(ISettingService settingService, ILoggerService loggerService)
         {
+            _settingService = settingService;
             _loggerService = loggerService;
 
             _discoveryCache = new DiscoveryCache(settingService.GetAuthorityUrl(), policy: new DiscoveryPolicy

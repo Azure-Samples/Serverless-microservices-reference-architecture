@@ -45,6 +45,7 @@
 #addin nuget:?package=Microsoft.Azure.Management.EventHub.Fluent
 #addin nuget:?package=Microsoft.Azure.Management.ResourceManager.Fluent
 #addin nuget:?package=Microsoft.Azure.Management.AppService.Fluent
+#addin nuget:?package=Microsoft.Azure.Management.Sql.Fluent
 
 ///////////////////////////////////////////////////////////////////////////////
 // LOADS
@@ -76,6 +77,8 @@ using Microsoft.Azure.Management.CosmosDB.Fluent.Models;
 using Microsoft.Azure.Documents;
 using Microsoft.Azure.Documents.Client;
 using Microsoft.Azure.Management.Storage.Fluent;
+using Microsoft.Azure.Management.Sql.Fluent;
+using Microsoft.Azure.Management.Sql.Fluent.Models;
 
 
 ///////////////////////////////////////////////////////////////////////////////
@@ -97,10 +100,14 @@ IResourceGroup resourceGroup = null;
 ICosmosDBAccount cosmosAccount = null;
 IStorageAccount storageAccount = null;
 IAppServicePlan appServicePlan = null;
+IAppServicePlan webAppServicePlan = null;
+IWebApp webApp = null;
 IFunctionApp  driversFunctionsApp = null;
 IFunctionApp  tripsFunctionsApp = null;
 IFunctionApp  passengersFunctionsApp = null;
 IFunctionApp  orchestratorsFunctionsApp = null;
+ISqlServer sqlDatabaseServer = null;
+ISqlDatabase sqlDatabase = null;
 
 string kuduApiAuthorizationToken = "";
 
@@ -405,7 +412,7 @@ Task("ProvisionPlan")
 .Does(() => {
 	Information($"ProvisionPlan....");
 
-	// NOTE: It appears I cannot create a `Consumption` based service plan
+	// NOTE: It appears I cannot create a `Consumption` based service plan for Azure Functions
 	// Instead the first function will auto-create it...but it will be auto-named which means it will contains weird numbers in the name!!
 	// appServicePlan = azure.AppServices.AppServicePlans.ListByResourceGroup(resourceGroup.Name).Where(r => r.Name.ToLower() == Resources.GetAppServicePlan(env).ToLower()).FirstOrDefault();
 	// if (appServicePlan == null)
@@ -421,6 +428,22 @@ Task("ProvisionPlan")
 	// }
 	// else
 	// 	Information($"App Service Plan: {appServicePlan.Name} already created!");
+
+	// Create a Web App Service Plan for the front-end
+	webAppServicePlan = azure.AppServices.AppServicePlans.ListByResourceGroup(resourceGroup.Name).Where(r => r.Name.ToLower() == Resources.GetWebAppServicePlan(env).ToLower()).FirstOrDefault();
+	if (webAppServicePlan == null)
+	{
+		webAppServicePlan = azure.AppServices.AppServicePlans
+						.Define(Resources.GetWebAppServicePlan(env))
+						.WithRegion(Region.USEast)
+						.WithExistingResourceGroup(resourceGroup)
+						.WithPricingTier(PricingTier.FreeF1) 
+						.WithOperatingSystem(Microsoft.Azure.Management.AppService.Fluent.OperatingSystem.Windows)
+						.Create();
+		Information($"App Service Plan: {webAppServicePlan.Name} created!");
+	}
+	else
+		Information($"App Service Plan: {webAppServicePlan.Name} already created!");
 });
 
 Task("ProvisionFunctionApps")
@@ -486,8 +509,57 @@ Task("ProvisionFunctionApps")
 		Information($"Functions App: {orchestratorsFunctionsApp.Name} already created!");
 });
 
-Task("ProvisionEventGrid")
+Task("ProvisionWebApp")
 .IsDependentOn("ProvisionFunctionApps")
+.Does(() => {
+	Information($"ProvisionWebApp....");
+	webApp = azure.WebApps.ListByResourceGroup(resourceGroup.Name).Where(r => r.Name.ToLower() == Resources.GetWebAppName(env).ToLower()).FirstOrDefault();
+	if (webApp == null)
+	{
+        webApp = azure.WebApps
+				.Define(Resources.GetWebAppName(env))
+				.WithExistingWindowsPlan(webAppServicePlan)
+				.WithExistingResourceGroup(resourceGroup)
+				.Create();
+		Information($"Web App: {webApp.Name} created!");
+	}
+	else
+		Information($"Web App: {webApp.Name} already created!");
+});
+
+Task("ProvisionSql")
+.IsDependentOn("ProvisionWebApp")
+.Does(() => {
+	Information($"ProvisionSql....");
+	sqlDatabaseServer = azure.SqlServers.ListByResourceGroup(resourceGroup.Name).Where(r => r.Name.ToLower() == Resources.GetSqlDatabaseServerName(env).ToLower()).FirstOrDefault();
+	if (sqlDatabaseServer == null)
+	{
+		sqlDatabaseServer = azure.SqlServers
+							.Define(Resources.GetSqlDatabaseServerName(env))
+							.WithRegion(Region.USEast)
+							.WithExistingResourceGroup(resourceGroup)
+							.WithAdministratorLogin(Resources.SqlDatabaseServerAdminLogin)
+							.WithAdministratorPassword(Resources.SqlDatabaseServerAdminPwd)
+							.Create();
+		Information($"SQL Server: {sqlDatabaseServer.Name} created!");
+	}
+	else
+		Information($"SQL Server: {sqlDatabaseServer.Name} already created!");
+
+	sqlDatabase = sqlDatabaseServer.Databases.List().Where(r => r.Name.ToLower() == Resources.GetSqlDatabaseName(env).ToLower()).FirstOrDefault();
+	if (sqlDatabase == null)
+	{
+		sqlDatabase = sqlDatabaseServer.Databases
+					.Define(Resources.GetSqlDatabaseName(env))
+					.Create();
+		Information($"SQL Server Database: {sqlDatabase.Name} created!");
+	}
+	else
+		Information($"SQL Server Database: {sqlDatabase.Name} already created!");
+});
+
+Task("ProvisionEventGrid")
+.IsDependentOn("ProvisionSql")
 .Does(() => {
 	Information($"ProvisionEventGrid....");
 

@@ -20,13 +20,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("GetDrivers triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -49,13 +42,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("GetDriversWithinLocation triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -75,13 +61,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("GetActiveDrivers triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -102,13 +81,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("GetDriver triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -128,13 +100,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("CreateDriver triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -156,13 +121,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("UpdateDriver triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -184,13 +142,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("UpdateDriverLocation triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -213,13 +164,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("GetDriverLocations triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {
@@ -240,13 +184,6 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             ILogger log)
         {
             log.LogInformation("DeleteDriver triggered....");
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
 
             try
             {

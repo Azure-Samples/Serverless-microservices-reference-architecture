@@ -367,7 +367,7 @@ I manually updated the functions app settings in the portal. I store in there th
 <p>For testing, there are the following handful APIs to conduct a test.</p>
 <h3>Create a Trip</h3>
 <p>POST to the Trips API:</p>
-<p><code>https://ridesharetripsfunctionsapp.azurewebsites.net/api/trips?code=WJ8Ld8FawVK4Si5s8XEV9y2/hlgcmTXnB8kQouS52pGBNnKyjy8r/g==</code></p>
+<p><code>https://ridesharetripsfunctionapp.azurewebsites.net/api/trips?code=Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg==</code></p>
 <p>Sample Payload:</p>
 <p><code>{
 	&quot;passenger&quot;: {
@@ -384,8 +384,10 @@ I manually updated the functions app settings in the portal. I store in there th
 	&quot;destination&quot;: {
 		&quot;latitude&quot;: -32,
 		&quot;longitude&quot;: 60
-	}
+	},
+    &quot;type&quot;: 0
 }</code></p>
+<p><strong>Please note</strong> you can create a trip in <code>Demo</code> mode! This will self-run so you don't have to do the below steps. The way you create a demo trip is by making the trip <code>type</code> equals 1. </p>
 <p>Once the Function returns the newly created Trip, get the <code>code</code>:</p>
 <p><code>{
     &quot;code&quot;: &quot;RPKIATS0&quot;,
@@ -452,12 +454,13 @@ I manually updated the functions app settings in the portal. I store in there th
 }</code></p>
 <h3>Retrieve a Trip by code</h3>
 <p>GET  to the Trips API (please note that the trip code is included in the URL):</p>
-<p><code>https://ridesharetripsfunctionsapp.azurewebsites.net/api/trips/RPKIATS0?code=oV3dIwoRIQ/hUMdsFZetVZ/xELdWEGAX1syZYPqpW2oBNCC4e9f9aA==</code></p>
+<p><code>https://ridesharetripsfunctionapp.azurewebsites.net/api/trips/{code}?code=HzL1cuSoqZXnhB3cPFBd74YTa5RF9xAKA8p2VaezpQWeWxPcI8c2TA==</code></p>
 <p>Now....you have 120 seconds (configurable by the settings service) to pick a diver. </p>
 <h3>Assign a Driver</h3>
 <p>POST to the Trip Managers API (please note that the trip code and the driver code are included in the URL):</p>
-<p><code>https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmanagers/RPKIATS0/acknowledge/drivers/AA100?code=h39q9HrukVNDxet6Plv6aP0P0uKz9ASYgSjQ3/e4GzI1KaN/r18oLA==</code></p>
-<h3>Updat the Driver Location</h3>
+<p><code>https://rideshareorchestratorsfunctionapp.azurewebsites.net/api/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code=2bTHzb1TxQGQvxC6nQ2MdL6A5x5a0ZSMao0eaaSW4KhoIaBMW7ZxrA==</code></p>
+<p><strong>Please note</strong> this API will change. I created a new Trips API that will assign a driver instead of this. This way the trip manager orchestrator is not visible to the outside at all. </p>
+<h3>Update the Driver Location</h3>
 <p>POST to the Drivers API:</p>
 <p><code>https://ridesharedriversfunctionsapp.azurewebsites.net/api/driverlocations?code=QwcMwmWVcswk4DxuseZr5sE3PdG/KA8t0se5Yzn3iRsY42e2mhe0HQ==</code></p>
 <p>Sample Payload:</p>

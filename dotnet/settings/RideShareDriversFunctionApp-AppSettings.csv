@@ -8,7 +8,3 @@ DocDbRideShareMainCollectionName|Main
 DocDbThroughput|400
 InsightsInstrumentationKey|a0e89e29-8304-44a9-8536-8b9071fd4fe9
 IsPersistDirectly|true
-AuthorityUrl|https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0
-ApiApplicationId|8df6f6dc-01f9-49d0-a49e-f23e29e71af5
-ApiScopeName|rideshare
-EnableAuth|true

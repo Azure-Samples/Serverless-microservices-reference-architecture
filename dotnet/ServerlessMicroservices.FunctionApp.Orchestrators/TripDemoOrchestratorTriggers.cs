@@ -19,14 +19,6 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             [OrchestrationClient] DurableOrchestrationClient context,
             ILogger log)
         {
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
-
             try
             {
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
@@ -57,14 +49,6 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
-
             try
             {
                 var status = await context.GetStatusAsync(code);
@@ -87,14 +71,6 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             string code,
             ILogger log)
         {
-            var validationService = ServiceFactory.GetTokenValidationService();
-            var user = await validationService.AuthenticateRequest(req);
-
-            if (user == null && validationService.AuthEnabled)
-            {
-                return new StatusCodeResult(401);
-            }
-
             try
             {
                 await TeminateInstance(context, code, log);

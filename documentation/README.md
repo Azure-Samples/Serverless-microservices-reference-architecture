@@ -12,4 +12,12 @@ The company's technical leadership thrives on keeping tabs on the rapidly growin
 
 During their initial research phase consisting of comparing serverless offerings and creating rapid prototypes, Relecloud's team has decided to build their ride share application on Azure's serverless components, given the breadth of options and unique capabilities for orchestrating serverless activities, such as [Durable Functions](). They also want to investigate using the [microservices]() pattern in their solution design, as it seems like a good fit alongside [Azure functions](), [API Management](), [Service Bus](), [Event Grid](), and other key components and services. Being able to monitor the solution as a whole is an important capability they want to put in place from the start, especially since they are relying on so many components. Finally, they wish to simplify the lifecycle management of all these pieces of the puzzle by applying [DevOps]() practices to automate continuous integration and deployment, end-to-end.
 
-Walk through Relecloud's decision-making process, and deploy the solution today by following the step-by-step [hands-on lab](), or take the shortcut and deploy with a few clicks [using our templates]().
+## Explore Relecloud's solution using serverless and microservices
+
+[Read about Relecloud's solution](./introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservics, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
+
+## Deploy Relecloud's solution today with a hands-on lab
+
+After learning about Relecloud's [serverless microservices architecture](./introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](./setup.md), or take the shortcut and deploy with a few clicks [using our templates]().
+
+Each section of the lab will briefly explain what you are trying to accomplish and why. It will  also link you to the relative portion of the [architecture document](./introduction.md).

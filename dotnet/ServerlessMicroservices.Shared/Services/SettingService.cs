@@ -29,6 +29,9 @@ namespace ServerlessMicroservices.Shared.Services
         private const string DocDbRideShareMainCollectionNameKey = "DocDbRideShareMainCollectionName";
         private const string DocDbThroughput = "DocDbThroughput";
 
+        // Sql
+        private const string SqlConnectionStringKey = "SqlConnectionString";
+
         // Orchestrators
         private const string StartTripManagerOrchestratorBaseUrlKey = "StartTripManagerOrchestratorBaseUrl";
         private const string startTripManagerOrchestratorApiKey = "StartTripManagerOrchestratorApiKey";
@@ -42,7 +45,7 @@ namespace ServerlessMicroservices.Shared.Services
         // Event Grid
         private const string TripExternalizationsEventGridTopicUrlKey = "TripExternalizationsEventGridTopicUrl";
         private const string TripExternalizationsEventGridTopicApiKey = "TripExternalizationsEventGridTopicApiKey";
-        
+
         // B2C
         private const string AuthorityUrlKey = "AuthorityUrl";
         private const string ApiApplicationIdKey = "ApiApplicationId";
@@ -143,6 +146,12 @@ namespace ServerlessMicroservices.Shared.Services
         public int GetDocDbThroughput()
         {
             return GetEnvironmentVariable(DocDbThroughput) != null ? Int32.Parse(GetEnvironmentVariable(DocDbThroughput)) : 400;
+        }
+
+        // Sql
+        public string GetSqlConnectionString()
+        {
+            return GetEnvironmentVariable(SqlConnectionStringKey);
         }
 
         // Trip Manager Orchestrator

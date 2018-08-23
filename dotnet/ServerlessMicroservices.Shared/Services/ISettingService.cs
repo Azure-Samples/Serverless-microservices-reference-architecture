@@ -25,6 +25,9 @@
         string GetDocDbMainCollectionName();
         int GetDocDbThroughput();
 
+        // Sql
+        string GetSqlConnectionString();
+
         // Orchestrators
         string GetStartTripManagerOrchestratorBaseUrl();
         string GetStartTripManagerOrchestratorApiKey();

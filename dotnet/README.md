@@ -81,7 +81,7 @@ For testing, there are the following handful APIs to conduct a test.
 POST to the Trips API:
 
 ```
-https://ridesharetripsfunctionsapp.azurewebsites.net/api/trips?code=WJ8Ld8FawVK4Si5s8XEV9y2/hlgcmTXnB8kQouS52pGBNnKyjy8r/g==
+https://ridesharetripsfunctionapp.azurewebsites.net/api/trips?code=Lbjwz7g8FyJZCHZNQksOxqrEPYNiZUeua39O46UsBNcmJu6pt8seBg==
 ```
 
 Sample Payload:
@@ -102,9 +102,12 @@ Sample Payload:
 	"destination": {
 		"latitude": -32,
 		"longitude": 60
-	}
+	},
+    "type": 0
 }
 ```
+
+**Please note** you can create a trip in `Demo` mode! This will self-run so you don't have to do the below steps. The way you create a demo trip is by making the trip `type` equals 1. 
 
 Once the Function returns the newly created Trip, get the `code`:
 
@@ -179,7 +182,7 @@ Once the Function returns the newly created Trip, get the `code`:
 GET  to the Trips API (please note that the trip code is included in the URL):
 
 ```
-https://ridesharetripsfunctionsapp.azurewebsites.net/api/trips/RPKIATS0?code=oV3dIwoRIQ/hUMdsFZetVZ/xELdWEGAX1syZYPqpW2oBNCC4e9f9aA==
+https://ridesharetripsfunctionapp.azurewebsites.net/api/trips/{code}?code=HzL1cuSoqZXnhB3cPFBd74YTa5RF9xAKA8p2VaezpQWeWxPcI8c2TA==
 ```
 
 Now....you have 120 seconds (configurable by the settings service) to pick a diver. 
@@ -189,10 +192,12 @@ Now....you have 120 seconds (configurable by the settings service) to pick a div
 POST to the Trip Managers API (please note that the trip code and the driver code are included in the URL):
 
 ```
-https://rideshareorchestratorsfunctionsapp.azurewebsites.net/api/tripmanagers/RPKIATS0/acknowledge/drivers/AA100?code=h39q9HrukVNDxet6Plv6aP0P0uKz9ASYgSjQ3/e4GzI1KaN/r18oLA==
+https://rideshareorchestratorsfunctionapp.azurewebsites.net/api/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code=2bTHzb1TxQGQvxC6nQ2MdL6A5x5a0ZSMao0eaaSW4KhoIaBMW7ZxrA==
 ```
 
-### Updat the Driver Location
+**Please note** this API will change. I created a new Trips API that will assign a driver instead of this. This way the trip manager orchestrator is not visible to the outside at all. 
+ 
+### Update the Driver Location
 
 POST to the Drivers API:
 

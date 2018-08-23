@@ -9,8 +9,6 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerlessMicroservices.Fun
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerlessMicroservices.FunctionApp.Passengers", "ServerlessMicroservices.FunctionApp.Passengers\ServerlessMicroservices.FunctionApp.Passengers.csproj", "{69ACD7CF-B4EB-423F-9457-5E92234C90FB}"
 EndProject
-Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerlessMicroservices.FunctionApp.ActiveDrivers", "ServerlessMicroservices.FunctionApp.ActiveDrivers\ServerlessMicroservices.FunctionApp.ActiveDrivers.csproj", "{2E7B68BE-5373-4310-B265-D2500C64778E}"
-EndProject
 Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "FunctionApps", "FunctionApps", "{F361B112-DA40-48CA-BF80-C07A0D036124}"
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "ServerlessMicroservices.Seeder", "ServerlessMicroservices.Seeder\ServerlessMicroservices.Seeder.csproj", "{4FDB2AF7-149A-4637-96F2-1057D4A47132}"
@@ -39,10 +37,6 @@ Global
 		{69ACD7CF-B4EB-423F-9457-5E92234C90FB}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{69ACD7CF-B4EB-423F-9457-5E92234C90FB}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{69ACD7CF-B4EB-423F-9457-5E92234C90FB}.Release|Any CPU.Build.0 = Release|Any CPU
-		{2E7B68BE-5373-4310-B265-D2500C64778E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{2E7B68BE-5373-4310-B265-D2500C64778E}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{2E7B68BE-5373-4310-B265-D2500C64778E}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{2E7B68BE-5373-4310-B265-D2500C64778E}.Release|Any CPU.Build.0 = Release|Any CPU
 		{4FDB2AF7-149A-4637-96F2-1057D4A47132}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{4FDB2AF7-149A-4637-96F2-1057D4A47132}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{4FDB2AF7-149A-4637-96F2-1057D4A47132}.Release|Any CPU.ActiveCfg = Release|Any CPU
@@ -67,7 +61,6 @@ Global
 		{7EA61A54-242F-49A6-9C0D-298C81A9F36B} = {F361B112-DA40-48CA-BF80-C07A0D036124}
 		{5CC2A81F-F5BE-40B3-A866-10D67398F3F8} = {F361B112-DA40-48CA-BF80-C07A0D036124}
 		{69ACD7CF-B4EB-423F-9457-5E92234C90FB} = {F361B112-DA40-48CA-BF80-C07A0D036124}
-		{2E7B68BE-5373-4310-B265-D2500C64778E} = {F361B112-DA40-48CA-BF80-C07A0D036124}
 		{F0DC59B8-B73C-407E-A0C7-64B697D137E2} = {F361B112-DA40-48CA-BF80-C07A0D036124}
 	EndGlobalSection
 	GlobalSection(ExtensibilityGlobals) = postSolution
