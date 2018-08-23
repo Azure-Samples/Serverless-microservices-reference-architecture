@@ -49,13 +49,44 @@
     </section>
     <!-- Passenger information modal -->
     <b-modal id="passengerInformationModal"
-            ref="modal"
-            title="Passenger information"
+            ref="modalRef"
+            title="PASSENGER INFORMATION"
             header-bg-variant="warning"
             header-text-variant="dark"
-            footer-bg-variant="light">
-      <div>
-        {{selectedPassenger.email}}
+            footer-bg-variant="light"
+            footer-text-variant="dark">
+      <b-container fluid>
+        <b-form-row>
+          <b-col><em><strong>First name</strong></em></b-col><b-col>{{selectedPassenger.givenName}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Last name</strong></em></b-col><b-col>{{selectedPassenger.surname}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Display name</strong></em></b-col><b-col>{{selectedPassenger.displayName}}</b-col>
+        </b-form-row>
+        <hr />
+        <b-form-row>
+          <b-col><em><strong>Street address</strong></em></b-col><b-col>{{selectedPassenger.streetAddress}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>City</strong></em></b-col><b-col>{{selectedPassenger.city}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>State/province</strong></em></b-col><b-col>{{selectedPassenger.state}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Postal code</strong></em></b-col><b-col>{{selectedPassenger.postalCode}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Country</strong></em></b-col><b-col>{{selectedPassenger.country}}</b-col>
+        </b-form-row>
+      </b-container>
+      <div slot="modal-footer" class="w-100">
+         <p class="float-left">Passenger information retrieved from the Graph API</p>
+         <b-btn size="sm" class="float-right" variant="primary" @click="hideModal()">
+           Close
+         </b-btn>
       </div>
     </b-modal>
   </div>
@@ -118,7 +149,10 @@ export default {
     },
     selectPassenger(passenger) {
       this.setSelectedPassenger(passenger);
-      this.$refs.modal.show();
+      this.$refs.modalRef.show();
+    },
+    hideModal() {
+      this.$refs.modalRef.hide();
     }
   },
   mounted() {

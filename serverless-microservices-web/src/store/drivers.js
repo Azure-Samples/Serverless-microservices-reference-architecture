@@ -6,7 +6,7 @@ export default {
   state() {
     return {
       drivers: null,
-      selectedDriver: null,
+      selectedDriver: { car: {} },
       contentLoading: false
     };
   },

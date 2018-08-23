@@ -48,6 +48,56 @@
             </div>
         </div>
     </section>
+    <!-- Driver information modal -->
+    <b-modal id="driverInformationModal"
+            ref="modalRef"
+            title="DRIVER INFORMATION"
+            header-bg-variant="warning"
+            header-text-variant="dark"
+            footer-bg-variant="light"
+            footer-text-variant="dark">
+      <b-container fluid>
+        <b-form-row>
+          <b-col><em><strong>Code</strong></em></b-col><b-col>{{selectedDriver.code}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>First name</strong></em></b-col><b-col>{{selectedDriver.firstName}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Last name</strong></em></b-col><b-col>{{selectedDriver.lastName}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Coordinates</strong></em></b-col><b-col>{{selectedDriver.latitude}}, {{selectedDriver.longitude}}</b-col>
+        </b-form-row>
+        <b-form-row>
+          <b-col><em><strong>Accepting rides?</strong></em></b-col><b-col>{{selectedDriver.isAcceptingRides?'Yes':'No'}}</b-col>
+        </b-form-row>
+        <hr />
+        <div class="card text-white bg-secondary">
+          <div class="card-header">CAR</div>
+          <div class="card-body">
+            <b-form-row>
+              <b-col><em><strong>Make</strong></em></b-col><b-col>{{selectedDriver.car.make}}</b-col>
+            </b-form-row>
+            <b-form-row>
+              <b-col><em><strong>Model</strong></em></b-col><b-col>{{selectedDriver.car.model}}</b-col>
+            </b-form-row>
+            <b-form-row>
+              <b-col><em><strong>Color</strong></em></b-col><b-col>{{selectedDriver.car.color}}</b-col>
+            </b-form-row>
+            <b-form-row>
+              <b-col><em><strong>License plate</strong></em></b-col><b-col>{{selectedDriver.car.licensePlate}}</b-col>
+            </b-form-row>
+          </div>
+        </div>
+      </b-container>
+      <div slot="modal-footer" class="w-100">
+         <p class="float-left"></p>
+         <b-btn size="sm" class="float-right" variant="primary" @click="hideModal()">
+           Close
+         </b-btn>
+      </div>
+    </b-modal>
   </div>
 </template>
 
@@ -113,6 +163,10 @@ export default {
     },
     selectDriver(driver) {
       this.setSelectedDriver(driver);
+      this.$refs.modalRef.show();
+    },
+    hideModal() {
+      this.$refs.modalRef.hide();
     }
   },
   mounted() {

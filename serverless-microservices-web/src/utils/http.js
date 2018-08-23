@@ -114,14 +114,14 @@ export function get(uri, data = {}) {
   if (Object.keys(data).length > 0) {
     uri = `${uri}?${qs(data)}`;
   }
-  // return auth.getAccessTokenOrLoginWithPopup().then(token => {
-  //   return axios.get(uri, {
-  //     headers: getHeaders(token),
-  //     withCredentials: false
-  //   });
-  // });
-  return axios.get(uri, {
-    headers: getHeaders(null),
-    withCredentials: false
+  return auth.getAccessTokenOrLoginWithPopup().then(token => {
+    return axios.get(uri, {
+      headers: getHeaders(token),
+      withCredentials: false
+    });
   });
+  // return axios.get(uri, {
+  //   headers: getHeaders(null),
+  //   withCredentials: false
+  // });
 }
