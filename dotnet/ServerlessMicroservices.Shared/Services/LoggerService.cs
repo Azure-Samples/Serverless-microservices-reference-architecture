@@ -20,7 +20,7 @@ namespace ServerlessMicroservices.Shared.Services
             GetAppInsightsClient().TrackTrace(message);
         }
 
-        public void Log(string eventName, Dictionary<string, string> props, Dictionary<string, double> measurements)
+        public void Log(string eventName, Dictionary<string, string> props, Dictionary<string, double> measurements = null)
         {
             GetAppInsightsClient().TrackEvent(eventName, props, measurements);
         }

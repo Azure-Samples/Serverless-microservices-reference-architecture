@@ -4,6 +4,7 @@ using ServerlessMicroservices.Models;
 using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
+using System.Collections.Generic;
 using System.Threading;
 using System.Threading.Tasks;
 
@@ -164,6 +165,15 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         {
             log.LogInformation($"CompleteTrip for {trip.Code} starting....");
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_COMPLETED);
+
+            // Send an event telemetry
+            ServiceFactory.GetLoggerService().Log("Trip completed", new Dictionary<string, string>
+                {
+                    {"Code", trip.Code },
+                    {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
+                    {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
+                    {"Mode", $"{trip.Type}" }
+                });
         }
 
         [FunctionName("A_TO_Cleanup")]
@@ -183,6 +193,15 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
 
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_ABORTED);
+
+            // Send an event telemetry
+            ServiceFactory.GetLoggerService().Log("Trip aborted", new Dictionary<string, string>
+                {
+                    {"Code", trip.Code },
+                    {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
+                    {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
+                    {"Mode", $"{trip.Type}" }
+                });
         }
 
         // *** PRIVATE ***//

@@ -175,6 +175,15 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             log.LogInformation($"CreateTripMonitor starting....");
             // Enqueue the trip code to be monitored 
             queueTripCode = trip.Code;
+
+            // Send an event telemetry
+            ServiceFactory.GetLoggerService().Log("Trip monitored", new Dictionary<string, string>
+                {
+                    {"Code", trip.Code },
+                    {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
+                    {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
+                    {"Mode", $"{trip.Type}" }
+                });
         }
 
         [FunctionName("A_TM_Cleanup")]
@@ -194,6 +203,15 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
 
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_ABORTED);
+
+            // Send an event telemetry
+            ServiceFactory.GetLoggerService().Log("Trip aborted", new Dictionary<string, string>
+                {
+                    {"Code", trip.Code },
+                    {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
+                    {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
+                    {"Mode", $"{trip.Type}" }
+                });
         }
 
         // *** PRIVATE ***//

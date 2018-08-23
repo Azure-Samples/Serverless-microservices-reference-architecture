@@ -521,6 +521,36 @@ namespace ServerlessMicroservices.Shared.Services
             }
         }
 
+        public async Task<int> RetrieveActiveTripsCount()
+        {
+            var error = "";
+            // NOTE: Unfortunately I could not find a way to get the cost when performing `count` against Cosmos
+            double cost = 0;
+
+            try
+            {
+                if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+                    throw new Exception("No Digital Main collection defined!");
+
+                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1 };
+
+                return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
+                            UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                            .Where(e => e.CollectionType == ItemCollectionTypes.Trip & e.EndDate == null)
+                            .CountAsync();
+            }
+            catch (Exception ex)
+            {
+                error = ex.Message;
+                throw new Exception(error);
+            }
+            finally
+            {
+                _loggerService.Log($"{LOG_TAG} - RetrieveActiveTripsCount - Error: {error}");
+            }
+        }
+
         public async Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false)
         {
             var error = "";
@@ -551,7 +581,7 @@ namespace ServerlessMicroservices.Shared.Services
 
                 if (!isIgnoreChangeFeed && blInsert)
                 {
-                    await _changeNotifierService.TripCreated(trip);
+                    await _changeNotifierService.TripCreated(trip, await RetrieveActiveTripsCount());
                 }
             }
             catch (Exception ex)

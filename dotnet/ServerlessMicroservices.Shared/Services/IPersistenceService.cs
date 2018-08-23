@@ -24,6 +24,7 @@ namespace ServerlessMicroservices.Shared.Services
         Task<List<TripItem>> RetrieveTrips(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS);
         Task<List<TripItem>> RetrieveActiveTrips(int max = Constants.MAX_RETRIEVE_DOCS);
         Task<int> RetrieveTripsCount();
+        Task<int> RetrieveActiveTripsCount();
         Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false);
         Task DeleteTrip(string code);
 

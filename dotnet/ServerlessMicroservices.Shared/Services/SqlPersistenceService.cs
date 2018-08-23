@@ -292,5 +292,10 @@ namespace ServerlessMicroservices.Shared.Services
         {
             throw new NotImplementedException();
         }
+
+        public Task<int> RetrieveActiveTripsCount()
+        {
+            throw new NotImplementedException();
+        }
     }
 }
