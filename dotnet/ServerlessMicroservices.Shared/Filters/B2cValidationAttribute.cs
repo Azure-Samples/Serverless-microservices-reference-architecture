@@ -23,14 +23,17 @@ namespace ServerlessMicroservices.Shared.Filters
                 throw new ValidationException("Http Request is not the first argument!");
 
             var validationService = ServiceFactory.GetTokenValidationService();
-            //TODO: Not the best way to do this!!
-            var user = validationService.AuthenticateRequest(httpRequest).Result;
-
-            if (user == null && validationService.AuthEnabled)
+            if (validationService.AuthEnabled)
             {
-                //httpRequest.HttpContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
-                //return Task.FromResult(0);
-                throw new ValidationException("Unauthorized!");
+                //TODO: Not the best way to do this!!
+                var user = validationService.AuthenticateRequest(httpRequest).Result;
+
+                if (user == null)
+                {
+                    //httpRequest.HttpContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                    //return Task.FromResult(0);
+                    throw new ValidationException("Unauthorized!");
+                }
             }
 
             return base.OnExecutingAsync(executingContext, cancellationToken);

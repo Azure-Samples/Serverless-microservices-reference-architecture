@@ -251,6 +251,9 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                 {
                     var archiveService = ServiceFactory.GetArchiveService();
                     await archiveService.UpsertTrip(trip);
+
+                    var powerBIService = ServiceFactory.GetPowerBIService();
+                    await powerBIService.UpsertTrip(trip);
                 }
             }
             catch (Exception e)

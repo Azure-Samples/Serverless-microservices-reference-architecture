@@ -8,6 +8,7 @@
         private static IChangeNotifierService _changeNotifierService = null;
         private static IPersistenceService _persistenceService = null;
         private static IPersistenceService _archiveService = null;
+        private static IPowerBIService _powerBIService = null;
         private static ITokenValidationService _tokenValidationService = null;
         private static IRoutesService _routesService = null;
         private static IUserService _userService = null;
@@ -50,6 +51,14 @@
                 _archiveService = new SqlPersistenceService(GetSettingService(), GetLoggerService());
 
             return _archiveService;
+        }
+
+        public static IPowerBIService GetPowerBIService()
+        {
+            if (_powerBIService == null)
+                _powerBIService = new PowerBIService(GetSettingService(), GetLoggerService());
+
+            return _powerBIService;
         }
 
         public static ITokenValidationService GetTokenValidationService()

@@ -96,11 +96,17 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
             throw new ValidationException("Http Request is not the first argument!");
 
         var validationService = ServiceFactory.GetTokenValidationService();
-        var user = validationService.AuthenticateRequest(httpRequest).Result;
-
-        if (user == null && validationService.AuthEnabled)
+        if (validationService.AuthEnabled)
         {
-            throw new ValidationException("Unauthorized!");
+            //TODO: Not the best way to do this!!
+            var user = validationService.AuthenticateRequest(httpRequest).Result;
+
+            if (user == null)
+            {
+                //httpRequest.HttpContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+                //return Task.FromResult(0);
+                throw new ValidationException("Unauthorized!");
+            }
         }
 
         return base.OnExecutingAsync(executingContext, cancellationToken);
@@ -108,7 +114,7 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 }
 ```
 
-It can then be attached to a specific function like this:
+It can then be used to decorate a specific function like this:
 
 ```csharp
 [B2cValidation]
@@ -120,7 +126,7 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 }
 ``` 
 
-It is very elegant and it actually does work! But unfortunately, it seems that it can only throw an exception. Relecloud was not  able to find a way to abort the HTTP request and throw a 401 status code. If an exception is thrown in the filter pipeline, the caller gets a 500 Internal Service Error which is hardly descriptive of the problem.
+It is very elegant and it actually does work! But unfortunately, it seems that it can only throw exceptions. Relecloud was not  able to find a way to abort the HTTP request and throw a 401 status code. If an exception is thrown in the filter pipeline, the caller gets a 500 Internal Service Error which is hardly descriptive of the problem.
 
 Relecloud received an input from a security expert who advised that the `JWT Validation` be added to the code instead of APIM. This way the HTTP endpoints will be protected regardless of whether APIM is used or not. The reference implementation includes a utility method that can be used to check the validation:
 
@@ -314,7 +320,7 @@ As the macro architecture depicts, the orchestrators are implemented in C#. The 
 
 ![Orchestrators Architecture](media/orchestrators-architecture.png)
 
-Please note the following:
+The following describes the process that newly created trips go through:
 
 - The `ChangeNotifierService` triggers the Trip Manager Orchestrator to start a new Trip Manager instance.
 - The new instance retrieves the available drivers (available & within x miles from trip's source location) and notifies them of a new trip
@@ -443,6 +449,9 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
         {
             var archiveService = ServiceFactory.GetArchiveService();
             await archiveService.UpsertTrip(trip);
+
+            var powerBIService = ServiceFactory.GetPowerBIService();
+            await powerBIService.UpsertTrip(trip);
         }
     }
     catch (Exception e)
@@ -464,7 +473,7 @@ Once in SQL, the data can be used to construct a PowerBI report to provide diffe
 
 TBA - show a sample PowerBI screen shots
 
-In addition, the handler can also send trip information to a PowerBI streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product lauches and is outside the scope of this reference implementation.    
+In addition, the handler sends trip information to the PowerBI Service which in turn sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product lauches but it is outside the scope of this reference implementation.    
 
 #### Archiver Handler
 
@@ -540,15 +549,32 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 
 - `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist to SQL. 
 - The `CosmosPersistenceService` assigns Cosmos ids manually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided. 
+- The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicte with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true. 
+- Go throgh the TODO items
 
 ### Node
 
+TBA
+
 ### Web
+
+TBA
 
 ## Integration Testing
 
+TBA
+
+We can describe the console tests and arguments they have
+
 ## Monitoring
+
+TBA
+
+Azure Dashboard
+App Insights Analytics
+App Insighst Live Metrics ....ASP.NET only?
+PowerBI streaming datasets
 
 ## Deployment
 
-## Provision
+TBA

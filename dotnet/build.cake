@@ -383,7 +383,22 @@ Task("ProvisionCosmos")
 				"dbs/" + Resources.GetCosmosDatabase(env), 
 				myCollection, 
 				requestOptions);
-		Information("Created a new collection");
+		Information("Created a new main collection");
+
+		// Define a new archive collection
+		DocumentCollection archiveCollection = new DocumentCollection();
+		archiveCollection.Id = Resources.GetCosmosArchiveCollection(env);
+
+		// Set the provisioned throughput for this collection to be 400 RUs.
+		RequestOptions archiveRequestOptions = new RequestOptions();
+		archiveRequestOptions.OfferThroughput = 400;
+
+		// Create a new collection.
+		archiveCollection = await documentClient.CreateDocumentCollectionAsync(
+				"dbs/" + Resources.GetCosmosDatabase(env), 
+				archiveCollection, 
+				archiveRequestOptions);
+		Information("Created a new archive collection");
 	}
 	else
 		Information($"Cosmos Database: {Resources.GetCosmosDatabase(env)} already created!");
