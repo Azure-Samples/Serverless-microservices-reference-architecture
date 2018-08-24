@@ -38,6 +38,7 @@
     }
 }
 ```
+
 - The Event Grid topic is being listened to by the following:
     - Logic App to notify by the events email. I notice that there is an obvious weakness in the Logic App Event Grid connector.....it does not give me access to the event data! At least I could it find a way to do it. In any case, the Logic App runs, gets the event subject and fires an email.
     - Azure Function `EVGH_TripExternalizations2SignalR` to perhaps broadcast the trip over SignalR.

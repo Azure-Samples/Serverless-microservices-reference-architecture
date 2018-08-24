@@ -223,10 +223,6 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
                 log.LogInformation($"ProcessTripExternalizations2PowerBI trip code {trip.Code}");
 
-                //TODO: Do something with the trip
-                //TODO: We can do different processing based on the event subject
-                //TODO: Event subjects are defined in ServerlessMicroservices.Shared.Helpers.Constants
-
                 if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_ABORTED ||
                     eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_COMPLETED)
                 {

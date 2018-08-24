@@ -20,4 +20,4 @@ During their initial research phase consisting of comparing serverless offerings
 
 After learning about Relecloud's [serverless microservices architecture](./introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](./setup.md), or take the shortcut and deploy with a few clicks [using our templates]().
 
-Each section of the lab will briefly explain what you are trying to accomplish and why. It will  also link you to the relative portion of the [architecture document](./introduction.md).
+Each section of the lab will briefly explain what you are trying to accomplish and why. It will also link you to the relative portion of the [architecture document](./introduction.md).
