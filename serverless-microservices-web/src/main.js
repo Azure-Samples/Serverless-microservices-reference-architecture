@@ -4,6 +4,15 @@ import AppFooter from './components/AppFooter';
 import router from './router';
 import store from './store/index';
 
+import BootstrapVue from 'bootstrap-vue';
+import BlockUI from 'vue-blockui';
+import VueIziToast from 'vue-izitoast';
+import 'izitoast/dist/css/iziToast.min.css';
+
+Vue.use(BootstrapVue);
+Vue.use(BlockUI);
+Vue.use(VueIziToast);
+
 Vue.config.productionTip = false;
 
 Vue.directive('scroll', {

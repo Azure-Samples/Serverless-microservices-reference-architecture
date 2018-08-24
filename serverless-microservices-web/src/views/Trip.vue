@@ -11,6 +11,7 @@
             </div>
         </div>
     </header>
+    <BlockUI message="Please wait..." :html="html" v-show="contentLoading"></BlockUI>
     <section id="features" class="features" style="padding-top:60px;">
         <div class="container">
             <div class="section-heading text-center" style="margin-bottom:50px;">
@@ -35,9 +36,14 @@
                             </div>
                             <div class="col-lg-6 align-self-center">
                                 <div class="feature-item">
-                                    <div class="dropdown"><button class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Pickup Location</button>
+                                    <!-- <div class="dropdown"><button class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Pickup Location</button>
                                         <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>
-                                    </div>
+                                    </div> -->
+                                    <b-dropdown id="ddown-pickup" text="Pickup Location" variant="info" class="">
+                                        <b-dropdown-item-button @click.stop="selectPickup(0)">Location #1</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click.stop="selectPickup(1)">Location #2</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click.stop="selectPickup(2)">Location #3</b-dropdown-item-button>
+                                    </b-dropdown>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -47,9 +53,14 @@
                             </div>
                             <div class="col-lg-6 align-self-center">
                                 <div class="feature-item">
-                                    <div class="dropdown"><button class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">DESTINATION</button>
+                                    <!-- <div class="dropdown"><button class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">DESTINATION</button>
                                         <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>
-                                    </div>
+                                    </div> -->
+                                    <b-dropdown id="ddown-pickup" text="Destination" variant="info" class="">
+                                        <b-dropdown-item-button @click.stop="selectDestination(0)">Location #1</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click.stop="selectDestination(1)">Location #2</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click.stop="selectDestination(2)">Location #3</b-dropdown-item-button>
+                                    </b-dropdown>
                                 </div>
                             </div>
                         </div>
@@ -60,6 +71,86 @@
     </section>
   </div>
 </template>
+
+<script>
+import { createNamespacedHelpers } from 'vuex';
+const { mapGetters: commonGetters } = createNamespacedHelpers('common');
+import { getDrivers, getDriver } from '@/api/drivers';
+
+export default {
+  name: 'Drivers',
+  props: ['authenticated'],
+  data() {
+    return {
+      drivers: [],
+      selectedDriver: null,
+      driverInfo: null,
+      html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
+      fields: [
+        { key: 'code', label: 'Code', sortable: true },
+        { key: 'firstName', label: 'First Name', sortable: true },
+        {
+          key: 'lastName',
+          label: 'Last Name',
+          sortable: true
+        },
+        { key: 'latitude', label: 'Latitude', class: 'text-right' },
+        { key: 'longitude', label: 'Longitude', class: 'text-right' },
+        {
+          key: 'isAcceptingRides',
+          label: 'Accepting rides?',
+          class: 'text-right'
+        },
+        { key: 'actions', label: '' }
+      ],
+      currentPage: 1,
+      perPage: 10,
+      pageOptions: [5, 10, 15]
+    };
+  },
+  computed: {
+    ...commonGetters(['notificationSystem']),
+    totalRows() {
+      return this.stories.length;
+    }
+  },
+  methods: {
+    retrieveDrivers() {
+      getDrivers()
+        .then(response => {
+          this.drivers = response.data;
+        })
+        .catch(err => {
+          this.$toast.error(
+            err.response,
+            'Error',
+            this.notificationSystem.options.error
+          );
+        });
+    },
+    selectDriver(driver) {
+      this.selectedDriver = driver;
+    },
+    selectPickup(number) {
+      this.$toast.success(
+        `Set pickup location to ${number}`,
+        'Success',
+        this.notificationSystem.options.success
+      );
+    },
+    selectDestination(number) {
+      this.$toast.success(
+        `Set destination to ${number}`,
+        'Success',
+        this.notificationSystem.options.success
+      );
+    }
+  },
+  mounted() {
+    this.retrieveDrivers();
+  }
+};
+</script>
 
 <style scoped>
 </style>

@@ -120,9 +120,8 @@ export function get(uri, data = {}) {
       withCredentials: false
     });
   });
-}
-
-// Means endpoint
-export function e(uri) {
-  return BASE_URL + uri;
+  // return axios.get(uri, {
+  //   headers: getHeaders(null),
+  //   withCredentials: false
+  // });
 }
