@@ -1,5 +1,5 @@
 KEY|VALUE
-APPINSIGHTS_INSTRUMENTATIONKEY|52fc25a8-88d3-4b15-a4e2-04f52b200e07
+APPINSIGHTS_INSTRUMENTATIONKEY|ed260747-5ffd-41e6-b1ba-2aaa743cc8c9
 FUNCTIONS_EXTENSION_VERSION|beta
 DocDbApiKey|es0ZhGNzMAJuM0QkdqjTKssoLqlF6BRiQc90hqOSK1ycXddRfo7JZmQhJYBVm3w58btLnTKjYv5y6WsRZJJjRw==
 DocDbEndpointUri|https://rideshare.documents.azure.com:443/
@@ -7,7 +7,7 @@ DocDbRideShareDatabaseName|RideShare
 DocDbRideShareMainCollectionName|Main
 DocDbThroughput|400
 SqlConnectionString|Server=tcp:rideshare-db.database.windows.net,1433;Initial Catalog=RideShare;Persist Security Info=False;User ID=rideshareadm!n;Password=rideShareS3cureP@ssword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
-InsightsInstrumentationKey|52fc25a8-88d3-4b15-a4e2-04f52b200e07
+InsightsInstrumentationKey|ed260747-5ffd-41e6-b1ba-2aaa743cc8c9
 IsPersistDirectly|true
 StartTripManagerOrchestratorApiKey|7EV98JFWNEEEMTW/eqYgJJ8rwR69pwyDhH5W4xV/sgVPa7XBPofIQw==
 StartTripManagerOrchestratorBaseUrl|https://rideshareorchestratorsfunctionapp.azurewebsites.net/api

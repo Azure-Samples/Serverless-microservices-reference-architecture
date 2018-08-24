@@ -3,6 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
+using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
 using System.Linq;
@@ -21,21 +22,22 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var passengers = ServiceFactory.GetUserService();
                 var (users, error) = await passengers.GetUsers();
                 if (!string.IsNullOrWhiteSpace(error))
-                {
-                    var returnError = $"GetPassengers failed: {error}";
-                    log.LogError(returnError);
-                    return new BadRequestObjectResult(returnError);
-                }
+                    throw new Exception(error);
+
                 return (ActionResult)new OkObjectResult(users.ToList());
             }
             catch (Exception e)
             {
                 var error = $"GetPassengers failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -48,21 +50,21 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var passengers = ServiceFactory.GetUserService();
                 var (passenger, error) = await passengers.GetUserById(userid);
                 if (!string.IsNullOrWhiteSpace(error))
-                {
-                    var returnError = $"GetPassenger failed: {error}";
-                    log.LogError(returnError);
-                    return new BadRequestObjectResult(returnError);
-                }
+                    throw new Exception(error);
                 return (ActionResult)new OkObjectResult(passenger);
             }
             catch (Exception e)
             {
                 var error = $"GetPassenger failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
     }

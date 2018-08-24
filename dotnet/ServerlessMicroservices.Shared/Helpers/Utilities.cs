@@ -1,5 +1,7 @@
-﻿using Newtonsoft.Json;
+﻿using Microsoft.AspNetCore.Http;
+using Newtonsoft.Json;
 using Newtonsoft.Json.Serialization;
+using ServerlessMicroservices.Shared.Services;
 using System;
 using System.Collections.Generic;
 using System.Net.Http;
@@ -64,6 +66,17 @@ namespace ServerlessMicroservices.Shared.Helpers
                 rndString += chars[rnd.Next(charsNo)];
 
             return rndString.ToUpper();
+        }
+
+        public static async Task ValidateToken(HttpRequest request)
+        {
+            var validationService = ServiceFactory.GetTokenValidationService();
+            if (validationService.AuthEnabled)
+            {
+                var user = await validationService.AuthenticateRequest(request);
+                if (user == null)
+                    throw new Exception(Constants.SECURITY_VALITION_ERROR);
+            }
         }
 
         public static async Task TriggerEventGridTopic<T>(HttpClient httpClient, T request, string eventType, string eventSubject, string eventGridTopicUrl, string eventGridTopicApiKey)

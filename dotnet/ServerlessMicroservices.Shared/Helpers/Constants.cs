@@ -4,6 +4,7 @@
     {
         // Equates
         public const int MAX_RETRIEVE_DOCS = 20;
+        public const string SECURITY_VALITION_ERROR = "SECURIY_VALIDATION_ERROR";
 
         // Internal Events (consumed by the orchestrators)
         public const string TRIP_DRIVER_ACCEPT_EVENT = "AcceptResult";

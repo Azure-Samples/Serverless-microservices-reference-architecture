@@ -44,20 +44,20 @@ Relecloud decided to use the following criteria to determine when a certain piec
 - The functionality must be written in a separate language/technology like Node.js in case there is some certain expertise that is only available in that specific technology.
 - The functionality must be isolated by a clean boundary 
 
-Given the above Micrservice principles, the following are identified as Microservices:
+Given the above principles, the following are identified as Microservices:
 
 | Microservice | Technology | Reason |
 |---|---|---|
-|Drivers APIs| C# | The `Drivers` is are code and deloyment independent isolated in a functions app. Hence it is considered a serverless Microservice.|
-|Trips APIs| C# | The `Trips` API is code and deloyment independent isolated in a functions app. Hence it is considered a serverless Microservice.|
-|Passengers APIs| C# | The `Passengers` API is code and deloyment independent isolated in a functions app. Hence it is considered a serverless Microservice.|
-|Durable Orchestartors| C# |The Trip `Manager`, `Monitor` and `Demo` i.e. Orchestrators are independent as they provide the heart of the solution. They need to scale and deploy independently, hence they are a good fit for a serverless Microservice.|
-|Event Grid Notification Handler| Logic App | The `Logic App` handler adds value to the overall solution but work independetly. Hence it is considered a serverless Microservice.|
-|Event Grid SignalR Handler | C# | The `SignalR` handler adds value to the overall solution but work independently. Hence it is considered a serverless Microservice.|
-|Event Grid PowerBI Handler | C# | The `PowerBI` handler adds value to the overall solution but work independently. Hence it is considered a serverless Microservice.|
-|Event Grid Archiver | NodeJS | The NodeJS `Archiver` handler adds value to the overall solution but work independently. Hence it is considered a serverless Microservice.|
+|Drivers APIs| C# | The `Drivers` API is code and deployment independent isolated in a functions app.|
+|Trips APIs| C# | The `Trips` API is code and deployment independent isolated in a functions app.|
+|Passengers APIs| C# | The `Passengers` API is code and deployment independent isolated in a functions app.|
+|Durable Orchestartors| C# |The Trip `Manager`, `Monitor` and `Demo` i.e. Orchestrators are independent as they provide the heart of the solution. They need to scale and deploy independently.|
+|Event Grid Notification Handler| Logic App | The `Logic App` handler adds value to the overall solution but work independently. |
+|Event Grid SignalR Handler | C# | The `SignalR` handler adds value to the overall solution but work independently.|
+|Event Grid PowerBI Handler | C# | The `PowerBI` handler adds value to the overall solution but work independently.|
+|Event Grid Archiver | NodeJS | The NodeJS `Archiver` handler adds value to the overall solution but work independently.|
 
-**Please note** that, due to code layout, some Microservices might be a Function within a Functions App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are actually part of the `Trips` Functions App.
+**Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Functions App.
 
 In the sections below, we will go trough each architecture component in more details. 
 
@@ -71,7 +71,7 @@ Describe how the SPA communicates with the B2C AD to provide different levels of
 
 There are many benefits to use an API manager. In the case the RideShare solution, there are really four major benefits:
 
-1. **Security**: the API manager layer verifies the incoming requests' [JWT](https://jwt.io/) token against the B2C Authority URL. This is accomplshed via an inbound policy that intercepts each call:
+1. **Security**: the API manager layer verifies the incoming requests' [JWT](https://jwt.io/) token against the B2C Authority URL. This is accomplished via an inbound policy that intercepts each call:
 
 ```xml
 <validate-jwt header-name="Authorization" failed-validation-httpcode="401" failed-validation-error-message="Unauthorized. Access token is missing or invalid."> 
@@ -81,16 +81,99 @@ There are many benefits to use an API manager. In the case the RideShare solutio
     </audiences>
 </validate-jwt>
 ```
-2. **Documentation**: the API manager provides develpers writing applications against RideShare APIs with a complete development portal for documentation and testing
+
+**Please note** that Relecloud considered using Azure Functions [Filters](https://github.com/Azure/azure-webjobs-sdk/tree/dev/src/Microsoft.Azure.WebJobs.Host/Filters) to intercept HTTP calls and validate the JWT token in code instead of relying on an APIM layer. This has the advantage of applying security validation regardless of whether an APIM is used or not.  
+
+Here is the `Attribute` that was created:
+
+```csharp
+public class B2cValidationAttribute : FunctionInvocationFilterAttribute
+{
+    public override Task OnExecutingAsync(FunctionExecutingContext executingContext, CancellationToken cancellationToken)
+    {
+        var httpRequest = executingContext.Arguments.First().Value as HttpRequest;
+        if (httpRequest == null)
+            throw new ValidationException("Http Request is not the first argument!");
+
+        var validationService = ServiceFactory.GetTokenValidationService();
+        var user = validationService.AuthenticateRequest(httpRequest).Result;
+
+        if (user == null && validationService.AuthEnabled)
+        {
+            throw new ValidationException("Unauthorized!");
+        }
+
+        return base.OnExecutingAsync(executingContext, cancellationToken);
+    }
+}
+```
+
+It can then be attached to a specific function like this:
+
+```csharp
+[B2cValidation]
+[FunctionName("GetTrips")]
+public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Function, "get", Route = "trips")] HttpRequest req,
+    ILogger log)
+{
+...
+}
+``` 
+
+It is very elegant and it actually does work! But unfortunately, it seems that it can only throw an exception. Relecloud was not  able to find a way to abort the HTTP request and throw a 401 status code. If an exception is thrown in the filter pipeline, the caller gets a 500 Internal Service Error which is hardly descriptive of the problem.
+
+Relecloud received an input from a security expert who advised that the `JWT Validation` be added to the code instead of APIM. This way the HTTP endpoints will be protected regardless of whether APIM is used or not. The reference implementation includes a utility method that can be used to check the validation:
+
+```csharp
+public static async Task ValidateToken(HttpRequest request)
+{
+    var validationService = ServiceFactory.GetTokenValidationService();
+    if (validationService.AuthEnabled)
+    {
+        var user = await validationService.AuthenticateRequest(request);
+        if (user == null)
+            throw new Exception(Constants.SECURITY_VALITION_ERROR);
+    }
+}
+```
+
+This method is used in each API Function to validate tokens. The function then examines the exception to determine whether to send 401 (security check) or 400 (bad request):
+
+```csharp
+[FunctionName("GetDrivers")]
+public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get", 
+        Route = "drivers")] HttpRequest req, 
+    ILogger log)
+{
+    log.LogInformation("GetDrivers triggered....");
+
+    try
+    {
+        await Utilities.ValidateToken(req);
+        var persistenceService = ServiceFactory.GetPersistenceService();
+        return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers());
+    }
+    catch (Exception e)
+    {
+        var error = $"GetDrivers failed: {e.Message}";
+        log.LogError(error);
+        if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+            return new StatusCodeResult(401);
+        else
+            return new BadRequestObjectResult(error);
+    }
+}
+```
+
+**Please note** that the token validation is enforced only if the `AuthEnabled` setting is set to true. 
+
+2. **Documentation**: the API manager provides developers writing applications against RideShare APIs with a complete development portal for documentation and testing
 
 3. **Usage Stats**: the API manager provides usage stats on all API calls (and report failures) which makes it really convenient to assess the API performance
 
 4. **Rate Limiting**: the API manager can be configured to rate limit APIs based on IP origin, access, etc. This can be useful to prevent DOD attacks or provide different tiers of access based on users. 
 
 **Please note** that, in the case of Azure Functions, while the APIs are front-ended with an API manager (and hence shielded, protected and rate limited), the APIs are still publicly available!!! This means that a DOD attack or other attacks can still happen against the bare APIs if someone discovers them in the wide.    
-
-**Please note** that Relecloud considered using Azure Functions Filters......
-
 
 ## RideShare APIs
 
@@ -207,15 +290,6 @@ public async Task TripCreated(TripItem trip, int activeTrips)
 }
 ```
 
-TBA - Khaled
-Why was this selected? What does it do for the solution, and in particular Relecloud's requirements?
-
-TBA - Khaled
-How could this be expanded in the future beyond the scope of the sample solution?
-
-TBA - Khaled
-What are some potential challenges?
-
 ## Durable Orchestrators
 
 Durable Orchestrators are the heart of the solution. They are made up of 3 orchestrators:
@@ -232,7 +306,7 @@ Each orchestrator has 3 sections:
 - Orchestrator Function - used to provide the orchestrator main body of execution and state management.
 - Orchestrator Activity Functions - one or more activity functions that the orchestrator calls upon to run the different activities that make up the execution.
 
-To make functions easily identifiable, the reference implementation follows a naming convention where the Trigger Functions start with a `T_` i.e. `T_StartTripManager`, the Orchestrator Functions start with an `O_` i.e. `O_ManageTrip` and the Activity Functions start with an `A_` and a 2-digit inditifier i.e. `A_TM_AssignTripDriver`. The `_TM_` denotes Trip Manager, for example.
+To make functions easily identifiable, the reference implementation follows a naming convention where the Trigger Functions start with a `T_` i.e. `T_StartTripManager`, the Orchestrator Functions start with an `O_` i.e. `O_ManageTrip` and the Activity Functions start with an `A_` and a 2-digit identifier i.e. `A_TM_AssignTripDriver`. The `_TM_` denotes Trip Manager, for example.
 
 Orchestrator instances require application-level unique instance IDs. In the reference implementation, the Trip code is used as an instance ID for the Trip Manager. The Trip Monitor uses the trip code and appends `-M` to make it unique while the Trip Demo uses the trip code and appends `-D` to make it unique.
 
@@ -262,24 +336,13 @@ Please note the following:
 **Please note** that, in the the reference implementation:
 
 - The trip is considered `complete` if the trip's driver location matches the trip's destination location. While this is not realistic, it does provide a method to determine when the trip is complete. In reality though, there has to be a more reliable way of determining completion.
-- The orchestrators currently use the persistence layer (described above) instead of calling the APIs to retrieve and persist trips. There is a setting in the `ISettingService` that controls this behavior i.e. `IsPersistDirectly`. More about this in the source code section.
+- The orchestrators currently use the persistence layer (described above) instead of calling the APIs to retrieve and persist trips. There is a setting in the `ISettingService` that controls this behavior i.e. `IsPersistDirectly`. More about this in the [source code](#source-code-structure) section.
 
-TBA - Khaled
-What makes Durable Functions different than standard ones? What do they solve for Relecloud? Remember, they said this was one of the things that set Azure's FaaS offering apart from the competition.
-
-TBA - Khaled
-Explain how Durable Functions are being used in the solution for orchestration. How could what is shown in the sample solution be expanded on? What are some other possible scenarios (briefly touch on fan out/fan in, etc.)
+The Azure Durable Functions are quite powerful as they provide a way to instantiate thousands of managed stateful instances in a serverless environment. This capability exists in other Azure products such as [Service Fabric](https://azure.microsoft.com/en-us/services/service-fabric/)'s stateful actors. The difference is that the Azure Durable Functions require a lot less effort to maintain and code.
 
 ## Event Grid
 
 The durable orchestrators externalize the trip at the following events:
-
-- Drivers Notified
-- Driver Picked
-- Trip Starting
-- Trip Running i.e. an event every x seconds
-- Trip Completed
-- Trip Aborted
 
 ```csharp
     // Event Grid Event Subjects
@@ -298,7 +361,7 @@ The trips are externalized to an [Event Grid Topic](https://docs.microsoft.com/e
 - Events can be delivered to multiple listeners that can process the event data.
 - Events have data and meta data such as subject that can be used to determine processing. For example, the `PowerBI Trip Processor filters out events based on subject.
 
-As shown in the macro architecture section, the solution impelements several listeners for the trip:
+As shown in the macro architecture section, the solution implements several listeners for the trip:
 
 ![Event Grid Listeners](media/event-grid-listeners.png)
 
@@ -401,7 +464,7 @@ Once in SQL, the data can be used to construct a PowerBI report to provide diffe
 
 TBA - show a sample PowerBI screen shots
 
-In addition, the handler can also send trip information to a PowerBI streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product lauches.     
+In addition, the handler can also send trip information to a PowerBI streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product lauches and is outside the scope of this reference implementation.    
 
 #### Archiver Handler
 
@@ -411,65 +474,11 @@ TBA
 
 Relecloud decided to use Cosmos....
 
-**Please note** that the Cosmos collection used in the reference implementation uses fixed data size and the minimum 400 RUs without a partition key. Obviously this needs to be addressed in a real solution. 
+**Please note** that the Cosmos `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. Obviously this needs to be better addressed in a real solution. 
 
-In addition Azure SQL Database is used to persist trip summaries so they can be reportyed on, in PowerBI, for example. 
+In addition Azure SQL Database is used to persist trip summaries so they can be reported on, in PowerBI, for example. 
 
-To this end, the solution defines a `TripFact` table to store the trip flat summaries:
-
-```sql
-    USE [RideShare]
-    GO
-
-    SET ANSI_NULLS ON
-    GO
-
-    SET QUOTED_IDENTIFIER ON
-    GO
-
-    CREATE TABLE[dbo].TripFact (
-        [Id][int] IDENTITY(1, 1) NOT NULL,
-        [StartDate][datetime] NOT NULL,
-        [EndDate][datetime] NULL,
-        [AcceptDate][datetime] NULL,
-        [TripCode] [nvarchar] (20) NOT NULL,
-        [PassengerCode] [nvarchar] (20) NULL,
-        [PassengerName] [nvarchar] (100) NULL,
-        [PassengerEmail] [nvarchar] (100) NULL,
-        [AvailableDrivers] [int] NULL,
-        [DriverCode] [nvarchar] (20) NULL,
-        [DriverName] [nvarchar] (100) NULL,
-        [DriverLatitude] [float] NULL,
-        [DriverLongitude] [float] NULL,
-        [DriverCarMake] [nvarchar] (100) NULL,
-        [DriverCarModel] [nvarchar] (100) NULL,
-        [DriverCarYear] [nvarchar] (4) NULL,
-        [DriverCarColor] [nvarchar] (20) NULL,
-        [DriverCarLicensePlate] [nvarchar] (20) NULL,
-        [SourceLatitude] [float] NULL,
-        [SourceLongitude] [float] NULL,
-        [DestinationLatitude] [float] NULL,
-        [DestinationLongitude] [float] NULL,
-        [Duration] [float] NULL,
-        [MonitorIterations] [int] NULL,
-        [Status] [nvarchar] (20) NULL,
-        [Error] [nvarchar] (200) NULL,
-        [Mode] [nvarchar] (20) NULL
-        CONSTRAINT[PK_dbo.TripFact] PRIMARY KEY CLUSTERED
-    (
-        [Id] ASC
-    )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
-    )
-
-    GO
-
-    CREATE INDEX IX_TRIP_START_DATE ON dbo.TripFact(StartDate);
-    CREATE INDEX IX_TRIP_CODE ON dbo.TripFact(TripCode);
-    CREATE INDEX IX_TRIP_PASSENGER_CODE ON dbo.TripFact(PassengerCode);
-    CREATE INDEX IX_TRIP_DRIVER_CODE ON dbo.TripFact(DriverCode);
-```
-
-TBA - What are some potential challenges?
+To this end, the solution defines a `TripFact` table to store the trip flat summaries. Please refer to the [setup](./setup.md) to see how you can provision it.
 
 ## Source Code Structure
 
@@ -479,14 +488,15 @@ The .NET solution conists of 7 projects:
 
 ![.NET Source](media/dotnet-source-structure.png)
 
-- The `Models` project defines all the model classes rquired by RideShare 
+- The `Models` project defines all the model classes required by RideShare 
 - The `Shared` project contains all the services which are used by the functions to provide different functionality 
 - The `Seeder` project contains some integration tests to pump trips through the solution 
 - The `Drivers` Function App project contains the `Drivers` APIs 
 - The `Trips` Function App project contains the `Trips` APIs 
 - The `Passengers` Function App project contains the `Passengers` APIs 
+- The `Orchestrators` Function App project contains the `Orchestrators` 
 
-Some notes about the source code:
+The following are some notes about the source code:
 
 - The concept of `ServiceFactory` is used to create static singleton instances:
 
@@ -528,7 +538,7 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
     _loggerService.Log("Active trips", activeTrips);
 ```
 
-- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementaion is complete and used in the APIs while the SQL implemention is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist to SQL. 
+- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist to SQL. 
 - The `CosmosPersistenceService` assigns Cosmos ids manually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided. 
 
 ### Node

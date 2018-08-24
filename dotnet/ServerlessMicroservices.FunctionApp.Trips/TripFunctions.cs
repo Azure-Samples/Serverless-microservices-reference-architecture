@@ -27,6 +27,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveTrips());
             }
@@ -34,7 +35,10 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 var error = $"GetTrips failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -46,6 +50,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveActiveTrips());
             }
@@ -53,7 +58,10 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 var error = $"GetActiveTrips failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -66,6 +74,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveTrip(code));
             }
@@ -73,7 +82,10 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 var error = $"GetTrip failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -85,6 +97,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                await Utilities.ValidateToken(req);
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 TripItem trip = JsonConvert.DeserializeObject<TripItem>(requestBody);
 
@@ -100,7 +113,10 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 var error = $"CreateTrip failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -114,6 +130,8 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                await Utilities.ValidateToken(req);
+
                 // Send over to the trip manager 
                 var baseUrl = ServiceFactory.GetSettingService().GetStartTripManagerOrchestratorBaseUrl();
                 var key = ServiceFactory.GetSettingService().GetStartTripManagerOrchestratorApiKey();
@@ -127,7 +145,10 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 var error = $"AssignTripDriver failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -140,6 +161,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                //NOTE: No need for security check as this is used in testing only
                 var requestBody = new StreamReader(req.Body).ReadToEnd();
                 byte[] byteArray = Encoding.UTF8.GetBytes(requestBody);
                 await outBlob.WriteAsync(byteArray, 0, byteArray.Length);
@@ -162,6 +184,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
             try
             {
+                //NOTE: No need for security check as this is used in testing only
                 StreamReader reader = new StreamReader(inBlob);
                 return (ActionResult)new OkObjectResult(JsonConvert.DeserializeObject<dynamic>(reader.ReadToEnd()));
             }

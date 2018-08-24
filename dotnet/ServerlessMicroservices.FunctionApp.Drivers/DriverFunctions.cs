@@ -5,6 +5,7 @@ using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
 using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
 using System.IO;
@@ -23,6 +24,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers());
             }
@@ -30,7 +32,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"GetDrivers failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -45,6 +50,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers(latitude, longitude, miles));
             }
@@ -52,7 +58,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"GetDriversWithinLocation failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -64,6 +73,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveActiveDrivers());
             }
@@ -71,7 +81,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"GetActiveDrivers failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -84,6 +97,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDriver(code));
             }
@@ -91,7 +105,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"GetDriver failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -103,6 +120,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverItem driver = JsonConvert.DeserializeObject<DriverItem>(requestBody);
                 var persistenceService = ServiceFactory.GetPersistenceService();
@@ -112,7 +130,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"CreateDriver failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -124,6 +145,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverItem driver = JsonConvert.DeserializeObject<DriverItem>(requestBody);
                 var persistenceService = ServiceFactory.GetPersistenceService();
@@ -133,7 +155,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"UpdateDriver failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -145,6 +170,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 string requestBody = new StreamReader(req.Body).ReadToEnd();
                 DriverLocationItem driverLocation = JsonConvert.DeserializeObject<DriverLocationItem>(requestBody);
                 var persistenceService = ServiceFactory.GetPersistenceService();
@@ -154,7 +180,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"UpdateDriverLocation failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -167,6 +196,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDriverLocations(code));
             }
@@ -174,7 +204,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"GetDriverLocations failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
 
@@ -187,6 +220,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
 
             try
             {
+                await Utilities.ValidateToken(req);
                 var persistenceService = ServiceFactory.GetPersistenceService();
                 await persistenceService.DeleteDriver(code);
                 return (ActionResult)new OkObjectResult("Ok");
@@ -195,7 +229,10 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             {
                 var error = $"DeleteDriver failed: {e.Message}";
                 log.LogError(error);
-                return new BadRequestObjectResult(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
             }
         }
     }

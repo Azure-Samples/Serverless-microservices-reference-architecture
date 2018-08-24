@@ -1,6 +1,8 @@
 # Serverless Microservices reference architecture
 
-Brief introduction
+TBA - Brief introduction
+
+To setup the solution, you need to provision resources and then 
 
 ## Step 1: Create the Azure function apps
 
@@ -40,10 +42,60 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 1.  Repeat the steps above to create the **Passengers** function app.
 
-1.  Repeat the steps above to create the **ActiveDrivers** function app.
-
-1.  Repeat the steps above to create the **ActiveTrips** function app.
-
 At this point, your Resource Group should have a list of resources similar to the following:
 
 ![List of resources in the Resource Group after creating function apps](media/resource-group-function-apps.png 'Resource Group resource list')
+
+
+```sql
+    USE [RideShare]
+    GO
+
+    SET ANSI_NULLS ON
+    GO
+
+    SET QUOTED_IDENTIFIER ON
+    GO
+
+    CREATE TABLE[dbo].TripFact (
+        [Id][int] IDENTITY(1, 1) NOT NULL,
+        [StartDate][datetime] NOT NULL,
+        [EndDate][datetime] NULL,
+        [AcceptDate][datetime] NULL,
+        [TripCode] [nvarchar] (20) NOT NULL,
+        [PassengerCode] [nvarchar] (20) NULL,
+        [PassengerName] [nvarchar] (100) NULL,
+        [PassengerEmail] [nvarchar] (100) NULL,
+        [AvailableDrivers] [int] NULL,
+        [DriverCode] [nvarchar] (20) NULL,
+        [DriverName] [nvarchar] (100) NULL,
+        [DriverLatitude] [float] NULL,
+        [DriverLongitude] [float] NULL,
+        [DriverCarMake] [nvarchar] (100) NULL,
+        [DriverCarModel] [nvarchar] (100) NULL,
+        [DriverCarYear] [nvarchar] (4) NULL,
+        [DriverCarColor] [nvarchar] (20) NULL,
+        [DriverCarLicensePlate] [nvarchar] (20) NULL,
+        [SourceLatitude] [float] NULL,
+        [SourceLongitude] [float] NULL,
+        [DestinationLatitude] [float] NULL,
+        [DestinationLongitude] [float] NULL,
+        [Duration] [float] NULL,
+        [MonitorIterations] [int] NULL,
+        [Status] [nvarchar] (20) NULL,
+        [Error] [nvarchar] (200) NULL,
+        [Mode] [nvarchar] (20) NULL
+        CONSTRAINT[PK_dbo.TripFact] PRIMARY KEY CLUSTERED
+    (
+        [Id] ASC
+    )WITH(PAD_INDEX = OFF, STATISTICS_NORECOMPUTE = OFF, IGNORE_DUP_KEY = OFF, ALLOW_ROW_LOCKS = ON, ALLOW_PAGE_LOCKS = ON)
+    )
+
+    GO
+
+    CREATE INDEX IX_TRIP_START_DATE ON dbo.TripFact(StartDate);
+    CREATE INDEX IX_TRIP_CODE ON dbo.TripFact(TripCode);
+    CREATE INDEX IX_TRIP_PASSENGER_CODE ON dbo.TripFact(PassengerCode);
+    CREATE INDEX IX_TRIP_DRIVER_CODE ON dbo.TripFact(DriverCode);
+```
+
