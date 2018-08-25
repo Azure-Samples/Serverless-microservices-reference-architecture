@@ -128,7 +128,7 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 
 It is very elegant and it actually does work! But unfortunately, it seems that it can only throw exceptions. Relecloud was not  able to find a way to abort the HTTP request and throw a 401 status code. If an exception is thrown in the filter pipeline, the caller gets a 500 Internal Service Error which is hardly descriptive of the problem.
 
-Relecloud received an input from a security expert who advised that the `JWT Validation` be added to the code instead of APIM. This way the HTTP endpoints will be protected regardless of whether APIM is used or not. The reference implementation includes a utility method that can be used to check the validation:
+Eventually, Relecloud received an input from a security expert who advised that the `JWT Validation` be added to the code instead of APIM for the verh same reason above: this way the HTTP endpoints will be protected regardless of whether APIM is used or not. To support this, the reference implementation includes a utility method that can be used to check the validation:
 
 ```csharp
 public static async Task ValidateToken(HttpRequest request)
@@ -143,7 +143,7 @@ public static async Task ValidateToken(HttpRequest request)
 }
 ```
 
-This method is used in each API Function to validate tokens. The function then examines the exception to determine whether to send 401 (security check) or 400 (bad request):
+This method is used in each API Function to validate tokens and it throws a `known` exception. Upon exception, the function examines the exception to determine whether to send 401 (security check) or 400 (bad request) as shown here:
 
 ```csharp
 [FunctionName("GetDrivers")]
@@ -343,8 +343,21 @@ The following describes the process that newly created trips go through:
 
 - The trip is considered `complete` if the trip's driver location matches the trip's destination location. While this is not realistic, it does provide a method to determine when the trip is complete. In reality though, there has to be a more reliable way of determining completion.
 - The orchestrators currently use the persistence layer (described above) instead of calling the APIs to retrieve and persist trips. There is a setting in the `ISettingService` that controls this behavior i.e. `IsPersistDirectly`. More about this in the [source code](#source-code-structure) section.
+- The route locations that the `Demo` uses to step through the trip's source and destination locations is not really. It is basically the random number of locations made up from the trip's source location and destination location. In real scenarios, [Bing Route API](https://msdn.microsoft.com/en-us/library/ff701717.aspx?f=255&MSPPError=-2147217396) can be used to determine the actual route between the source and destination.      
 
-The Azure Durable Functions are quite powerful as they provide a way to instantiate thousands of managed stateful instances in a serverless environment. This capability exists in other Azure products such as [Service Fabric](https://azure.microsoft.com/en-us/services/service-fabric/)'s stateful actors. The difference is that the Azure Durable Functions require a lot less effort to maintain and code.
+The Azure Durable Functions are quite powerful as they provide a way to instantiate thousands of managed stateful instances in a serverless environment. This capability exists in other Azure products such as [Service Fabric](https://azure.microsoft.com/en-us/services/service-fabric/)'s stateful actors. The difference is that the Azure Durable Functions require a lot less effort to setup, maintain and code.
+
+Although Azure Durable Functions can [query and enumerate all instances](https://docs.microsoft.com/en-us/azure/azure-functions/durable-functions-instance-management) of a specific orchestrator:
+
+```csharp
+IList<DurableOrchestrationStatus> instances = await context.GetStatusAsync(); // You can pass CancellationToken as a parameter.
+foreach (var instance in instances)
+{
+    log.Info(JsonConvert.SerializeObject(instance));
+};
+```
+
+it is still probably a good idea to store the instance ids and their status in a table storage for example in case a solution requires special querying capability against the instances.
 
 ## Event Grid
 
@@ -379,7 +392,7 @@ In the reference implementation, the logic app is triggered by the Event Grid to
 
 ![Logic App Listener](media/logic-app-listener.png)
 
-**Please note** that the [Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) Event Grid trigger seems to only expose the event's meta data ...not its data. 
+**Please note** that the [Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) Event Grid trigger seems to only expose the event's meta data ...not its data.  
 
 #### SignalR Handler
 
@@ -416,7 +429,7 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 }
 ```
 
-**Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles the Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
+**Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
 
 TBA - Details 
 
@@ -462,7 +475,7 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
     }
 }
 ```
-The handler only cares about the `completed` and `aborted` trip events. It then calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for details on the table structure. 
+The handler only cares about the `completed` and `aborted` trip events. It then calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for more details on the SQL Database. 
 
 Once in SQL, the data can be used to construct a PowerBI report to provide different performance indicators:
 - Trips per month 
@@ -473,7 +486,7 @@ Once in SQL, the data can be used to construct a PowerBI report to provide diffe
 
 TBA - show a sample PowerBI screen shots
 
-In addition, the handler sends trip information to the PowerBI Service which in turn sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product lauches but it is outside the scope of this reference implementation.    
+In addition, the handler sends trip information to the PowerBI Service which in turn sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.    
 
 #### Archiver Handler
 
@@ -481,13 +494,11 @@ TBA
 
 ## Data storage
 
-Relecloud decided to use Cosmos....
+Relecloud decided to use [Cosmos]() as the main data storage for the solution emtities. With globally distributed capability, Comos can meet the scaling requirement of RideShare. 
 
 **Please note** that the Cosmos `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. Obviously this needs to be better addressed in a real solution. 
 
-In addition Azure SQL Database is used to persist trip summaries so they can be reported on, in PowerBI, for example. 
-
-To this end, the solution defines a `TripFact` table to store the trip flat summaries. Please refer to the [setup](./setup.md) to see how you can provision it.
+Relecloud also decided to use Azure SQL Database to persist trip summaries so they can be reported on in PowerBI, for example. To this end, the solution defines a `TripFact` table to store the trip flat summaries. Please refer to the [setup](./setup.md) to learn how you provision it.
 
 ## Source Code Structure
 
@@ -547,10 +558,9 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
     _loggerService.Log("Active trips", activeTrips);
 ```
 
-- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist to SQL. 
+- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL. 
 - The `CosmosPersistenceService` assigns Cosmos ids manually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided. 
 - The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicte with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true. 
-- Go throgh the TODO items
 
 ### Node
 
@@ -562,19 +572,183 @@ TBA
 
 ## Integration Testing
 
-TBA
+The .NET `ServerlessMicroservices.Seeder` project contains a multi-thread tester that can be used to submit `demo` trip requests against the `Trips` API. The test will simulate load on the deployed solution and test end-to-end. 
 
-We can describe the console tests and arguments they have
+**Please note** that the test will usually run against a dev environment where the `AuthEnabled` setting is set to false.
+
+The `Seeder` main `Program` takes 3 arguments i.e. `seeder.exe url 2 60`
+
+- Test Parameters URL to read the test data from. 
+- Optional: # of iterations. Default to 1. 
+- Optional: # of seconds to delay between each iteration. Default to 60.
+
+The Test Parameters URL is the `RetrieveTripTestParameters` endpoint defined in the Trips API Function App. It reads test parameters stored in blob storage i.e. . The blob storage is written to by the `StoreTripTestParameters` endpoint defined in the Trips API Function App. 
+
+The following is a sample POST payload the `StoreTripTestParameters` API i.e. `https://<your-trips-function-api>.azurewebsites.net/api/triptestparameters?code=<your code>`. It defines 4 trips to run simulatenously:
+
+```json
+[
+	{
+		"url": "https://<your-trips-function-app>.azurewebsites.net/api/trips?code=<your code>",
+		"passengerCode": "bsam@gmail.com",
+		"passengerFirstName": "Bill",
+		"passengerLastName": "Sam",
+		"PassengerMobile": "50551000",	
+		"PassengerEmail": "bsam@gmail.com",	
+		"sourceLatitude": 31,	
+		"sourceLongitude": 50,	
+		"destinationLatitude": 32,	
+		"destinationLongitude": 60
+	},
+	{
+		"url": "https://<your-trips-function-app>.azurewebsites.net/api/trips?code=<your code>",
+		"passengerCode": "krami@gmail.com",
+		"passengerFirstName": "Kurt",
+		"passengerLastName": "Ramo",
+		"PassengerMobile": "505551515",	
+		"PassengerEmail": "krami@gmail.com",	
+		"sourceLatitude": 28,	
+		"sourceLongitude": 40,	
+		"destinationLatitude": 33,	
+		"destinationLongitude": 51
+	},
+	{
+		"url": "https://<your-trips-function-app>.azurewebsites.net/api/trips?code=<your code>",
+		"passengerCode": "sjones@gmail.com",
+		"passengerFirstName": "Smith",
+		"passengerLastName": "Jones",
+		"PassengerMobile": "50551102",	
+		"PassengerEmail": "sjones@gmail.com",	
+		"sourceLatitude": 31,	
+		"sourceLongitude": 50,	
+		"destinationLatitude": 32,	
+		"destinationLongitude": 60
+	},
+	{
+		"url": "https://<your-trips-function-app>.azurewebsites.net/api/trips?code=<your code>",
+		"passengerCode": "rita_ghana@gmail.com",
+		"passengerFirstName": "Rita",
+		"passengerLastName": "Ghana",
+		"PassengerMobile": "505556156",	
+		"PassengerEmail": "rita_ghana@gmail.com",	
+		"sourceLatitude": 28,	
+		"sourceLongitude": 40,	
+		"destinationLatitude": 33,	
+		"destinationLongitude": 51
+	}
+]
+``` 
+
+Please note the following about the `Seeder` test:
+
+- Since the tester loads the test parameters from a URL, the test parameters can be varied independently without having to re-compile the code. 
+- Since each test paramer defines the URL to submit trip requests to, production and dev environments can be tested at the same time.
+
+One way to verify that the test ran successfully is to query the trip summaries in the `TripFact` table for the number of entries after the test ran:
+```sql
+SELECT * FROM dbo.TripFact
+```
+
+The number of entries should match the number of submitted trips. Let us say, for example, we started the test with the test parameters shown above: `Seeder.exe url 2 60`. This means that the test will run for 2 iterations submitting 4 trips in each itertaion. Therefore we expect to see 8 new entries in the `TripFact` table.    
 
 ## Monitoring
 
-TBA
+[Application Insights](https://azure.microsoft.com/en-us/services/application-insights/) and [Azure Dashboard](https://azure.microsoft.com/en-us/updates/upload-download-azure-dashboards/) are great resources to monitor a solution in production. One can pin response time, requests and failure requests from the solution Applicaion Insights resource right into the Azure Dashboard:
 
-Azure Dashboard
-App Insights Analytics
-App Insighst Live Metrics ....ASP.NET only?
-PowerBI streaming datasets
+![Server Telemetry](media/app-insights-normal.png)
+
+In addition, one can also create custom queries and pin their results to the dashboard as well. For example, the following is an analytic query that shows the distribution of custom events (sent from the code) in the last 24 hours:
+
+```sql
+customEvents
+| where timestamp > ago(24h) 
+| summarize count() by name
+| render piechart  
+```
+
+The result shows the distribution of trip different stages:
+
+![Trip Stages](media/app-insights-custom-events.png)
+
+Custom metrics are sent from the solution to the Application Insights resources to denote a metric value. In fact, if an Application Insights is attacched to a Function App, the Azure Functions framework automatically sends `Count`, `AvgDurationMs`, `MaxDurationMs`, `MinDurationMs`, `Failures`, `Successes` and `SuccessRate` custom metrics for each function i.e. trigger, orchestrator or activity. 
+
+The following is an anaytic query that shows in a pie chart the occurrences of the following two custom metrics in the last 24 hours: `Active trips` and `O_MonitorTrip`:
+
+```sql
+customMetrics
+| where timestamp > ago(24h) 
+| where name == "Active trips" or name contains "O_MonitorTrip"   
+| summarize count() by name
+| render piechart 
+```
+The result shows the distribution of the above 2 custom metrics:
+
+![Custom Metrics](media/app-insights-custom-metrics.png)
 
 ## Deployment
 
+Function App deployments can happen from [Visual Studio]() IDE, [Visual Studio Team Services](https://visualstudio.microsoft.com/vso/) by defining a build pipeline that can be triggered upon push to the code repository, for example, or a build script such as [Cake](https://cakebuild.net/) or [Psake](https://github.com/psake/psake).
+
+Relecloud decided to use [Visual Studio team Services](https://visualstudio.microsoft.com/vso/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
+
+### VSTS
+
 TBA
+
+### Cake
+
+The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
+
+1. Create a service principal that can be used to authenticate the script to use your Azure subscription. This can be easily accomplished using the following PowerShell script:
+
+```powershell
+# Login
+Login-AzureRmAccount
+
+# Set the Subscriptions
+Get-AzureRmSubscription  
+
+# Set the Subscription to your preferred subscription
+Select-AzureRmSubscription -SubscriptionId "<your_subs_id>"
+
+# Create an application in Azure AD
+$pwd = convertto-securestring "<your_pwd>" -asplaintext -force
+$app = New-AzureRmADApplication  -DisplayName "RideSharePublisher"  -HomePage "http://rideshare" -IdentifierUris "http://rideshare" -Password $pwd
+
+# Create a service principal
+New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
+
+# Assign role
+New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $app.ApplicationId.Guid
+```
+2. Place two text files in the `dotnet` directory that can tell the Cake script about the service principal that you just created. The two text files are: `dev_authfile.txt` and `prod_authfile.txt`. They contain the following:
+
+```
+subscription=<your_subs_id>  
+client=<your_client_id_produced_by_ps_above>  
+key=<your_pwd_you_set_up_in_ps_above>  
+tenant=<your_azure_tenant_id>
+managementURI=https\://management.core.windows.net/  
+baseURL=https\://management.azure.com/  
+authURL=https\://login.windows.net/  
+graphURL=https\://graph.windows.net/ 
+```
+If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
+
+3. Make sure that the `settings` directory CSV files are updated as shown in [setup](./setup.md) to reflect your own resource app settings and connection strings.
+
+Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [setup](./setup.md). If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
+
+From a PowerShell command, use the following commands for the `Dev` environment:
+
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Drivers','--App=ServerlessMicroservices.FunctionApp.Drivers','--Env=Dev'`
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Dev'`
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Dev'`
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Dev'`
+
+From a PowerShell command, use the following commands for the `Prod` environment:
+
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Drivers','--App=ServerlessMicroservices.FunctionApp.Drivers','--Env=Prod'`
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Prod'`
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Prod'`
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Prod'`

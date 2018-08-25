@@ -112,7 +112,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Go through the Driver APIs
             }
 
             foreach (var driver in availableDrivers)
@@ -139,7 +139,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Go through the Trips APIs
             }
 
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_DRIVER_PICKED);
@@ -199,7 +199,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO: 
+                //TODO: Go through the Trips APIs
             }
 
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_ABORTED);

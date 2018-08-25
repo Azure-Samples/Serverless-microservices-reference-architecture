@@ -23,13 +23,19 @@ namespace ServerlessMicroservices.Seeder
             else
             {
                 _tripTestParametersUrl = args[0];
-                int iterations = args[1] != null ? Int32.Parse(args[1]) : 1;
-                int seconds = args[2] != null ? Int32.Parse(args[2]) : 60;
+                int iterations = args.Length > 1 && args[1] != null ? Int32.Parse(args[1]) : 1;
+                int seconds = args.Length > 2 && args[2] != null ? Int32.Parse(args[2]) : 60;
 
                 for (int i = 0; i < iterations; i++)
                 {
+                    if (i > 0)
+                    {
+                        Console.WriteLine($"Delaying for {seconds} seconds before starting iteration {i}....");
+                        await Task.Delay(seconds * 1000);
+                    }
+
+                    Console.WriteLine($"Iteration {i} starting....");
                     await TestTrips();
-                    await Task.Delay(seconds * 1000);
                     Console.WriteLine($"Iteration {i} completed");
                 }
 
@@ -91,11 +97,11 @@ namespace ServerlessMicroservices.Seeder
             try
             {
                 // Wait a little to avoid thread contention
-                Console.WriteLine($"Trip - Simulate a little delay....");
-                await Task.Delay(Utilities.GenerateRandomInteger(5000));
+                Console.WriteLine($"TestTripRunner - Simulate a little delay....");
+                await Task.Delay(Utilities.GenerateRandomInteger(10000));
 
                 var startTime = DateTime.Now;
-                Console.WriteLine($"Trip - Passenger Code: {passengerCode} ....");
+                Console.WriteLine($"TestTripRunner - Passenger Code: {passengerCode} ....");
                 var response = await Utilities.Post<dynamic, dynamic>(null, new
                 {
                     passenger = new
@@ -121,10 +127,11 @@ namespace ServerlessMicroservices.Seeder
 
                 var endTime = DateTime.Now;
                 result.Duration = (endTime - startTime).TotalSeconds;
+                Console.WriteLine($"TestTripRunner - submitted in {result.Duration} seconds.");
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"TestTripRunner failed: {ex.Message}");
+                Console.WriteLine($"TestTripRunner - failed: {ex.Message}");
                 result.Error = ex.Message;
             }
 

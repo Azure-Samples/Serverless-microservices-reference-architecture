@@ -103,7 +103,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Gor through the Trip APIs
             }
 
             return trip;
@@ -174,7 +174,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Gor through the Trip APIs
             }
 
             info.State.CurrentRouteIndex++;

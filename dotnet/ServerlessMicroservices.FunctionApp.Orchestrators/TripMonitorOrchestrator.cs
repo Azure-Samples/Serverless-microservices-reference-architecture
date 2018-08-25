@@ -99,7 +99,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Go through the Trips APIs
             }
 
             return trip;
@@ -137,7 +137,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Go through the Trips APIs
             }
 
             return trip;
@@ -155,7 +155,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Go through the Trips APIs
             }
         }
 
@@ -189,7 +189,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
             else
             {
-                //TODO:
+                //TODO: Go through the Trips APIs
             }
 
             await Externalize(trip, Constants.EVG_SUBJECT_TRIP_ABORTED);

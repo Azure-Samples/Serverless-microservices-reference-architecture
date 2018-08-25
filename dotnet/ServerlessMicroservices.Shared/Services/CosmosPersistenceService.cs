@@ -124,7 +124,7 @@ namespace ServerlessMicroservices.Shared.Services
 
         public async Task<List<DriverItem>> RetrieveDrivers(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS)
         {
-            //TODO: For now, call the main `RetrieveDrivers` method
+            //TODO: Call the main `RetrieveDrivers` method
             return await RetrieveActiveDrivers(max);
         }
 
@@ -446,7 +446,7 @@ namespace ServerlessMicroservices.Shared.Services
 
         public async Task<List<TripItem>> RetrieveTrips(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS)
         {
-            //TODO: For now, call the main `RetrieveTrips` method
+            //TODO: call the main `RetrieveTrips` method
             return await RetrieveTrips(max);
         }
 
