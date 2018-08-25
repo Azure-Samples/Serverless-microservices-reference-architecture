@@ -128,7 +128,7 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 
 It is very elegant and it actually does work! But unfortunately, it seems that it can only throw exceptions. Relecloud was not  able to find a way to abort the HTTP request and throw a 401 status code. If an exception is thrown in the filter pipeline, the caller gets a 500 Internal Service Error which is hardly descriptive of the problem.
 
-Eventually, Relecloud received an input from a security expert who advised that the `JWT Validation` be added to the code instead of APIM for the verh same reason above: this way the HTTP endpoints will be protected regardless of whether APIM is used or not. To support this, the reference implementation includes a utility method that can be used to check the validation:
+Eventually, Relecloud received an input from a security expert who advised that the `JWT Validation` be added to the code instead of APIM for the very same reason that the the HTTP endpoints will be protected regardless of whether APIM is used or not. To support this, the reference implementation includes a utility method that can be used to check the validation:
 
 ```csharp
 public static async Task ValidateToken(HttpRequest request)
@@ -478,15 +478,18 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 The handler only cares about the `completed` and `aborted` trip events. It then calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for more details on the SQL Database. 
 
 Once in SQL, the data can be used to construct a PowerBI report to provide different performance indicators:
-- Trips per month 
-- Average trip duration
-- Top drivers
-- Average trip available drivers
+- Total Trips 
+- Average Trip Duration
+- Top Drivers
+- Top Pasengers
+- Average Available Drivers
 - Etc
 
-TBA - show a sample PowerBI screen shots
+This is a sample PowerBI report against test trip data:
 
-In addition, the handler sends trip information to the PowerBI Service which in turn sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.    
+![Sample PowerBI Trip Report](media/sample-trip-powerbi-report.png)
+
+In addition, the handler sends trip information to the PowerBI Service which, if configured, sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.    
 
 #### Archiver Handler
 
@@ -649,7 +652,60 @@ One way to verify that the test ran successfully is to query the trip summaries 
 SELECT * FROM dbo.TripFact
 ```
 
-The number of entries should match the number of submitted trips. Let us say, for example, we started the test with the test parameters shown above: `Seeder.exe url 2 60`. This means that the test will run for 2 iterations submitting 4 trips in each itertaion. Therefore we expect to see 8 new entries in the `TripFact` table.    
+The number of entries should match the number of submitted trips. Let us say, for example, we started the test with the test parameters shown above: `Seeder.exe url 2 60`. This means that the test will run for 2 iterations submitting 4 trips in each itertaion. Therefore we expect to see 8 new entries in the `TripFact` table.   
+
+The following is a sample tester output for 2 iterations:
+
+```
+Iteration 0 starting....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Passenger Code: sjones@gmail.com ....
+TestTripRunner - Passenger Code: rita_ghana@gmail.com ....
+TestTripRunner - Passenger Code: bsam@gmail.com ....
+TestTripRunner - Passenger Code: krami@gmail.com ....
+TestTripRunner - submitted in 15.02846 seconds.
+TestTripRunner - submitted in 18.5976287 seconds.
+TestTripRunner - submitted in 11.6632886 seconds.
+TestTripRunner - submitted in 17.1535626 seconds.
+Thread 0 => Duration: 17.1535626 - Error:
+Thread 1 => Duration: 11.6632886 - Error:
+Thread 2 => Duration: 15.02846 - Error:
+Thread 3 => Duration: 18.5976287 - Error:
+All tasks are finished.
+Iteration 0 completed
+Delaying for 60 seconds before starting iteration 1....
+Iteration 1 starting....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+TestTripRunner - Simulate a little delay....
+TestTripRunner - Passenger Code: krami@gmail.com ....
+TestTripRunner - Passenger Code: bsam@gmail.com ....
+TestTripRunner - submitted in 1.3980593 seconds.
+TestTripRunner - submitted in 1.2487726 seconds.
+TestTripRunner - Passenger Code: rita_ghana@gmail.com ....
+TestTripRunner - submitted in 1.3474113 seconds.
+TestTripRunner - Passenger Code: sjones@gmail.com ....
+TestTripRunner - submitted in 1.3841847 seconds.
+Thread 0 => Duration: 1.2487726 - Error:
+Thread 1 => Duration: 1.3980593 - Error:
+Thread 2 => Duration: 1.3841847 - Error:
+Thread 3 => Duration: 1.3474113 - Error:
+All tasks are finished.
+Iteration 1 completed
+Test is completed. Press any key to exit...
+```
 
 ## Monitoring
 
@@ -691,51 +747,17 @@ Function App deployments can happen from [Visual Studio]() IDE, [Visual Studio T
 
 Relecloud decided to use [Visual Studio team Services](https://visualstudio.microsoft.com/vso/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
 
-### VSTS
+### VSTS 
 
 TBA
+Function Apps
+Web App
 
-### Cake
+### Cake for C# Function Apps
 
-The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
+The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [setup](setup.md/#cake) page to know how to do this. 
 
-1. Create a service principal that can be used to authenticate the script to use your Azure subscription. This can be easily accomplished using the following PowerShell script:
-
-```powershell
-# Login
-Login-AzureRmAccount
-
-# Set the Subscriptions
-Get-AzureRmSubscription  
-
-# Set the Subscription to your preferred subscription
-Select-AzureRmSubscription -SubscriptionId "<your_subs_id>"
-
-# Create an application in Azure AD
-$pwd = convertto-securestring "<your_pwd>" -asplaintext -force
-$app = New-AzureRmADApplication  -DisplayName "RideSharePublisher"  -HomePage "http://rideshare" -IdentifierUris "http://rideshare" -Password $pwd
-
-# Create a service principal
-New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
-
-# Assign role
-New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $app.ApplicationId.Guid
-```
-2. Place two text files in the `dotnet` directory that can tell the Cake script about the service principal that you just created. The two text files are: `dev_authfile.txt` and `prod_authfile.txt`. They contain the following:
-
-```
-subscription=<your_subs_id>  
-client=<your_client_id_produced_by_ps_above>  
-key=<your_pwd_you_set_up_in_ps_above>  
-tenant=<your_azure_tenant_id>
-managementURI=https\://management.core.windows.net/  
-baseURL=https\://management.azure.com/  
-authURL=https\://login.windows.net/  
-graphURL=https\://graph.windows.net/ 
-```
-If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
-
-3. Make sure that the `settings` directory CSV files are updated as shown in [setup](./setup.md) to reflect your own resource app settings and connection strings.
+Make sure that the `settings` directory CSV files are updated as shown in [setup](./setup.md) to reflect your own resource app settings and connection strings.
 
 Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [setup](./setup.md). If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
 

@@ -2,9 +2,42 @@
 
 TBA - Brief introduction
 
-To setup the solution, you need to provision resources and then 
+The following is a summary of all Azure resources required to deploy the solution:
 
-## Step 1: Create the Azure function apps
+| Prod Resource Name | Dev Resource Name | Type | Provision Mode |
+|---|---|---|:---:|
+| serverless-microservices | serverless-microservices-dev | Resource Group | Auto | 
+| rideshare | rideshare | Cosmos DB Account | Auto |
+| Main | Main | Cosmos DB Collection | Auto |
+| Archive | Archive | Cosmos DB Collection | Auto |
+| RideSharefunctionstore | rideSharefunctiondev | Storage Account | Auto |
+| RideShareFunctionAppPlan | RideShareFunctionAppPlan | Consumtpion Plan | Auto |
+| RideShareDriversFunctionApp | RideShareDriversFunctionAppDev | Function App | Auto |
+| RideShareTripsFunctionApp | RideShareTripsFunctionAppDev | Function App | Auto |
+| RideSharePassengersFunctionApp | RideSharePassengersFunctionAppDev | Function App | Auto |
+| RideShareOrchestratorsFunctionApp | RideShareOrchestratorsFunctionAppDev | Function App | Auto |
+| RideShareArchiverFunctionApp | RideShareArchiverFunctionAppDev | Function App | Auto |
+| RideShareAppServicePlan | RideShareAppServicePlanDev | Web App Service Plan | Auto |
+| RelecloudRideshare | RelecloudRideshareDev | Web App Service | Auto |
+| rideshare-db | rideshare-db-dev | SQL Database Server | Auto |
+| RideShare | RideShare | SQL Database | Auto |
+| TripFact | TripFact | SQL Database Table | Manual |
+| RideShareTripExternalizations | RideShareTripExternalizationsDev | Event Grid Topic | Manual |
+| rideshare | rideshare-dev | App Insights | Manual |
+| ProcessTripExternalization | ProcessTripExternalizationDev | Logic App | Manual |
+| rideshare | N/A | API Management Service | Manual |
+| rideshare | rideshare-dev | SignalR Service | Manual |
+| relecloudrideshare.onmicrosoft.com | N/A | B2C Tenant | Manual |
+
+There are 3 ways to provision the required resources:
+
+- [Manual via the Portal](#manual-via-the-portal)
+- [ARM Template](#arm-template)
+- [Cake](#cake)
+
+## Manual via the Portal
+
+### Step 1: Create the Azure function apps
 
 **--FORMAT-- Have intro under each step explaining the concepts, what they're doing, and why. Link to associated section in [Introduction](./introduction.md)**
 
@@ -46,6 +79,88 @@ At this point, your Resource Group should have a list of resources similar to th
 
 ![List of resources in the Resource Group after creating function apps](media/resource-group-function-apps.png 'Resource Group resource list')
 
+Once completed, please jump to the [setup](#setup) section to continue. 
+
+## ARM Template
+
+Once completed, please jump to the [setup](#setup) section to continue. 
+
+## Cake 
+
+The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
+
+1. Create a service principal that can be used to authenticate the script to use your Azure subscription. This can be easily accomplished using the following PowerShell script:
+
+```powershell
+# Login
+Login-AzureRmAccount
+
+# Set the Subscriptions
+Get-AzureRmSubscription  
+
+# Set the Subscription to your preferred subscription
+Select-AzureRmSubscription -SubscriptionId "<your_subs_id>"
+
+# Create an application in Azure AD
+$pwd = convertto-securestring "<your_pwd>" -asplaintext -force
+$app = New-AzureRmADApplication  -DisplayName "RideSharePublisher"  -HomePage "http://rideshare" -IdentifierUris "http://rideshare" -Password $pwd
+
+# Create a service principal
+New-AzureRmADServicePrincipal -ApplicationId $app.ApplicationId
+
+# Assign role
+New-AzureRmRoleAssignment -RoleDefinitionName Contributor -ServicePrincipalName $app.ApplicationId.Guid
+```
+2. Place two text files in the `dotnet` directory that can tell the Cake script about the service principal that you just created. The two text files are: `dev_authfile.txt` and `prod_authfile.txt`. They contain the following:
+
+```
+subscription=<your_subs_id>  
+client=<your_client_id_produced_by_ps_above>  
+key=<your_pwd_you_set_up_in_ps_above>  
+tenant=<your_azure_tenant_id>
+managementURI=https\://management.core.windows.net/  
+baseURL=https\://management.azure.com/  
+authURL=https\://login.windows.net/  
+graphURL=https\://graph.windows.net/ 
+```
+
+If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
+
+Once the above is completed, from a PowerShell command, use the following command to provision the `Dev` environment:
+`./build.ps1 -Target Provision -ScriptArgs '--Env=Dev'`
+
+From a PowerShell command, use the following command to provision the `Prod` environment:
+`./build.ps1 -Target Provision -ScriptArgs '--Env=Prod'`
+
+Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net):
+
+- [App Insights]()
+- [Event Grid]()
+- [Logic App]()
+- [API Manager]()
+- [B2C Tenant]()
+- [SignalR Service]()
+
+Once completed, please jump to the [setup](#setup) section to continue. 
+
+## Setup
+
+After you have provisioned all your resources, there are some manual steps that you need to do to complete the setup 
+
+- [Add APIM Products and APIs](#Add-APIM-Products-and-APIs)
+- [Connect Event Grid to its listeners](#connect-event-grid-to-its-listeners)
+- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app) 
+- [Run a script to create the TripFact table](#create-tripfact-table)
+
+### Add APIM Products and APIs
+
+### Connect Event Grid to its listeners
+
+### Connect Event Grid to Logic App
+
+### Create TripFact Table 
+
+Connect to the databse and run the following script to create the `TripFact` table and its indices:  
 
 ```sql
     USE [RideShare]
@@ -98,4 +213,93 @@ At this point, your Resource Group should have a list of resources similar to th
     CREATE INDEX IX_TRIP_PASSENGER_CODE ON dbo.TripFact(PassengerCode);
     CREATE INDEX IX_TRIP_DRIVER_CODE ON dbo.TripFact(DriverCode);
 ```
+
+## Update the Setting Files
+
+The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting files for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as application settings for each function app. Alternatively, the Cake deployment script auto-import these files into app settings.
+
+### Drivers Function App
+
+| KEY | DESCRIPTION |
+|---|---|
+| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| DocDbApiKey | The Cosmos DB API Key | 
+| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
+| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
+| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
+| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
+| AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
+| ApiApplicationId | The B2C Client ID | 
+| ApiScopeName | The Scope Name i.e. rideshare | 
+| EnableAuth | if set to true, the JWT token validatidaion will be enforced | 
+
+### Passengers Function App
+
+| KEY | DESCRIPTION |
+|---|---|
+| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| DocDbApiKey | The Cosmos DB API Key | 
+| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
+| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
+| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
+| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
+| AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
+| ApiApplicationId | The B2C Client ID | 
+| ApiScopeName | The Scope Name i.e. rideshare | 
+| EnableAuth | if set to true, the JWT token validatidaion will be enforced | 
+| GraphTenantId| Azure Tenant ID |
+| GraphClientId| Azure Graph client ID |
+| GraphClientSecret| Azure Graps secret |
+
+### Orchestrators Function App
+
+| KEY | DESCRIPTION |
+|---|---|
+| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| DocDbApiKey | The Cosmos DB API Key | 
+| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
+| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
+| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
+| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
+| DriversAcknowledgeMaxWaitPeriodInSeconds |The number of seconds to wait before the solution times out waiting for drivers to accept a trip i.e. 120|
+| DriversLocationRadiusInMiles |The miles radius that the solution locates available drivers within i.e. 15|
+| TripMonitorIntervalInSeconds | The number of seconds the `TripMonitor` waits in its monitoring loop i.e. 10 |
+| TripMonitorMaxIterations |The number of maximum iterations the `TripMonitor` loops before it aborts the trip i.e. 20|
+| IsPersistDirectly| If true, the orechestrators access the data storage layer directly. Default to true |
+| TripExternalizationsEventGridTopicUrl| The URL of the event grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
+| TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
+
+
+### Trips Function App
+
+| KEY | DESCRIPTION |
+|---|---|
+| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| DocDbApiKey | The Cosmos DB API Key | 
+| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
+| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
+| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
+| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
+| AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
+| ApiApplicationId | The B2C Client ID | 
+| ApiScopeName | The Scope Name i.e. rideshare | 
+| EnableAuth | if set to true, the JWT token validatidaion will be enforced | 
+| SqlConnectionString | The connection string to the Azure SQL Databse where `TripFact` is provisioned  | 
+| SqlConnectionString | The connection string to the Azure SQL Databse where `TripFact` is provisioned  | 
+| StartTripManagerOrchestratorApiKey|The Start Trip Manager Orchestrator trigger endpoint function code key |
+| StartTripManagerOrchestratorBaseUrl|The Start Trip Manager Orchestrator trigger endpoint function base url |
+| StartTripDemoOrchestratorApiKey|The Trip Start Demo Orchestrator trigger endpoint function code key |
+| StartTripDemoOrchestratorBaseUrl|The Trip Start Demo Orchestrator trigger endpoint function base url |
+| TerminateTripManagerOrchestratorApiKey|The Terminate Trip Manager Orchestrator trigger endpoint function code key |
+| TerminateTripManagerOrchestratorBaseUrl|The Trip Manager Orchestrator trigger endpoint function base url |
+| TerminateTripMonitorOrchestratorApiKey|The Terminate Trip Demo Orchestrator trigger endpoint function code key |
+| TerminateTripMonitorOrchestratorBaseUrl|The Trip Terminate Demo Orchestrator trigger endpoint function base url |
 
