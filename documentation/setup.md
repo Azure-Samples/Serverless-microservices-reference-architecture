@@ -2,6 +2,8 @@
 
 TBA - Brief introduction
 
+## Resources
+
 The following is a summary of all Azure resources required to deploy the solution:
 
 | Prod Resource Name | Dev Resource Name | Type | Provision Mode |
@@ -132,6 +134,8 @@ Once the above is completed, from a PowerShell command, use the following comman
 From a PowerShell command, use the following command to provision the `Prod` environment:
 `./build.ps1 -Target Provision -ScriptArgs '--Env=Prod'`
 
+**Please note** that provisiong a Cosmos DB Account takes a long time to be online. If you proceed with creating a database and the colections while the status is `Creating`, you will get an error that says something like `bad request` without much of an explanation. Once the DB Account becomes `Online`, you can continue to provision the rest (by re-invoking the `provision` command). The exact error is: One or more errors occurred. Long running operation failed with status 'BadRequest'.
+
 Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net):
 
 - [App Insights]()
@@ -216,7 +220,7 @@ Connect to the databse and run the following script to create the `TripFact` tab
 
 ## Update the Setting Files
 
-The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting files for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as application settings for each function app. Alternatively, the Cake deployment script auto-import these files into app settings.
+The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting file for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each function app. Alternatively, the Cake deployment script auto-imports these files into the `Application Settings`.
 
 ### Drivers Function App
 

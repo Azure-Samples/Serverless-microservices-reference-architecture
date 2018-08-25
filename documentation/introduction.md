@@ -757,9 +757,9 @@ Web App
 
 The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [setup](setup.md/#cake) page to know how to do this. 
 
-Make sure that the `settings` directory CSV files are updated as shown in [setup](./setup.md) to reflect your own resource app settings and connection strings.
+Make sure that the `settings` directory CSV files are updated as shown in [setup](./setup.md/#update-the-setting-files) to reflect your own resource app settings and connection strings.
 
-Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [setup](./setup.md). If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
+Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [setup](./setup.md/#resources). If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
 
 From a PowerShell command, use the following commands for the `Dev` environment:
 
