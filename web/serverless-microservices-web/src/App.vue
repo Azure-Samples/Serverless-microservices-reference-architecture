@@ -19,7 +19,10 @@
                   <li class="nav-item" role="presentation">
                     <router-link :to="{ name: 'drivers' }" class="nav-link">Drivers</router-link>
                   </li>
-                  <li class="nav-item" role="presentation">
+                  <li class="nav-item" role="presentation" v-if="auth.isAuthenticated()" @click="logout()">
+                    <router-link :to="{ name: 'home' }" class="nav-link">Logout</router-link>
+                  </li>
+                  <li class="nav-item" role="presentation" v-else> <!--Add this to Login  @click="login()"-->
                     <router-link :to="{ name: 'login' }" class="nav-link">Login</router-link>
                   </li>
               </ul>
@@ -46,8 +49,12 @@ export default {
     };
   },
   methods: {
-    login,
-    logout
+    login() {
+        auth.login();
+      },
+    logout() {
+        auth.logout();
+      },
   }
 };
 </script>
