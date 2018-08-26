@@ -15,7 +15,6 @@ In this document:
         - [Create the Azure SQL Database Assets](#create-the-azure-sql-database-assets)
         - [Create the Event Grid Topic](#create-the-event-grid-topic)
         - [Create the App Insights Resource](#create-the-app-insights-resource)
-        - [Create the Logic App](#create-the-logic-app)
         - [Create the API Management Service](#create-the-api-management-service)
         - [Create the SignalR Service](#create-the-signalr-service)
         - [Create the B2C Tenant](#create-the-b2c-tenant)
@@ -23,7 +22,7 @@ In this document:
     - [Cake](#cake)
 - [Setup](#setup)
     - [Add APIM Products and APIs](#add-apim-products-and-apis)
-    - [Connect Event Grid to its listeners](#connect-event-grid-to-its-listeners)
+    - [Connect Event Grid to Function Apps](#connect-event-grid-to-function-apps)
     - [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
     - [Create TripFact Table](#create-tripfact-table)
 - [Setting Files](#setting-files)
@@ -78,6 +77,8 @@ There are 3 ways to provision the required resources:
 
 ### Manual via the Portal
 
+Log in to the [Azure portal](https://portal.azure.com).
+
 #### Create the resource group
 
 #### Create the Cosmos Assets
@@ -96,35 +97,31 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 1.  Log in to the [Azure portal](https://portal.azure.com).
 
-1.  Type **Function App** into the Search box at the top of the page, then select **Function App** within the Marketplace section.
+2.  Type **Function App** into the Search box at the top of the page, then select **Function App** within the Marketplace section.
 
     ![Type Function App into the Search box](media/function-app-search-box.png 'Function App search')
 
-1.  Complete the function app creation form with the following:
+3.  Complete the function app creation form with the following:
 
-    a. **App name**: Enter a unique value for the **Drivers** function app.
-    b. **Subscription**: Select your Azure subscription.
-    c. **Resource Group**: Either select an existing Resource Group or create a new one such as "serverless-microservices".
-    d. **OS**: Select Windows.
-    e. **Hosting Plan**: Select Consumption Plan.
-    f. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    g. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
-    h. **Application Insights**: Set to Off. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
+    1. **App name**: Enter a unique value for the **Drivers** function app.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as "serverless-microservices".
+    4. **OS**: Select Windows.
+    5. **Hosting Plan**: Select Consumption Plan.
+    6. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    7. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
+    8. **Application Insights**: Set to Off. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
 
     ![Screenshot of the Function App creation form](media/new-function-app-form.png 'Create Function App form')
 
-1.  Repeat the steps above to create the **Trips** function app.
+4.  Repeat the steps above to create the **Trips** function app.
 
-    a. Enter a unique value for the App name, ensuring it has the word **Trips** within the name so you can easily identify it.
-    b. Make sure you enter the same remaining settings and select the storage account you created in the previous step.
+    1. Enter a unique value for the App name, ensuring it has the word **Trips** within the name so you can easily identify it.
+    2. Make sure you enter the same remaining settings and select the storage account you created in the previous step.
 
-1.  Repeat the steps above to create the **Orchestrators** function app.
+5.  Repeat the steps above to create the **Orchestrators** function app.
 
-1.  Repeat the steps above to create the **Passengers** function app.
-
-At this point, your Resource Group should have a list of resources similar to the following:
-
-![List of resources in the Resource Group after creating function apps](media/resource-group-function-apps.png 'Resource Group resource list')
+6.  Repeat the steps above to create the **Passengers** function app.
 
 #### Create the Web App Service Plan
 
@@ -132,17 +129,106 @@ At this point, your Resource Group should have a list of resources similar to th
 
 #### Create the Azure SQL Database Assets
 
+1.  Type **SQL** into the Search box at the top of the `All Sevices` page, then select **SQL Database  section.
+
+2.  Click the **Add** button to create a new SQL Database.
+
+3.  Complete the SQL Database creation form with the following:
+
+    1. **Name**: Enter a unique value for the **Database** i.e. `RideShare`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    4. **Source**: Select `Blank Database`.
+    5. **Server**: Select and Create a new server.
+    6. **Elatic Pool**: Select `Not Now`.
+    7. **Pricing Tier**: Will be filled in automaticlaly once you complete the server creation i.e `10 DTUs, 250 GB` 
+    8. **Coallation**: Select `SQL_Latin_1_General_CP1_CI_AS`.
+
+    ![Screenshot of the SQL Database form](media/sql-database-creation.png)
+
+4. Complete the SQL Database Server creation form with the following:
+
+    1. **Name**: Enter a unique value for the SQL Database **Server** i.e. `rideshare-db`.
+    2. **Server admin login**: Select your login.
+    3. **Password**: select your password.
+    4. **Confirm password**: Re-type your password.
+    5. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    6. **Allow Azure services to access server**: Select `Checked`.
+
+    ![Screenshot of the SQL Database Server form](media/sql-database-server-creation.png)
+
+5. Take note of the newly-created database connection string:
+
+    ![Screenshot of the SQL Database connection string](media/sql-database-creation1.png)
+
 #### Create the Event Grid Topic
+
+1.  Type **Event Grid** into the Search box at the top of the `All Sevices` page, then select **Event Grid Topic**  section.
+
+2.  Click the **Add** button to create a new Event Grid Topic.
+
+3.  Complete the event grid topic creation form with the following:
+
+    1. **Name**: Enter a unique value for the Event Grid **Topic** i.e. `RideShareExternalizations`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+
+    ![Screenshot of the Event Grid Topic form](media/event-grid-topic-creation.png)
+
+4. Take note of the newly-created topic key:
+
+    ![Screenshot of the Event Grid Topic key](media/event-grid-topic-creation1.png)
+
+5. Take note of the newly-created topic endpoint URL:
+
+    ![Screenshot of the Event Grid Topic endpoint](media/event-grid-topic-creation2.png)
 
 #### Create the App Insights Resource
 
-#### Create the Logic App 
+1.  Type **Application Insights** into the Search box at the top of the `All Sevices` page, then select **Application Insights**  section.
+
+2.  Click the **Add** button to create a new Application Insights resource.
+
+3.  Complete the application insights creation form with the following:
+
+    1. **Name**: Enter a unique value for the application Insights i.e. `rideshare`.
+    2. **Application Type**: Select `General`. This is required by Function Apps.
+    3. **Subscription**: Select your Azure subscription.
+    4. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    5. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+
+    ![Screenshot of the Application Insights form](media/application-insights-creation.png)
+
+4. Take note of the newly-created resource instrumentation key:
+
+    ![Screenshot of the Application Insights instrumentation key](media/application-insights-creation1.png)
 
 #### Create the API Management Service 
 
+1.  Type **API Management** into the Search box at the top of the `All Sevices` page, then select **API Management**  section.
+
+2.  Click the **Add** button to create a new API Management service.
+
+3.  Complete the API Management service creation form with the following:
+
+    1. **Name**: Enter a unique value for the application Insights i.e. `rideshare`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Organization name**: Type in your organization name.
+    6. **Administrator email**: Type in an admin email.
+    7. **Pricing tier**: Select `Developer (No SLA)`.
+
+    ![Screenshot of the API Management form](media/apim-creation.png)
+
 #### Create the SignalR Service 
 
+TBA 
+
 #### Create the B2C Tenant 
+
+TBA
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
@@ -191,15 +277,14 @@ graphURL=https\://graph.windows.net/
 
 If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
 
-Once the above is completed, from a PowerShell command, use the following command to provision the `Dev` environment:
-`./build.ps1 -Target Provision -ScriptArgs '--Env=Dev'`
+Once the above is completed, from a PowerShell command, use the following commands to provision the `Dev` and `Prod` environments:
 
-From a PowerShell command, use the following command to provision the `Prod` environment:
-`./build.ps1 -Target Provision -ScriptArgs '--Env=Prod'`
+- `./build.ps1 -Target Provision -ScriptArgs '--Env=Dev'`
+- `./build.ps1 -Target Provision -ScriptArgs '--Env=Prod'`
 
-**Please note** that provisiong a Cosmos DB Account takes a long time to be online. If you proceed with creating a database and the colections while the status is `Creating`, you will get an error that says something like `bad request` without much of an explanation. Once the DB Account becomes `Online`, you can continue to provision the rest (by re-invoking the `provision` command). The exact error is: One or more errors occurred. Long running operation failed with status 'BadRequest'.
+**Please note** that provisiong a Cosmos DB Account takes a long time to be online. If you proceed with creating a database and the colections while the DB account status is `Creating`, you will get an error that says something like `bad request` without much of an explanation. Once the DB Account becomes `Online`, you can continue to provision the rest (by re-invoking the `provision` command). The exact error is: One or more errors occurred. Long running operation failed with status 'BadRequest'.
 
-Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net). So please complete the following provisions manually:
+Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net). So please complete the following provisions manually as described in the manual steps above:
 
 - [Event Grid](#create-the-event-grid-topic)
 - [App Insights](#create-the-app-insights-resource)
@@ -212,22 +297,28 @@ Once completed, please jump to the [setup](#setup) section to continue.
 
 ## Setup
 
-After you have provisioned all your resources, there are some manual steps that you need to do to complete the setup 
+After you have provisioned all your resources, there are some manual steps that you need to do to complete the setup:
 
 - [Add APIM Products and APIs](#Add-APIM-Products-and-APIs)
-- [Connect Event Grid to its listeners](#connect-event-grid-to-its-listeners)
+- [Connect Event Grid to Function Apps](#connect-event-grid-to-functions-apps)
 - [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app) 
 - [Run a script to create the TripFact table](#create-tripfact-table)
 
 ### Add APIM Products and APIs
 
-### Connect Event Grid to its listeners
+TBA
+
+### Connect Event Grid to Function Apps
+
+TBA
 
 ### Connect Event Grid to Logic App
 
+TBA
+
 ### Create TripFact Table 
 
-Connect to the databse and run the following script to create the `TripFact` table and its indices:  
+Connect to the SQL database and run the following script to create the `TripFact` table and its indices:  
 
 ```sql
     USE [RideShare]
@@ -283,7 +374,7 @@ Connect to the databse and run the following script to create the `TripFact` tab
 
 ## Setting Files
 
-The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting file for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each function app. Alternatively, the Cake deployment script auto-imports these files into the `Application Settings`.
+The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting file for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each function app. The Cake deployment script can auto-import these files into the `Application Settings`.
 
 ### Drivers Function App
 
@@ -342,7 +433,6 @@ The reference implementation solution requires several settings for each functio
 | TripExternalizationsEventGridTopicUrl| The URL of the event grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
 | TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
 
-
 ### Trips Function App
 
 | KEY | DESCRIPTION |
@@ -374,9 +464,9 @@ The reference implementation solution requires several settings for each functio
 
 ### .NET
 
-Pre-requisites:
+In order to build .NET solition form Visiual Studio, you need:
 
-- VS2017 15.7 or later
+- VS 2017 15.7 or later
 - .NET Core 2.1 SDK Installed
 
 ### Node
@@ -399,7 +489,7 @@ Web App
 
 The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake) provision section to know how to do this. 
 
-Make sure the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
+**Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
 Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [resources](#resources) section. If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
 

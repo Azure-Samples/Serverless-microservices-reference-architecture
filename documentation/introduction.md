@@ -10,7 +10,7 @@ In this document:
     - [RideShare APIs](#rideshare-apis)
     - [Durable Orchestrators](#durable-orchestrators)
     - [Event Grid](#event-grid)
-        - [Notification Handler via a Logic App](#notification-handler-via-a-logic-app)
+        - [Logic App handler](#logic-app-handler)
         - [SignalR Handler](#signalr-handler)
         - [PowerBI Handler](#powerbi-handler)
         - [Archiver Handler](#archiver-handler)
@@ -404,7 +404,7 @@ As shown in the macro architecture section, the solution implements several list
 
 ![Event Grid Listeners](media/event-grid-listeners.png)
 
-##### Notification Handler via a Logic App
+##### Logic App Handler
 
 [Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the event grid topic. Please refer to the [setup](./setup.md) to see how to set this up. 
 
@@ -667,7 +667,7 @@ Please note the following about the `Seeder` test:
 - Since the tester loads the test parameters from a URL, the test parameters can be varied independently without having to re-compile the code. 
 - Since each test paramer defines the URL to submit trip requests to, production and dev environments can be tested at the same time.
 
-One way to verify that the test ran successfully is to query the trip summaries in the `TripFact` table for the number of entries after the test ran:
+One way to verify that the test ran successfully is to query the trip summaries in the `TripFact` table for the number of entries after the test runs:
 ```sql
 SELECT * FROM dbo.TripFact
 ```
