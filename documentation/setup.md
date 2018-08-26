@@ -79,11 +79,74 @@ There are 3 ways to provision the required resources:
 
 Log in to the [Azure portal](https://portal.azure.com).
 
-#### Create the resource group
+#### Create the Resource Group
+
+1.  Type **Resource** into the Search box at the top of the `All Services` page, then select **Resource Groups**  section.
+
+2.  Click the **Add** button to create a new resource group.
+
+3.  Complete the resource group creation form with the following:
+
+    1. **Name**: Enter a unique value for the **reource group** i.e. `serverless-microservices`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+
+    ![Screenshot of the resource group form](media/resource-group-creation.png)
 
 #### Create the Cosmos Assets
 
+1.  Type **Cosmos** into the Search box at the top of the `All Services` page, then select **Azure Cosmos DB**  section.
+
+2.  Click the **Add** button to create a new Cosmos DB Account.
+
+3.  Complete the resource group creation form with the following:
+
+    1. **ID**: Enter a unique ID for the **Cosmos DB Account** i.e. `rideshare`.
+    2. **API**: Select `SQL`.
+    3. **Subscription**: Select your Azure subscription.
+    4. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    5. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    6. Un-check the `geo-redundancy`
+
+    ![Screenshot of the cosmos DB form](media/comos-creation.png)
+
+    **Please note** that this process of creating a Cosmos DB Account might take about 5 minutes. 
+
+4.  Once the DB is online, select it and click `Data Explorer` and `Add Collection`:
+
+    1. **Database ID**: Use existing and select the **Cosmos DB Account** you created i.e. `rideshare`.
+    2. **Collection Id**: Type `Main`.
+    3. **Storage capacity**: Select `Fixed`.
+    4. **Throughput**: Select 400.
+
+    ![Screenshot of the cosmos DB collection](media/comos-creation1.png)
+
+5.  Repeat step 4 for a new collection called `Archiver`
+
+6.  Take note of the DB Account keys:
+
+    ![Screenshot of the cosmos DB account](media/comos-creation2.png)
+
 #### Create the Storage Account
+
+1.  Type **Storage** into the Search box at the top of the `All Services` page, then select **Storage accounts**  section.
+
+2.  Click the **Add** button to create a new Storage Account.
+
+3.  Complete the storage creation form with the following:
+
+    1. **Name**: Enter a unique name for the **Storage Account** i.e. `ridesharefuncstore`.
+    2. **Deployment Model**: Select `Reosurce Manager`.
+    3. **Account Kind**: Select ``Storage V2``.
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Subscription**: Select your Azure subscription.
+    6. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+
+    ![Screenshot of the storage creation](media/storage-creation.png)
+
+4.  Take note of the DB Account keys:
+
+    ![Screenshot of the storage account](media/storage-creation2.png)
 
 #### Create the Azure function apps
 
@@ -105,7 +168,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     1. **App name**: Enter a unique value for the **Drivers** function app.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as "serverless-microservices".
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
     4. **OS**: Select Windows.
     5. **Hosting Plan**: Select Consumption Plan.
     6. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
@@ -129,7 +192,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the Azure SQL Database Assets
 
-1.  Type **SQL** into the Search box at the top of the `All Sevices` page, then select **SQL Database  section.
+1.  Type **SQL** into the Search box at the top of the `All Services` page, then select **SQL Database**  section.
 
 2.  Click the **Add** button to create a new SQL Database.
 
@@ -163,7 +226,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the Event Grid Topic
 
-1.  Type **Event Grid** into the Search box at the top of the `All Sevices` page, then select **Event Grid Topic**  section.
+1.  Type **Event Grid** into the Search box at the top of the `All Services` page, then select **Event Grid Topic**  section.
 
 2.  Click the **Add** button to create a new Event Grid Topic.
 
@@ -186,7 +249,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the App Insights Resource
 
-1.  Type **Application Insights** into the Search box at the top of the `All Sevices` page, then select **Application Insights**  section.
+1.  Type **Application Insights** into the Search box at the top of the `All Services` page, then select **Application Insights**  section.
 
 2.  Click the **Add** button to create a new Application Insights resource.
 
@@ -206,7 +269,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the API Management Service 
 
-1.  Type **API Management** into the Search box at the top of the `All Sevices` page, then select **API Management**  section.
+1.  Type **API Management** into the Search box at the top of the `All Services` page, then select **API Management**  section.
 
 2.  Click the **Add** button to create a new API Management service.
 
@@ -306,15 +369,177 @@ After you have provisioned all your resources, there are some manual steps that 
 
 ### Add APIM Products and APIs
 
-TBA
+**Please note** that you should have created the [Create the API Management Service ](#create-the-api-management-service) before you can proceed with this step. In addition, you should have already [deployed](#deployment) the Function Apps to Azure before you can make them available in the API Management Service.
+
+APIM defines two top-pevel entities: `Product` and `Api`. They are related this way:
+
+![APIM Entity Hierarchy](media/apim-hierarchy.png)
+
+Therefore we want to create a new product and add to it several APIs.
+
+1.  Type **API Management** into the Search box at the top of the `All Services` page, then select **API Managememt Service**  section.
+
+2.  Select the **resource** you created earlier i.e. `rideshare`.
+
+3.  Select it to go to detail and click on `products`. Click the **Add** button to create a new API Management product.
+
+4.  Complete the API Management product creation form with the following:
+
+    1. **Display Name**: Enter a name i.e. `RideShare`.
+    2. **Id**: Enter a unique identifier `rideshare-product`.
+    3. **Description**: Enter an optional description.
+    3. **State**: Select `Not Published`.
+    5. **Requires subscription**: Checked.
+
+    ![Screenshot of the API Management product form](media/apim-product-creation.png)
+
+3.  Re-select the API Management Service to go to detail and click on `APIs`. Click the **Add a new API** and select the `Blank API`. 
+
+**Please note** that, normally the Function App can produce a Swagger file that can be imported directly. But unfortunately for V2 Beta (at the time of this writing), the `API Definitions` feature is not available. 
+
+4.  Complete the API Management API creation form for `Drivers` with the following:
+
+    1. **Display Name**: Enter a name i.e. `RideShare Drivers API`.
+    2. **Name**: Enter an identifier `rideshare-drivers`.
+    3. **Description**: Enter an optional description.
+    4. **Web Service URL**: Enter the Drivers Function App base url `https://ridesharedriversfunctionapp.azurewebsites.net/api/`.
+    5. **URL Scheme**: HTTPS.
+    6. **API URL Suffix**: d (or any character...just to make it unique)
+    7. **Product**: Select `RideShare` product you created earlier. This is how the API is linked to the product.
+
+    ![Screenshot of the API Management API form](media/apim-api-creation.png)
+
+5.  Repeat step 4 for the `Trips` and `Passengers` Function Apps. The `Orchestrators` are not exposed to the outside world and hence they should not be added to APIM.
+
+6. For each API we created, we need to design its operations. As noted aboce, this step will have to be done manually for V2 Beta. Select `Design` and click on **Add operation** for each operation (**please note** that the API operations are listed below so they can be added manually). Complete the operation form as shown here for a sample operation:
+
+    1. **Display Name**: Enter a name i.e. `Get Driver Locations`.
+    2. **Name**: Enter an identifier `get-driver-locations`.
+    3. **URL**: `GET`//driverlocations/{code}
+    4. **Description**: Enter optional description
+    5. **Template**: The URL slug may contain replaceable parameters such as `/driverlocations/{code}`. The `{code}` needs to be defined in the template:
+        - *Name*: code
+        - *Description*: Driver Code
+        - *Type*: string
+        - *Required*: yes 
+    6. **Query**: The URL may need to contain a query parameters. In the function apps, the `code` is the function auth key. It must be defined here as a query parameter :
+        - *Name*: code
+        - *Description*: Function Code
+        - *Type*: string
+        - *Values*: Provide the function auth code as a default value 
+        - *Required*: yes 
+
+    ![Screenshot of the API Management operation form](media/apim-operation-creation.png)
+
+For each API, please add a new operation:
+
+#### Drivers API
+
+| Display Name | Name | URL | Template | Query |
+|---|---|---|---|---|
+| Get Drivers | get-drivers | `GET`/drivers | None | `GetDrivers` Auth Code | 
+| Get Drivers Within Location| get-drivers-within-location | `GET`/drivers/{latitude}/{longitude}/{miles} | latitude = double, longitude = double, miles = double | `GetDriversWithinLocation` Auth Code | 
+| Get Active Drivers | get-active-drivers | `GET`/activedrivers | None | `GetActiveDrivers` Auth Code | 
+| Get Driver | get-driver | `GET`/drivers/{code} | code = driver code = string | `GetDriver` Auth Code | 
+| Create Driver | create-driver | `POST`/drivers | None | `CreateDriver` Auth Code | 
+| Update Driver | update-driver | `PUT`/drivers | None | `UpdateDriver` Auth Code | 
+| Update Driver Location | update-driver-location | `PUT`/driverlocations | None | `UpdateDriverLocation` Auth Code | 
+| Get Driver Locations | get-driver-locations | `GET`/driverlocations/{code} | code = driver code = string | `GetDriverLocations` Auth Code | 
+| Delete Driver | delete-driver | `DELETE`/drivers/{code} | code = driver code = string | `DeleteDriver` Auth Code | 
+
+#### Trips API
+
+| Display Name | Name | URL | Template | Query |
+|---|---|---|---|---|
+| Get Trips | get-trips | `GET`/trips | None | `GetTrips` Auth Code | 
+| Get Active Trips | get-active-trips | `GET`/activetrips | None | `GetActiveTrips` Auth Code | 
+| Get Trip | get-trip | `GET`/trips/{code} | code = trip code = string | `GetTrip` Auth Code | 
+| Create Trip | create-trip | `POST`/trips | None | `CreateTrip` Auth Code | 
+| Assign Trip Driver | assign-trip-driver | `POST`/trips/{code}/drivers/{drivercode} | code = trip code = string, drivercode = driver code = string | `AssignTripDriver` Auth Code | 
+
+#### Passengers API
+
+| Display Name | Name | URL | Template | Query |
+|---|---|---|---|---|
+| Get Passengers | get-passengers | `GET`/passengers | None | `GetPassengers` Auth Code | 
+| Get Passenger | get-passenger | `GET`/passengers/{code} | code = passenger code = string | `GetPassenger` Auth Code | 
+
 
 ### Connect Event Grid to Function Apps
 
-TBA
+**Please note** that you should have created the [Event Grid Topic](#create-the-event-grid-topic) and the [Function Apps](#create-the- azure-function-apps) before you can proceed with this step. In addition, you should have already [deployed](#deployment) the Function Apps to Azure before you can make them listen to an Event Grid Topic. 
+
+1.  Type **Function Apps** into the Search box at the top of the `All Services` page, then select **Function Apps**  section.
+
+2.  Select the **RideShareTripsFunctionApp** app.
+
+3. Expand the Functions (Read Only) tree leaf:
+
+![Trips Function App Functions](media/trips-function-app-functions.png)
+
+4. Select the `EVGH_TripExternalizations2PowerBI` Function and click on **Add Event Grid Subscription**. This will show a dialog to allow you to make this function a listener for the Event Grid Topic: 
+
+    1. **Name**: Select a name i.e. `RideShareTripExternalizations2PpowerBI`.
+    2. **Topic Type**: Select `Event Grid Topic`.
+    3. **Subscription**: Select your Azure subscription.
+    4. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    5. **Instance**: Select the Event Grid Topic you are subscribing to i.e. `RideShareTripExternalizations`
+    6. Check the **Subscribe to all event types**
+
+    ![Trips Function App PowerBI link](media/trips-function-app-link.png)
+
+5. Repeat step 4 for the `EVGH_TripExternalizations2SignalR` Function.
 
 ### Connect Event Grid to Logic App
 
-TBA
+**Please note** that you should have created the [Event Grid Topic](#create-the-event-grid-topic) before you can proceed with this step.
+
+1.  Type **Logic Apps** into the Search box at the top of the `All Services` page, then select **Logic Apps**  section.
+
+2.  Click the **Add** button to create a new Logic App.
+
+3.  Complete the logic app creation form with the following:
+
+    1. **Name**: Enter a unique value for the logic app i.e. `ProcessTripExternalization`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+
+    ![Screenshot of the Logic App form](media/logic-app-creation.png)
+
+4. Once the resource is created, navigate to it and select `Blank Logic App`. In the `Search connectors and triggers`, type `Event Grid` and select the `Azure Event Grid` trigger:
+
+    ![Screenshot of the Logic App Trigger](media/logic app-creation1.png)
+
+5. Then select the `When Event source occurs`:
+
+    ![Screenshot of the Logic App Event](media/logic app-creation2.png)
+
+6. Finally select the `When Event source occurs`:
+
+    1. **Subscription**: Select your Azure subscription.
+    2. **Resource Type**: Select `Microsoft.EventGrid.Topic`.
+    3. **Resource Name**: Select the Event Grid Topic you provisioned.
+
+    ![Screenshot of the Logic App form](media/logic-app-creation3.png)
+
+7. Then click on the `New Step` and type in the `Choose an action` search box `SendGrid`:
+
+    1. Select `Send Email (v2) (preview).
+    2. You may need to setup a [SendGrid account](https://sendgrid.com/) if you have not done so already. Alternatively you can choose Office 365 Email email sender or Gmail sender or whatever Logic App supports.
+
+    ![Screenshot of the Logic App sender](media/logic-app-creation4.png)
+
+8. Fill out the Email Sender form:
+    1. **From**: The email address you wish this notification be sent from
+    2. **To**: The email address you wish this notification be sent to
+    3. **Subject**: If you select this field, you can either type whatever you want the subject or pick from one the dynamic fields shown. The Event Grid `Subject` is what makes sense. 
+
+    ![Screenshot of the Logic App sender](media/logic-app-creation5.png)
+
+    4. **Body**: If you select this field, you can either type whatever you want the body or pick from one the dynamic fields shown.
+
+**As noted before**, the Logic App Event Grid Connector does not make the event body (or data) readily available.
 
 ### Create TripFact Table 
 
