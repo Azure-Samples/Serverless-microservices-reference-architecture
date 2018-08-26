@@ -1,5 +1,27 @@
 # Introduction to serverless microservices
 
+In this document:
+
+- [What are Microservics?](#what-are-microservices?)
+- [What is serverless?](#what-is-serverless?)
+- [Macro Architecture](#macro-architecture)
+    - [Web App](#web-app)
+    - [API Management](#api-management)
+    - [RideShare APIs](#rideshare-apis)
+    - [Durable Orchestrators](#durable-orchestrators)
+    - [Event Grid](#event-grid)
+        - [Notification Handler via a Logic App](#notification-handler-via-a-logic-app)
+        - [SignalR Handler](#signalr-handler)
+        - [PowerBI Handler](#powerbi-handler)
+        - [Archiver Handler](#archiver-handler)
+- [DataStorage](#data-storage)
+- [Source Code Structure](#source-code-structure)
+    - [.NET](#.net)
+    - [Node](#node)
+    - [Web](#web)
+- [Integration Testing](#integration-testing)
+- [Monitoring](#monitoring)
+
 ## What are microservices?
 
 Explain in one or two paragraphs what microservices are, and the concepts. Link out to MS docs for full explanation.
@@ -59,15 +81,13 @@ Given the above principles, the following are identified as Microservices:
 
 **Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Functions App.
 
-In the sections below, we will go trough each architecture component in more details. 
-
-## Web App
+### Web App
 
 TBA - Joel
 
 Describe how the SPA communicates with the B2C AD to provide different levels of permissions.
 
-## API Management
+### API Management
 
 There are many benefits to use an API manager. In the case the RideShare solution, there are really four major benefits:
 
@@ -181,7 +201,7 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 **Please note** that, in the case of Azure Functions, while the APIs are front-ended with an API manager (and hence shielded, protected and rate limited), the APIs are still publicly available!!! This means that a DOD attack or other attacks can still happen against the bare APIs if someone discovers them in the wide.    
 
-## RideShare APIs
+### RideShare APIs
 
 As the macro architecture depicts, the APIs are implemented using C# Azure Functions. They have a very simple architecture that can be illustrated as follows:
 
@@ -296,7 +316,7 @@ public async Task TripCreated(TripItem trip, int activeTrips)
 }
 ```
 
-## Durable Orchestrators
+### Durable Orchestrators
 
 Durable Orchestrators are the heart of the solution. They are made up of 3 orchestrators:
 
@@ -359,7 +379,7 @@ foreach (var instance in instances)
 
 it is still probably a good idea to store the instance ids and their status in a table storage for example in case a solution requires special querying capability against the instances.
 
-## Event Grid
+### Event Grid
 
 The durable orchestrators externalize the trip at the following events:
 
@@ -384,7 +404,7 @@ As shown in the macro architecture section, the solution implements several list
 
 ![Event Grid Listeners](media/event-grid-listeners.png)
 
-#### Notification Handler via a Logic App
+##### Notification Handler via a Logic App
 
 [Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the event grid topic. Please refer to the [setup](./setup.md) to see how to set this up. 
 
@@ -394,7 +414,7 @@ In the reference implementation, the logic app is triggered by the Event Grid to
 
 **Please note** that the [Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) Event Grid trigger seems to only expose the event's meta data ...not its data.  
 
-#### SignalR Handler
+##### SignalR Handler
 
 Azure Functions provide a special binding `EventGridEvent` which makes receiving an Event Grid event a breeze:
 
@@ -433,7 +453,7 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 TBA - Details 
 
-#### PowerBI Handler
+##### PowerBI Handler
 
 Similar to the SignalR handler above, the PowerBI event grid handler follows the same convention:
 
@@ -491,7 +511,7 @@ This is a sample PowerBI report against test trip data:
 
 In addition, the handler sends trip information to the PowerBI Service which, if configured, sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.    
 
-#### Archiver Handler
+##### Archiver Handler
 
 TBA
 
@@ -521,7 +541,7 @@ The .NET solution conists of 7 projects:
 
 The following are some notes about the source code:
 
-- The concept of `ServiceFactory` is used to create static singleton instances:
+- The `Factory` pattern is used to create static singleton instances via the `ServiceFactory`:
 
 ```csharp
 private static ISettingService _settingService = null;
@@ -535,7 +555,7 @@ public static ISettingService GetSettingService()
 }
 ```
 
-- The `ISettingService` service implementation is used to read settings:
+- The `ISettingService` service implementation is used to read settings from environment variables:
 
 ```csharp
 var seconds = _settingService.GetTripMonitorIntervalInSeconds();
@@ -741,36 +761,3 @@ The result shows the distribution of the above 2 custom metrics:
 
 ![Custom Metrics](media/app-insights-custom-metrics.png)
 
-## Deployment
-
-Function App deployments can happen from [Visual Studio]() IDE, [Visual Studio Team Services](https://visualstudio.microsoft.com/vso/) by defining a build pipeline that can be triggered upon push to the code repository, for example, or a build script such as [Cake](https://cakebuild.net/) or [Psake](https://github.com/psake/psake).
-
-Relecloud decided to use [Visual Studio team Services](https://visualstudio.microsoft.com/vso/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
-
-### VSTS 
-
-TBA
-Function Apps
-Web App
-
-### Cake for C# Function Apps
-
-The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [setup](setup.md/#cake) page to know how to do this. 
-
-Make sure that the `settings` directory CSV files are updated as shown in [setup](./setup.md/#update-the-setting-files) to reflect your own resource app settings and connection strings.
-
-Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [setup](./setup.md/#resources). If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
-
-From a PowerShell command, use the following commands for the `Dev` environment:
-
-- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Drivers','--App=ServerlessMicroservices.FunctionApp.Drivers','--Env=Dev'`
-- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Dev'`
-- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Dev'`
-- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Dev'`
-
-From a PowerShell command, use the following commands for the `Prod` environment:
-
-- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Drivers','--App=ServerlessMicroservices.FunctionApp.Drivers','--Env=Prod'`
-- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Prod'`
-- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Prod'`
-- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Prod'`

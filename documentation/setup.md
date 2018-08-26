@@ -1,6 +1,43 @@
 # Serverless Microservices reference architecture
 
-TBA - Brief introduction
+In this document:
+
+- [Resources](#resources)
+- [Provision](#provision)
+    - [Manual via the Portal](#manual-via-the-portal)
+        - [Create the Azure function apps](#create-the-azure-apps)
+        - [Create the Resource Group](#create-the-resource-group)
+        - [Create the Cosmos Assets](#create-the-cosmos-assets)
+        - [Create the Storage Account](#create-the-storage-account)
+        - [Create the Storage Account](#create-the-storage-account)
+        - [Create the Azure function apps](#create-the-azure-apps)
+        - [Create the Web App Service Plan](#create-the-web-app-service-plan)
+        - [Create the Azure SQL Database Assets](#create-the-azure-sql-database-assets)
+        - [Create the Event Grid Topic](#create-the-event-grid-topic)
+        - [Create the App Insights Resource](#create-the-app-insights-resource)
+        - [Create the Logic App](#create-the-logic-app)
+        - [Create the API Management Service](#create-the-api-management-service)
+        - [Create the SignalR Service](#create-the-signalr-service)
+        - [Create the B2C Tenant](#create-the-b2c-tenant)
+    - [ARM Template](#arm-template)
+    - [Cake](#cake)
+- [Setup](#setup)
+    - [Add APIM Products and APIs](#add-apim-products-and-apis)
+    - [Connect Event Grid to its listeners](#connect-event-grid-to-its-listeners)
+    - [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
+    - [Create TripFact Table](#create-tripfact-table)
+- [Setting Files](#setting-files)
+    - [Drivers Function App](#drivers-function-app)
+    - [Passengers Function App](#passengers-function-app)
+    - [Orchestrators Function App](#orchestrators-function-app)
+    - [Trips Function App](#trips-function-app)
+- [Build the solution](#build-the-solution)
+    - [.NET](#.net)
+    - [Node](#node)
+    - [Web](#web)
+- [Deployment](#deployment)
+    - [VSTS](#vsts)
+    - [Cake](#cake)
 
 ## Resources
 
@@ -12,7 +49,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 | rideshare | rideshare | Cosmos DB Account | Auto |
 | Main | Main | Cosmos DB Collection | Auto |
 | Archive | Archive | Cosmos DB Collection | Auto |
-| RideSharefunctionstore | rideSharefunctiondev | Storage Account | Auto |
+| ridesharefunctionstore | ridesharefunctiondev | Storage Account | Auto |
 | RideShareFunctionAppPlan | RideShareFunctionAppPlan | Consumtpion Plan | Auto |
 | RideShareDriversFunctionApp | RideShareDriversFunctionAppDev | Function App | Auto |
 | RideShareTripsFunctionApp | RideShareTripsFunctionAppDev | Function App | Auto |
@@ -31,15 +68,23 @@ The following is a summary of all Azure resources required to deploy the solutio
 | rideshare | rideshare-dev | SignalR Service | Manual |
 | relecloudrideshare.onmicrosoft.com | N/A | B2C Tenant | Manual |
 
+## Provision
+
 There are 3 ways to provision the required resources:
 
 - [Manual via the Portal](#manual-via-the-portal)
 - [ARM Template](#arm-template)
 - [Cake](#cake)
 
-## Manual via the Portal
+### Manual via the Portal
 
-### Step 1: Create the Azure function apps
+#### Create the resource group
+
+#### Create the Cosmos Assets
+
+#### Create the Storage Account
+
+#### Create the Azure function apps
 
 **--FORMAT-- Have intro under each step explaining the concepts, what they're doing, and why. Link to associated section in [Introduction](./introduction.md)**
 
@@ -81,13 +126,31 @@ At this point, your Resource Group should have a list of resources similar to th
 
 ![List of resources in the Resource Group after creating function apps](media/resource-group-function-apps.png 'Resource Group resource list')
 
+#### Create the Web App Service Plan
+
+#### Create the Web App
+
+#### Create the Azure SQL Database Assets
+
+#### Create the Event Grid Topic
+
+#### Create the App Insights Resource
+
+#### Create the Logic App 
+
+#### Create the API Management Service 
+
+#### Create the SignalR Service 
+
+#### Create the B2C Tenant 
+
 Once completed, please jump to the [setup](#setup) section to continue. 
 
-## ARM Template
+### ARM Template
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
-## Cake 
+### Cake 
 
 The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
 
@@ -136,14 +199,14 @@ From a PowerShell command, use the following command to provision the `Prod` env
 
 **Please note** that provisiong a Cosmos DB Account takes a long time to be online. If you proceed with creating a database and the colections while the status is `Creating`, you will get an error that says something like `bad request` without much of an explanation. Once the DB Account becomes `Online`, you can continue to provision the rest (by re-invoking the `provision` command). The exact error is: One or more errors occurred. Long running operation failed with status 'BadRequest'.
 
-Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net):
+Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net). So please complete the following provisions manually:
 
-- [App Insights]()
-- [Event Grid]()
-- [Logic App]()
-- [API Manager]()
-- [B2C Tenant]()
-- [SignalR Service]()
+- [Event Grid](#create-the-event-grid-topic)
+- [App Insights](#create-the-app-insights-resource)
+- [Logic App](#create-the-logic-app)
+- [API Manager](#create-the-api-management-service)
+- [SignalR Service](#create-the-signalr-service)
+- [B2C Tenant](#create-the-b2c-tenant)
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
@@ -218,7 +281,7 @@ Connect to the databse and run the following script to create the `TripFact` tab
     CREATE INDEX IX_TRIP_DRIVER_CODE ON dbo.TripFact(DriverCode);
 ```
 
-## Update the Setting Files
+## Setting Files
 
 The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting file for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each function app. Alternatively, the Cake deployment script auto-imports these files into the `Application Settings`.
 
@@ -306,4 +369,52 @@ The reference implementation solution requires several settings for each functio
 | TerminateTripManagerOrchestratorBaseUrl|The Trip Manager Orchestrator trigger endpoint function base url |
 | TerminateTripMonitorOrchestratorApiKey|The Terminate Trip Demo Orchestrator trigger endpoint function code key |
 | TerminateTripMonitorOrchestratorBaseUrl|The Trip Terminate Demo Orchestrator trigger endpoint function base url |
+
+## Build the solution
+
+### .NET
+
+Pre-requisites:
+
+- VS2017 15.7 or later
+- .NET Core 2.1 SDK Installed
+
+### Node
+
+### Web
+
+## Deployment
+
+Function App deployments can happen from [Visual Studio]() IDE, [Visual Studio Team Services](https://visualstudio.microsoft.com/vso/) by defining a build pipeline that can be triggered upon push to the code repository, for example, or a build script such as [Cake](https://cakebuild.net/) or [Psake](https://github.com/psake/psake).
+
+Relecloud decided to use [Visual Studio team Services](https://visualstudio.microsoft.com/vso/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
+
+### VSTS 
+
+TBA
+Function Apps
+Web App
+
+### Cake
+
+The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake) provision section to know how to do this. 
+
+Make sure the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
+
+Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [resources](#resources) section. If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
+
+From a PowerShell command, use the following commands for the `Dev` environment:
+
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Drivers','--App=ServerlessMicroservices.FunctionApp.Drivers','--Env=Dev'`
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Dev'`
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Dev'`
+- `./build.ps1 -Target Deploy -Configuration Debug -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Dev'`
+
+From a PowerShell command, use the following commands for the `Prod` environment:
+
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Drivers','--App=ServerlessMicroservices.FunctionApp.Drivers','--Env=Prod'`
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Prod'`
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Prod'`
+- `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Prod'`
+
 
