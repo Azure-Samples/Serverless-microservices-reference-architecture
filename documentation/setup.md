@@ -22,6 +22,9 @@ In this document:
     - [Cake](#cake)
 - [Setup](#setup)
     - [Add APIM Products and APIs](#add-apim-products-and-apis)
+        - [Drivers API](#drivers-api)
+        - [Trips API](#trips-api)
+        - [Passengers API](#passengers-api)
     - [Connect Event Grid to Function Apps](#connect-event-grid-to-function-apps)
     - [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
     - [Create TripFact Table](#create-tripfact-table)
@@ -467,7 +470,7 @@ For each API, please add a new operation:
 
 ### Connect Event Grid to Function Apps
 
-**Please note** that you should have created the [Event Grid Topic](#create-the-event-grid-topic) and the [Function Apps](#create-the- azure-function-apps) before you can proceed with this step. In addition, you should have already [deployed](#deployment) the Function Apps to Azure before you can make them listen to an Event Grid Topic. 
+**Please note** that you should have created the [Event Grid Topic](#create-the-event-grid-topic) and the [Function Apps](#create-the-azure-function-apps) before you can proceed with this step. In addition, you should have already [deployed](#deployment) the Function Apps to Azure before you can make them listen to an Event Grid Topic. 
 
 1.  Type **Function Apps** into the Search box at the top of the `All Services` page, then select **Function Apps**  section.
 
@@ -509,11 +512,11 @@ For each API, please add a new operation:
 
 4. Once the resource is created, navigate to it and select `Blank Logic App`. In the `Search connectors and triggers`, type `Event Grid` and select the `Azure Event Grid` trigger:
 
-    ![Screenshot of the Logic App Trigger](media/logic app-creation1.png)
+    ![Screenshot of the Logic App Trigger](media/logic-app-creation1.png)
 
 5. Then select the `When Event source occurs`:
 
-    ![Screenshot of the Logic App Event](media/logic app-creation2.png)
+    ![Screenshot of the Logic App Event](media/logic-app-creation2.png)
 
 6. Finally select the `When Event source occurs`:
 
