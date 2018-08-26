@@ -40,10 +40,11 @@
                                         <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>
                                     </div> -->
                                     <b-dropdown id="ddown-pickup" text="Pickup Location" variant="info" class="">
-                                        <b-dropdown-item-button @click.stop="selectPickup(0)">Location #1</b-dropdown-item-button>
-                                        <b-dropdown-item-button @click.stop="selectPickup(1)">Location #2</b-dropdown-item-button>
-                                        <b-dropdown-item-button @click.stop="selectPickup(2)">Location #3</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click.stop="selectPickup(location)" v-bind:key ="location.id" v-for="location in pickUpLocations">{{location.name}}</b-dropdown-item-button>
                                     </b-dropdown>
+                                    <div v-if="selectedPickUpLocation !== null">
+                                        {{ selectedPickUpLocation.name }}
+                                    </div>
                                 </div>
                             </div>
                             <div class="col-lg-6">
@@ -57,10 +58,23 @@
                                         <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>
                                     </div> -->
                                     <b-dropdown id="ddown-pickup" text="Destination" variant="info" class="">
-                                        <b-dropdown-item-button @click.stop="selectDestination(0)">Location #1</b-dropdown-item-button>
-                                        <b-dropdown-item-button @click.stop="selectDestination(1)">Location #2</b-dropdown-item-button>
-                                        <b-dropdown-item-button @click.stop="selectDestination(2)">Location #3</b-dropdown-item-button>
+                                        <b-dropdown-item-button @click.stop="selectDestination(location)" v-bind:key ="location.id" v-for="location in destinationLocations">{{location.name}}</b-dropdown-item-button>
                                     </b-dropdown>
+                                    <div v-if="selectedDestinationLocation !== null">
+                                        {{ selectedDestinationLocation.name }}
+                                    </div>
+                                </div>
+                            </div>
+                             <div class="col-lg-6">
+                                <div class="feature-item"><i class="icon-flag text-primary"></i>
+                                    <h3>Request a driver</h3>
+                                </div>
+                            </div>
+                              <div class="col-lg-6 align-self-center">
+                                <div class="feature-item">
+                                    <b-button id="request-driver" text="Request Driver" variant="info" class="" v-bind:disabled="requestDriverDisabled" @click="requestDriver()">
+                                        Request Driver
+                                    </b-button>
                                 </div>
                             </div>
                         </div>
@@ -84,6 +98,8 @@ export default {
     return {
       drivers: [],
       selectedDriver: null,
+      selectedPickUpLocation: null,
+      selectedDestinationLocation: null,
       driverInfo: null,
       html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
       fields: [
@@ -106,13 +122,26 @@ export default {
       currentPage: 1,
       perPage: 10,
       pageOptions: [5, 10, 15],
-      contentLoading : ''
+      contentLoading : '',
+      pickUpLocations: [
+        { id: 1, name: 'Microsoft Corporate Office', latitude: 47.6423354, longitude: -122.1391189 },
+        { id: 2, name: 'Microsoft Conference Center', latitude: 47.6384841, longitude: -122.1449758 },
+        { id: 3, name: 'Microsoft Production Studios', latitude: 47.6490121, longitude: -122.139642 }
+      ],
+      destinationLocations: [
+        { id: 1, name: 'Seattle, Washington', latitude: 47.6131746, longitude: -122.4821466 },
+        { id: 2, name: 'Bellevue, Washington', latitude: 47.5963256, longitude: -122.1928181 },
+        { id: 3, name: 'Redmond, Washington', latitude: 47.6721228, longitude: -122.1356409 }
+      ]        
     };
   },
   computed: {
     ...commonGetters(['notificationSystem']),
     totalRows() {
       return this.stories.length;
+    },
+    requestDriverDisabled() {
+      return this.selectedPickUpLocation === null || this.selectedDestinationLocation === null;
     }
   },
   methods: {
@@ -129,22 +158,53 @@ export default {
           );
         });
     },
+    requestDriver(){
+        var selectedDriver;
+
+        // Find first available driver
+        for (let index = 0; index < this.drivers.length; index++) {
+            var driver = this.drivers[index];
+
+            if (driver.isAcceptingRides){
+                selectedDriver = driver;
+                console.log(driver.car);
+                break;
+            }    
+        }
+        this.selectDriver(selectedDriver);
+    },
     selectDriver(driver) {
-      this.selectedDriver = driver;
+        if (driver === undefined){
+            this.$toast.warning(
+                `Please try again later.`,
+                'No drivers available',
+                this.notificationSystem.options.warning
+            );
+        }
+        else {
+            this.$toast.success(
+                `Name: <b>${driver.firstName} ${driver.lastName}</b>.<br/>Car: ${driver.car.color} ${driver.car.year} ${driver.car.make} ${driver.car.model}<br/>License Plate: ${driver.car.licensePlate}`,
+                'Driver Found',
+                this.notificationSystem.options.success
+            );
+            this.selectedDriver = driver;
+        }
     },
-    selectPickup(number) {
+    selectPickup(location) {
       this.$toast.success(
-        `Set pickup location to ${number}`,
+        `Set pickup location to ${location.name} (${location.latitude}, ${location.longitude})`,
         'Success',
         this.notificationSystem.options.success
       );
+       this.selectedPickUpLocation = location;
     },
-    selectDestination(number) {
+    selectDestination(location) {
       this.$toast.success(
-        `Set destination to ${number}`,
+        `Set destination to ${location.name} (${location.latitude}, ${location.longitude})`,
         'Success',
         this.notificationSystem.options.success
       );
+       this.selectedDestinationLocation = location;
     }
   },
   mounted() {
