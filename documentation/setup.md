@@ -334,6 +334,10 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the SignalR form](media/signalr-creation.png)
 
+4. Take note of the newly-created resource connection string:
+
+    ![Screenshot of the SignalR service connection string](media/signalr-creation1.png)
+
 #### Create the B2C Tenant 
 
 TBA
