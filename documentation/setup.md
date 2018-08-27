@@ -70,6 +70,10 @@ The following is a summary of all Azure resources required to deploy the solutio
 | rideshare | rideshare-dev | SignalR Service | Manual |
 | relecloudrideshare.onmicrosoft.com | N/A | B2C Tenant | Manual |
 
+:eight_spoked_asterisk: **Please note** that, in some cases, the resource names must be unique globally. We suggest you append an identifier to the above reosurce names so they become unique i.e. `ridesharefunctionstore-xyzw`, `rideshare-xyzw`, etc.   
+
+:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to provision or dploy, you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+
 ## Provision
 
 There are 3 ways to provision the required resources:
@@ -342,6 +346,8 @@ graphURL=https\://graph.windows.net/
 ```
 
 If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
+
+:eight_spoked_asterisk: **Please note** that you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
 Once the above is completed, from a PowerShell command, use the following commands to provision the `Dev` and `Prod` environments:
 
@@ -719,7 +725,9 @@ The `Cake` script reponsible to `deploy` and `provision` is included in the `dot
 
 **Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
-Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps provided that you used the same resource names as defined in [resources](#resources) section. If this is not the case, you can adjust the `paths.cake` file to match your resource names. 
+Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps. 
+
+:eight_spoked_asterisk: **Please note** that you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
 From a PowerShell command, use the following commands for the `Dev` environment:
 
