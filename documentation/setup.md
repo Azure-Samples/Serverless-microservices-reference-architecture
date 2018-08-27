@@ -308,7 +308,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 3.  Complete the API Management service creation form with the following:
 
-    1. **Name**: Enter a unique value for the application Insights i.e. `rideshare`.
+    1. **Name**: Enter a unique value for the APIM Service i.e. `rideshare`.
     2. **Subscription**: Select your Azure subscription.
     3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
     3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
@@ -320,7 +320,19 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the SignalR Service 
 
-TBA 
+1.  Click **Ctreate a resource** and type **SignalR** into the Search box, then select **SignalR Service**  section.
+
+2.  Click the **Create** button to create a new SignalR service.
+
+3.  Complete the SignalR service creation form with the following:
+
+    1. **Resource Name**: Enter a unique value for the SignalR Service i.e. `rideshare`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    7. **Pricing tier**: Select `Free`.
+
+    ![Screenshot of the SignalR form](media/signalr-creation.png)
 
 #### Create the B2C Tenant 
 
@@ -714,7 +726,7 @@ The reference implementation solution requires several settings for each functio
 | ApiScopeName | The Scope Name i.e. rideshare | 
 | EnableAuth | if set to true, the JWT token validatidaion will be enforced | 
 | SqlConnectionString | The connection string to the Azure SQL Databse where `TripFact` is provisioned  | 
-| SqlConnectionString | The connection string to the Azure SQL Databse where `TripFact` is provisioned  | 
+| AzureSignalRConnectionString  | The connection string to the SignalR Service  | 
 | StartTripManagerOrchestratorApiKey|The Start Trip Manager Orchestrator trigger endpoint function code key |
 | StartTripManagerOrchestratorBaseUrl|The Start Trip Manager Orchestrator trigger endpoint function base url |
 | StartTripDemoOrchestratorApiKey|The Trip Start Demo Orchestrator trigger endpoint function code key |
