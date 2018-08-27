@@ -14,12 +14,12 @@ In this document:
         - [Create the Web App Service Plan](#create-the-web-app-service-plan)
         - [Create the Azure SQL Database Assets](#create-the-azure-sql-database-assets)
         - [Create the Event Grid Topic](#create-the-event-grid-topic)
-        - [Create the App Insights Resource](#create-the-app-insights-resource)
+        - [Create the Application Insights Resource](#create-the-application-insights-resource)
         - [Create the API Management Service](#create-the-api-management-service)
         - [Create the SignalR Service](#create-the-signalr-service)
         - [Create the B2C Tenant](#create-the-b2c-tenant)
     - [ARM Template](#arm-template)
-    - [Cake](#cake)
+    - [Cake Provision](#cake-provision)
 - [Setup](#setup)
     - [Add APIM Products and APIs](#add-apim-products-and-apis)
         - [Drivers API](#drivers-api)
@@ -39,7 +39,7 @@ In this document:
     - [Web](#web)
 - [Deployment](#deployment)
     - [VSTS](#vsts)
-    - [Cake](#cake)
+    - [Cake Deployment](#cake-deployment)
 
 ## Resources
 
@@ -64,7 +64,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 | RideShare | RideShare | SQL Database | Auto |
 | TripFact | TripFact | SQL Database Table | Manual |
 | RideShareTripExternalizations | RideShareTripExternalizationsDev | Event Grid Topic | Manual |
-| rideshare | rideshare-dev | App Insights | Manual |
+| rideshare | rideshare-dev | Application Insights | Manual |
 | ProcessTripExternalization | ProcessTripExternalizationDev | Logic App | Manual |
 | rideshare | N/A | API Management Service | Manual |
 | rideshare | rideshare-dev | SignalR Service | Manual |
@@ -72,7 +72,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 
 :eight_spoked_asterisk: **Please note** that, in some cases, the resource names must be unique globally. We suggest you append an identifier to the above reosurce names so they become unique i.e. `ridesharefunctionstore-xyzw`, `rideshare-xyzw`, etc.   
 
-:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to provision or dploy, you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to [provision](#cake-provision) or [deploy](#cake-deployment), you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
 ## Provision
 
@@ -157,10 +157,6 @@ Log in to the [Azure portal](https://portal.azure.com).
 
 #### Create the Azure function apps
 
-**--FORMAT-- Have intro under each step explaining the concepts, what they're doing, and why. Link to associated section in [Introduction](./introduction.md)**
-
-**-- Show code snippets within a section if appropriate. Like when provisioning Event Grid and creating topics, maybe show code snippet or two from functions where the topics are being used --**
-
 In this step, you will be creating six new function apps in the Azure portal. There are many ways this can be accomplished, such as [publishing from Visual Studio](), [Visual Studio Code](), the [Azure CLI](), Azure [Cloud Shell](), an [Azure Resource Manager (ARM) template](), and through the Azure portal.
 
 Each of these function apps act as a hosting platform for one or more functions. In our solution, they double as microservices with each function serving as an endpoint or method. Having functions distributed amongst multiple function apps enables isolation, providing physical boundaries between the microservices, as well as independent release schedules, administration, and scaling.
@@ -195,7 +191,37 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the Web App Service Plan
 
+1.  Type **App Service** into the Search box at the top of the `All Services` page, then select **App Service Plans**  section.
+
+2.  Click the **Add** button to create a new app service plan.
+
+3.  Complete the app service plan creation form with the following:
+
+    1. **App Service Plan**: Enter a unique value for the **App Service Plan** i.e. `RideShareAppServicePlan`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Operating system**: Select `Windows`
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Pricing Tier**: Select `Free`.
+
+    ![Screenshot of the app service plan](media/app-service-plan-creation.png)
+
 #### Create the Web App
+
+1.  Type **App Service** into the Search box at the top of the `All Services` page, then select **App Services**  section.
+
+2.  Click the **Add** button to create a new app service and select `Web App` from the marketplace. Click `Create`.
+
+3.  Complete the app service creation form with the following:
+
+    1. **App Name**: Enter a unique value for the **App Name** i.e. `RelecloudRideShare`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Operating system**: Select `Windows`
+    4. **App Service PLan**: Select the pan you created in the previous step.
+    5. **Application Insights**: Select `Off`.
+
+    ![Screenshot of the app service](media/app-service-creation.png)
 
 #### Create the Azure SQL Database Assets
 
@@ -254,7 +280,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the Event Grid Topic endpoint](media/event-grid-topic-creation2.png)
 
-#### Create the App Insights Resource
+#### Create the Application Insights Resource
 
 1.  Type **Application Insights** into the Search box at the top of the `All Services` page, then select **Application Insights**  section.
 
@@ -306,7 +332,7 @@ Once completed, please jump to the [setup](#setup) section to continue.
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
-### Cake 
+### Cake Provision
 
 The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
 
@@ -359,7 +385,7 @@ Once the above is completed, from a PowerShell command, use the following comman
 Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net). So please complete the following provisions manually as described in the manual steps above:
 
 - [Event Grid](#create-the-event-grid-topic)
-- [App Insights](#create-the-app-insights-resource)
+- [Application Insights](#create-the-application-insights-resource)
 - [Logic App](#create-the-logic-app)
 - [API Manager](#create-the-api-management-service)
 - [SignalR Service](#create-the-signalr-service)
@@ -435,12 +461,16 @@ Therefore we want to create a new product and add to it several APIs.
         - *Name*: code
         - *Description*: Function Code
         - *Type*: string
-        - *Values*: Provide the function auth code as a default value 
+        - *Values*: Provide the Function Auth Code as a default value 
         - *Required*: yes 
 
     ![Screenshot of the API Management operation form](media/apim-operation-creation.png)
 
-For each API, please add a new operation:
+    7. **Function URL and the Auth Code**: Select the Function App and select the function you are interested in. The portal shows the `function.json` and a button to `Get function URL`. If you click it, it will expose the function URL with the code:
+
+    ![Screenshot of the API function URL](media/apim-function.png)
+
+For each API, please add a new operation as defined below. Once completed, please `publish` the `RideShare` product.
 
 #### Drivers API
 
@@ -614,7 +644,7 @@ The reference implementation solution requires several settings for each functio
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
 | FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
@@ -631,7 +661,7 @@ The reference implementation solution requires several settings for each functio
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
 | FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
@@ -651,7 +681,7 @@ The reference implementation solution requires several settings for each functio
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
 | FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
@@ -671,7 +701,7 @@ The reference implementation solution requires several settings for each functio
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The App Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an app insights resource associated with it | 
+| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
 | FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
@@ -719,7 +749,7 @@ TBA
 Function Apps
 Web App
 
-### Cake
+## Cake Deployment
 
 The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake) provision section to know how to do this. 
 
