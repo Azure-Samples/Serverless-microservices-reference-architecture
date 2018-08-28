@@ -212,6 +212,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                 else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_ABORTED)
                     clientMethod = "tripAborted";
 
+                log.LogInformation($"ProcessTripExternalizations2SignalR firing SignalR `{clientMethod}` client method!");
                 await signalRMessages.AddAsync(new SignalRMessage()
                 {
                     Target = clientMethod,

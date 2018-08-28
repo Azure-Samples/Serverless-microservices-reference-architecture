@@ -1,6 +1,12 @@
-﻿using ServerlessMicroservices.Shared.Helpers;
+﻿using Microsoft.AspNetCore.SignalR.Client;
+using Microsoft.Extensions.CommandLineUtils;
+using Microsoft.Extensions.Configuration;
+using Microsoft.Extensions.Logging;
+using ServerlessMicroservices.Models;
+using ServerlessMicroservices.Shared.Helpers;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using System.Threading.Tasks;
 
 namespace ServerlessMicroservices.Seeder
@@ -11,38 +17,69 @@ namespace ServerlessMicroservices.Seeder
 
         static void Main(string[] args)
         {
-            MainAsync(args).GetAwaiter().GetResult();
-        }
+            var app = new CommandLineApplication();
+            app.FullName = "RideShare Test Sampels";
+            app.HelpOption("--help");
 
-        static async Task MainAsync(string[] args)
-        {
-            if (args.Length == 0)
-            {
-                Console.WriteLine("You need to pass the test parameters URL as an argument. Press any key to exit...");
-            }
-            else
-            {
-                _tripTestParametersUrl = args[0];
-                int iterations = args.Length > 1 && args[1] != null ? Int32.Parse(args[1]) : 1;
-                int seconds = args.Length > 2 && args[2] != null ? Int32.Parse(args[2]) : 60;
+            var testUrlOption = app.Option("-t|--testurl", "Set test url", CommandOptionType.SingleValue, true);
+            var iterationsOption = app.Option("-i|--iterations", "Set iterations", CommandOptionType.SingleValue, true);
+            var secondsOption = app.Option("-s|--seconds", "Set seconds", CommandOptionType.SingleValue, true);
+            var envOption = app.Option("-v|--env", "Set Env", CommandOptionType.SingleValue, true);
 
-                for (int i = 0; i < iterations; i++)
+            var configuration = new ConfigurationBuilder()
+                .SetBasePath(Directory.GetCurrentDirectory())
+                //.AddUserSecrets<Program>()
+                .Build();
+
+            app.Command("testTrips", cmd =>
+            {
+                cmd.Description = "Test Demo Trips";
+                cmd.HelpOption("--help");
+
+                cmd.OnExecute(async () =>
                 {
-                    if (i > 0)
+                    var url = testUrlOption.Value();
+
+                    if (string.IsNullOrEmpty(url) || !testUrlOption.HasValue())
                     {
-                        Console.WriteLine($"Delaying for {seconds} seconds before starting iteration {i}....");
-                        await Task.Delay(seconds * 1000);
+                        MissingTestDemoOptions();
+                        return 0;
                     }
 
-                    Console.WriteLine($"Iteration {i} starting....");
-                    await TestTrips();
-                    Console.WriteLine($"Iteration {i} completed");
-                }
+                    int iterations = iterationsOption.HasValue() ? Int32.Parse(iterationsOption.Value()) : 1;
+                    int seconds = secondsOption.HasValue() ? Int32.Parse(secondsOption.Value()) : 60;
 
-                Console.WriteLine("Test is completed. Press any key to exit...");
-            }
+                    for (int i = 0; i < iterations; i++)
+                    {
+                        if (i > 0)
+                        {
+                            Console.WriteLine($"Delaying for {seconds} seconds before starting iteration {i}....");
+                            await Task.Delay(seconds * 1000);
+                        }
 
-            Console.ReadLine();
+                        Console.WriteLine($"Iteration {i} starting....");
+                        await TestTrips();
+                        Console.WriteLine($"Iteration {i} completed");
+                    }
+
+                    return 0;
+                });
+            });
+
+            app.Command("signalr", cmd =>
+            {
+                cmd.Description = "Test SignalR .NET Client";
+                cmd.HelpOption("--help");
+
+                cmd.OnExecute(async () =>
+                {
+                    string env = envOption.HasValue() ? envOption.Value() : "Dev";
+                    await TestSignalR(env);
+                    return 0;
+                });
+            });
+
+            app.Execute(args);
         }
 
         /*
@@ -137,6 +174,91 @@ namespace ServerlessMicroservices.Seeder
 
             return result;
         }
+
+        /*
+         * SignalR testing
+         */
+        static async Task TestSignalR(string env)
+        {
+            // Get the SingalR service url and access token by calling the `singnalrinfo` API
+            var singnalRInfo = await GetSignalRInfo(env);
+            if (singnalRInfo == null)
+                throw new Exception("SignalR info is NULL!");
+
+            var connection = new HubConnectionBuilder()
+            .WithUrl(singnalRInfo.Endpoint, option =>
+            {
+                option.AccessTokenProvider = () =>
+                {
+                    return Task.FromResult(singnalRInfo.AccessKey);
+                };
+            })
+            .ConfigureLogging( logging =>
+            {
+                logging.AddConsole();
+            })
+            .Build();
+
+            connection.On<TripItem>("tripUpdated", (trip) =>
+            {
+                Console.WriteLine($"tripUpdated - {trip.Code}");
+            });
+
+            connection.On<TripItem>("tripDriversNotified", (trip) =>
+            {
+                Console.WriteLine($"tripDriversNotified - {trip.Code}");
+            });
+
+            connection.On<TripItem>("tripDriverPicked", (trip) =>
+            {
+                Console.WriteLine($"tripDriverPicked - {trip.Code}");
+            });
+
+            connection.On<TripItem>("tripStarting", (trip) =>
+            {
+                Console.WriteLine($"tripStarting - {trip.Code}");
+            });
+
+            connection.On<TripItem>("tripRunning", (trip) =>
+            {
+                Console.WriteLine($"tripRunning - {trip.Code}");
+            });
+
+            connection.On<TripItem>("tripCompleted", (trip) =>
+            {
+                Console.WriteLine($"tripCompleted - {trip.Code}");
+            });
+
+            connection.On<TripItem>("tripAborted", (trip) =>
+            {
+                Console.WriteLine($"tripAborted - {trip.Code}");
+            });
+
+            await connection.StartAsync();
+
+            Console.WriteLine("SignalR client started....waiting for messages from server. To cancel......press any key!");
+            Console.ReadLine();
+        }
+
+        private static async Task<SignalRInfo> GetSignalRInfo(string env)
+        {
+            if (env.ToLower() == "dev")
+                return await Utilities.Get<SignalRInfo>(null, "https://ridesharetripsfunctionappdev.azurewebsites.net/api/signalrinfo", new Dictionary<string, string>());
+            else 
+                return await Utilities.Get<SignalRInfo>(null, "https://ridesharetripsfunctionapp.azurewebsites.net/api/signalrinfo", new Dictionary<string, string>());
+
+        }
+
+        private static void MissingTestDemoOptions()
+        {
+            Console.WriteLine("Required options: testUrl");
+        }
+    }
+
+    class SignalRInfo
+    {
+        public string Endpoint { get; set; }
+        public string AccessKey { get; set; }
     }
 
     class TripTestParameters
