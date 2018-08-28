@@ -7,6 +7,7 @@ DocDbRideShareDatabaseName|RideShare
 DocDbRideShareMainCollectionName|Main
 DocDbThroughput|400
 SqlConnectionString|Server=tcp:rideshare-db-dev.database.windows.net,1433;Initial Catalog=RideShare;Persist Security Info=False;User ID=rideshareadm!n;Password=rideShareS3cureP@ssword;MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;
+AzureSignalRConnectionString|Endpoint=https://rideshare-dev.service.signalr.net;AccessKey=p0A2YxgcBRul1/WvDqkhjmEnTThpbsLoiz3z7FiYjv4=;
 InsightsInstrumentationKey|546fbb26-8554-48fb-b370-12c8c5933541
 IsPersistDirectly|true
 StartTripManagerOrchestratorApiKey|Ag8n7DW3edadHVSnPkBpMDeypEDD5idrfpENLMHND7XzTmlTK6HvNA==
