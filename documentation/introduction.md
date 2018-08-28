@@ -12,7 +12,7 @@ In this document:
     - [Event Grid](#event-grid)
         - [Logic App handler](#logic-app-handler)
         - [SignalR Handler](#signalr-handler)
-            - [.NET SignalR Client](#.net-signalr-client)
+            - [DOTNET SignalR Client](#dotnet-signalr-client)
             - [JavaScript SignalR Client](#javascript-signalr-client)
         - [PowerBI Handler](#powerbi-handler)
         - [Archiver Handler](#archiver-handler)
@@ -461,7 +461,7 @@ As shown in the macro architecture section, the solution implements several list
 
 ##### Logic App Handler
 
-[Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the event grid topic. Please refer to the [setup](./setup.md) to see how to set this up. 
+[Logic Apps](https://azure.microsoft.com/en-us/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the event grid topic. Please refer to the [setup](./setup.md#connect-event-grid-to-logic-app) to see how to set this up. 
 
 In the reference implementation, the logic app is triggered by the Event Grid topic to send an Email to admins about the trip:
 
@@ -529,69 +529,69 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 The Event handler also has a special binding for `SignalR` service which defines a hub called `trips`. When an event arrives, the above function triggers a client method (based on the subject) to notify of the trip update.
 
-###### .NET SignalR Client
+###### DOTNET SignalR Client
 
 A .NET SignalR client can be written to receive the `SignalR` messages:
 
 ```csharp
-    // Get the SingalR service url and access token by calling the `signalrinfo` API
-    var singnalRInfo = await GetSignalRInfo();
-    if (singnalRInfo == null)
-        throw new Exception("SignalR info is NULL!");
+// Get the SingalR service url and access token by calling the `signalrinfo` API
+var singnalRInfo = await GetSignalRInfo();
+if (singnalRInfo == null)
+    throw new Exception("SignalR info is NULL!");
 
-    var connection = new HubConnectionBuilder()
-    .WithUrl(singnalRInfo.Endpoint, option =>
+var connection = new HubConnectionBuilder()
+.WithUrl(singnalRInfo.Endpoint, option =>
+{
+    option.AccessTokenProvider = () =>
     {
-        option.AccessTokenProvider = () =>
-        {
-            return Task.FromResult(singnalRInfo.AccessKey);
-        };
-    })
-    .ConfigureLogging( logging =>
-    {
-        logging.AddConsole();
-    })
-    .Build();
+        return Task.FromResult(singnalRInfo.AccessKey);
+    };
+})
+.ConfigureLogging( logging =>
+{
+    logging.AddConsole();
+})
+.Build();
 
-    connection.On<TripItem>("tripUpdated", (trip) =>
-    {
-        Console.WriteLine($"tripUpdated - {trip.Code}");
-    });
+connection.On<TripItem>("tripUpdated", (trip) =>
+{
+    Console.WriteLine($"tripUpdated - {trip.Code}");
+});
 
-    connection.On<TripItem>("tripDriversNotified", (trip) =>
-    {
-        Console.WriteLine($"tripDriversNotified - {trip.Code}");
-    });
+connection.On<TripItem>("tripDriversNotified", (trip) =>
+{
+    Console.WriteLine($"tripDriversNotified - {trip.Code}");
+});
 
-    connection.On<TripItem>("tripDriverPicked", (trip) =>
-    {
-        Console.WriteLine($"tripDriverPicked - {trip.Code}");
-    });
+connection.On<TripItem>("tripDriverPicked", (trip) =>
+{
+    Console.WriteLine($"tripDriverPicked - {trip.Code}");
+});
 
-    connection.On<TripItem>("tripStarting", (trip) =>
-    {
-        Console.WriteLine($"tripStarting - {trip.Code}");
-    });
+connection.On<TripItem>("tripStarting", (trip) =>
+{
+    Console.WriteLine($"tripStarting - {trip.Code}");
+});
 
-    connection.On<TripItem>("tripRunning", (trip) =>
-    {
-        Console.WriteLine($"tripRunning - {trip.Code}");
-    });
+connection.On<TripItem>("tripRunning", (trip) =>
+{
+    Console.WriteLine($"tripRunning - {trip.Code}");
+});
 
-    connection.On<TripItem>("tripCompleted", (trip) =>
-    {
-        Console.WriteLine($"tripCompleted - {trip.Code}");
-    });
+connection.On<TripItem>("tripCompleted", (trip) =>
+{
+    Console.WriteLine($"tripCompleted - {trip.Code}");
+});
 
-    connection.On<TripItem>("tripAborted", (trip) =>
-    {
-        Console.WriteLine($"tripAborted - {trip.Code}");
-    });
+connection.On<TripItem>("tripAborted", (trip) =>
+{
+    Console.WriteLine($"tripAborted - {trip.Code}");
+});
 
-    await connection.StartAsync();
+await connection.StartAsync();
 
-    Console.WriteLine("SignalR client started....waiting for messages from server. To cancel......press any key!");
-    Console.ReadLine();
+Console.WriteLine("SignalR client started....waiting for messages from server. To cancel......press any key!");
+Console.ReadLine();
 ```
 
 Where `GetSignalRInfo` retrieves via a `Get` operation the `SignalR Info` from a Function also defined in the `Trips Function App`: 
@@ -743,7 +743,7 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 }
 ```
 
-**Please note** that the  handler currently only processes the `completed` and `aborted` trip events. But it is a good idea to actually store all trip events so something like [Event Sourcing](https://microservices.io/patterns/data/event-sourcing.html) can be implemented if desired. This is outside the scope of this solution.
+**Please note** that the  handler currently only processes the `completed` and `aborted` trip events. But it is a good idea to actually store all trip events which paves the way to support [Event Sourcing](https://microservices.io/patterns/data/event-sourcing.html) if desired. This is outside the scope of this solution.
 
 The handler calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for more details on the SQL Database. 
 
@@ -771,7 +771,7 @@ Relecloud decided to use [Cosmos]() as the main data storage for the solution em
 
 **Please note** that the Cosmos `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. Obviously this needs to be better addressed in a real solution. 
 
-Relecloud also decided to use Azure SQL Database to persist trip summaries so they can be reported on in PowerBI, for example. To this end, the solution defines a `TripFact` table to store the trip flat summaries. Please refer to the [setup](./setup.md) to learn how you provision it.
+Relecloud also decided to use Azure SQL Database to persist trip summaries so they can be reported on in PowerBI, for example. To this end, the solution defines a `TripFact` table to store the trip flat summaries. Please refer to the [setup](./setup.md#create-tripfact-table) to learn how you provision it.
 
 ## Source Code Structure
 
