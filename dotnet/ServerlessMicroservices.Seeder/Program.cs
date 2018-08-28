@@ -178,7 +178,7 @@ namespace ServerlessMicroservices.Seeder
          */
         static async Task TestSignalR(string env)
         {
-            // Get the SingalR service url and access token by calling the `singnalrinfo` API
+            // Get the SingalR service url and access token by calling the `signalrinfo` API
             var singnalRInfo = await GetSignalRInfo(env);
             if (singnalRInfo == null)
                 throw new Exception("SignalR info is NULL!");

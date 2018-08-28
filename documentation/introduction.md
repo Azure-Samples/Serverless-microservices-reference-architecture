@@ -12,6 +12,8 @@ In this document:
     - [Event Grid](#event-grid)
         - [Logic App handler](#logic-app-handler)
         - [SignalR Handler](#signalr-handler)
+            - [.NET SignalR Client](#.net-signalr-client)
+            - [JavaScript SignalR Client](#javascript-signalr-client)
         - [PowerBI Handler](#powerbi-handler)
         - [Archiver Handler](#archiver-handler)
 - [DataStorage](#data-storage)
@@ -394,6 +396,59 @@ The durable orchestrators externalize the trip at the following events:
 }
 ```
 
+The `trip item` is defined this way:
+
+```csharp
+public class TripItem : BaseItem
+{
+    [JsonProperty(PropertyName = "code")]
+    public string Code { get; set; } = "";
+
+    // Included here ...just in case the passenger state changed ...this captures the passenger state at the time of the trip
+    [JsonProperty(PropertyName = "passenger")]
+    public PassengerItem Passenger { get; set; } = new PassengerItem();
+
+    // Included here ...just in case the driver state changed ...this captures the driver state at the time of the trip
+    [JsonProperty(PropertyName = "driver")]
+    public DriverItem Driver { get; set; } = null;
+
+    // Included here ...just in case the driver state changed ...this captures the available drivers state at the time of the trip
+    [JsonProperty(PropertyName = "availableDrivers")]
+    public List<DriverItem> AvailableDrivers { get; set; } = new List<DriverItem>();
+    
+    [JsonProperty(PropertyName = "source")]
+    public TripLocation Source { get; set; } = new TripLocation();
+
+    [JsonProperty(PropertyName = "destination")]
+    public TripLocation Destination { get; set; } = new TripLocation();
+
+    [JsonProperty(PropertyName = "acceptDate")]
+    public DateTime? AcceptDate { get; set; } = null;
+
+    [JsonProperty(PropertyName = "startDate")]
+    public DateTime StartDate  { get; set; } = DateTime.Now;
+
+    [JsonProperty(PropertyName = "endDate")]
+    public DateTime? EndDate { get; set; } = null;
+
+    // Computed values
+    [JsonProperty(PropertyName = "duration")]
+    public double Duration { get; set; } = 0;
+
+    [JsonProperty(PropertyName = "monitorIterations")]
+    public int MonitorIterations { get; set; } = 0;
+
+    [JsonProperty(PropertyName = "isAborted")]
+    public bool IsAborted { get; set; } = false;
+
+    [JsonProperty(PropertyName = "error")]
+    public string Error { get; set; } = "";
+
+    [JsonProperty(PropertyName = "type")]
+    public TripTypes Type { get; set; } = TripTypes.Normal;
+}
+```
+
 The trips are externalized to an [Event Grid Topic](https://docs.microsoft.com/en-us/azure/event-grid/overview). The key advantages of the Event Grid Topic are:
 
 - The emitter fires and forgets. No need to wait until a response arrives. 
@@ -421,6 +476,7 @@ Azure Functions provide a special binding `EventGridEvent` which makes receiving
 ```csharp
 [FunctionName("EVGH_TripExternalizations2SignalR")]
 public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] EventGridEvent eventGridEvent,
+    [SignalR(HubName = "trips")] IAsyncCollector<SignalRMessage> signalRMessages, 
     ILogger log)
 {
     log.LogInformation($"ProcessTripExternalizations2SignalR triggered....EventGridEvent" +
@@ -434,11 +490,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
     {
         TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
         if (trip == null)
-            throw new Exception("Trip i snull!");
+            throw new Exception("Trip is null!");
 
         log.LogInformation($"ProcessTripExternalizations2SignalR trip code {trip.Code}");
 
-        //Do something with the trip...
+        // Convert the `event subject` to a method to be called on clients
+        var clientMethod = "tripUpdated";
+        if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_DRIVERS_NOTIFIED)
+            clientMethod = "tripDriversNotified";
+        else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_DRIVER_PICKED)
+            clientMethod = "tripDriverPicked";
+        else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_STARTING)
+            clientMethod = "tripStarting";
+        else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_RUNNING)
+            clientMethod = "tripRunning";
+        else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_COMPLETED)
+            clientMethod = "tripCompleted";
+        else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_ABORTED)
+            clientMethod = "tripAborted";
+
+        log.LogInformation($"ProcessTripExternalizations2SignalR firing SignalR `{clientMethod}` client method!");
+        await signalRMessages.AddAsync(new SignalRMessage()
+        {
+            Target = clientMethod,
+            Arguments = new object[] { trip}
+        });
     }
     catch (Exception e)
     {
@@ -451,7 +527,178 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 **Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
 
-TBA - Details 
+The Event handler also has a special binding for `SignalR` service which defines a hub called `trips`. When an event arrives, the above function triggers a client method (based on the subject) to notify of the trip update.
+
+###### .NET SignalR Client
+
+A .NET SignalR client can be written to receive the `SignalR` messages:
+
+```csharp
+    // Get the SingalR service url and access token by calling the `signalrinfo` API
+    var singnalRInfo = await GetSignalRInfo();
+    if (singnalRInfo == null)
+        throw new Exception("SignalR info is NULL!");
+
+    var connection = new HubConnectionBuilder()
+    .WithUrl(singnalRInfo.Endpoint, option =>
+    {
+        option.AccessTokenProvider = () =>
+        {
+            return Task.FromResult(singnalRInfo.AccessKey);
+        };
+    })
+    .ConfigureLogging( logging =>
+    {
+        logging.AddConsole();
+    })
+    .Build();
+
+    connection.On<TripItem>("tripUpdated", (trip) =>
+    {
+        Console.WriteLine($"tripUpdated - {trip.Code}");
+    });
+
+    connection.On<TripItem>("tripDriversNotified", (trip) =>
+    {
+        Console.WriteLine($"tripDriversNotified - {trip.Code}");
+    });
+
+    connection.On<TripItem>("tripDriverPicked", (trip) =>
+    {
+        Console.WriteLine($"tripDriverPicked - {trip.Code}");
+    });
+
+    connection.On<TripItem>("tripStarting", (trip) =>
+    {
+        Console.WriteLine($"tripStarting - {trip.Code}");
+    });
+
+    connection.On<TripItem>("tripRunning", (trip) =>
+    {
+        Console.WriteLine($"tripRunning - {trip.Code}");
+    });
+
+    connection.On<TripItem>("tripCompleted", (trip) =>
+    {
+        Console.WriteLine($"tripCompleted - {trip.Code}");
+    });
+
+    connection.On<TripItem>("tripAborted", (trip) =>
+    {
+        Console.WriteLine($"tripAborted - {trip.Code}");
+    });
+
+    await connection.StartAsync();
+
+    Console.WriteLine("SignalR client started....waiting for messages from server. To cancel......press any key!");
+    Console.ReadLine();
+```
+
+Where `GetSignalRInfo` retrieves via a `Get` operation the `SignalR Info` from a Function also defined in the `Trips Function App`: 
+
+```csharp
+[FunctionName("GetSignalRInfo")]
+public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
+    [SignalRConnectionInfo(HubName = "trips")] AzureSignalRConnectionInfo info,
+    ILogger log)
+{
+    log.LogInformation("GetSignalRInfo triggered....");
+
+    try
+    {
+        if (info == null)
+            throw new Exception("SignalR Info is null!");
+
+        return (ActionResult)new OkObjectResult(info);
+    }
+    catch (Exception e)
+    {
+        var error = $"GetSignalRInfo failed: {e.Message}";
+        log.LogError(error);
+        return new BadRequestObjectResult(error);
+    }
+}
+```
+
+###### JavaScript SignalR Client
+
+A JavaScript SignalR client can be written to receive the `SignalR` messages:
+
+```JavaScript
+let signalRInfoUrl = "<trips-function-app-base-url>/api/signalrinfo";
+let hubConnection = {};
+
+getSignalRInfoAsync = async (url) => {
+	console.log(`SignalR Info URL ${url}`);
+	const rawResponse = await fetch(url, {
+        method: "GET", // *GET, POST, PUT, DELETE, etc.
+        mode: "cors", // no-cors, cors, *same-origin
+        cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+        credentials: "same-origin", // include, same-origin, *omit
+        headers: {
+            "Content-Type": "application/json; charset=utf-8"
+        },
+        redirect: "follow", // manual, *follow, error
+        referrer: "no-referrer" // no-referrer, *client
+    });
+	if (rawResponse.status === 200) {
+		let signalRInfo = await rawResponse.json();
+		console.log(signalRInfo);
+		console.log(signalRInfo.accessKey);
+		console.log(signalRInfo.endpoint);
+		return signalRInfo;
+	} else {
+		alert(`getSignalRInfoAsync Response status: ${rawResponse.status}`);
+		return null;
+	}
+}
+
+document.getElementById("start").addEventListener("click", async e => {
+    e.preventDefault();
+
+	let info = await getSignalRInfoAsync(signalRInfoUrl);
+	if (info != null) {
+		let options = {
+			accessTokenFactory: () => info.accessKey
+		};
+
+		hubConnection = new signalR.HubConnectionBuilder()
+			.withUrl(info.endpoint, options)
+			.configureLogging(signalR.LogLevel.Information)
+			.build();
+
+		hubConnection.on('tripUpdated', (trip) => {
+			console.log(`tripUpdated: ${trip.code}`);
+		});
+
+		hubConnection.on('tripDriversNotified', (trip) => {
+			console.log(`tripDriversNotified: ${trip.code}`);
+		});
+
+		hubConnection.on('tripDriverPicked', (trip) => {
+			console.log(`tripDriverPicked: ${trip.code}`);
+		});
+
+		hubConnection.on('tripStarting', (trip) => {
+			console.log(`tripStarting: ${trip.code}`);
+		});
+
+		hubConnection.on('tripRunning', (trip) => {
+			console.log(`tripRunning: ${trip.code}`);
+		});
+
+		hubConnection.on('tripCompleted', (trip) => {
+			console.log(`tripCompleted: ${trip.code}`);
+		});
+
+		hubConnection.on('tripAborted', (trip) => {
+			console.log(`tripAborted: ${trip.code}`);
+		});
+
+		hubConnection.start().catch(err => console.error(err.toString()));
+	}
+});
+```
 
 ##### PowerBI Handler
 
@@ -495,7 +742,10 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
     }
 }
 ```
-The handler only cares about the `completed` and `aborted` trip events. It then calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for more details on the SQL Database. 
+
+**Please note** that the  handler currently only processes the `completed` and `aborted` trip events. But it is a good idea to actually store all trip events so something like [Event Sourcing](https://microservices.io/patterns/data/event-sourcing.html) can be implemented if desired. This is outside the scope of this solution.
+
+The handler calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for more details on the SQL Database. 
 
 Once in SQL, the data can be used to construct a PowerBI report to provide different performance indicators:
 - Total Trips 
