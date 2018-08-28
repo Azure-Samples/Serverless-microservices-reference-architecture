@@ -18,7 +18,7 @@ In this document:
         - [Archiver Handler](#archiver-handler)
 - [DataStorage](#data-storage)
 - [Source Code Structure](#source-code-structure)
-    - [.NET](#.net)
+    - [DOTNET](#dotnet)
     - [Node](#node)
     - [Web](#web)
 - [Integration Testing](#integration-testing)
@@ -775,7 +775,7 @@ Relecloud also decided to use Azure SQL Database to persist trip summaries so th
 
 ## Source Code Structure
 
-### .NET
+### DOTNET
 
 The .NET solution conists of 7 projects:
 
