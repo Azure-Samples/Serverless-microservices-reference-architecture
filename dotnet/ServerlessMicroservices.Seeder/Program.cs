@@ -13,8 +13,6 @@ namespace ServerlessMicroservices.Seeder
 {
     class Program
     {
-        private static string _tripTestParametersUrl = "";
-
         static void Main(string[] args)
         {
             var app = new CommandLineApplication();
@@ -58,7 +56,7 @@ namespace ServerlessMicroservices.Seeder
                         }
 
                         Console.WriteLine($"Iteration {i} starting....");
-                        await TestTrips();
+                        await TestTrips(url);
                         Console.WriteLine($"Iteration {i} completed");
                     }
 
@@ -89,10 +87,10 @@ namespace ServerlessMicroservices.Seeder
         /*
          * This is end-to-end trip testing
          */
-        static async Task TestTrips()
+        static async Task TestTrips(string url)
         {
             // Read the test parameters
-            var tripTasks = await Utilities.Get<List<TripTestParameters>> (null, _tripTestParametersUrl, new Dictionary<string, string>());
+            var tripTasks = await Utilities.Get<List<TripTestParameters>> (null, url, new Dictionary<string, string>());
 
             // Launch the test tasks
             List<Task<TripTestResult>> taskRuns = new List<Task<TripTestResult>>();
