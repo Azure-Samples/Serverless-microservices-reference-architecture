@@ -216,7 +216,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                 await signalRMessages.AddAsync(new SignalRMessage()
                 {
                     Target = clientMethod,
-                    Arguments = new object[] { trip}
+                    Arguments = new object[] { trip }
                 });
             }
             catch (Exception e)
