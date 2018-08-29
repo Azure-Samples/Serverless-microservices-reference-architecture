@@ -1,10 +1,10 @@
 let hubConnection = {};
 
-window.onload = function () {
-  connectToSignalR();
-};
+window.addEventListener("load", async e => {
+  await connectToSignalRAsync();
+});
 
-var getSignalRInfoAsync = async (url) => {
+getSignalRInfoAsync = async (url) => {
   console.log(`SignalR Info URL ${url}`);
   const rawResponse = await fetch(url, {
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -38,8 +38,8 @@ var getSignalRInfoAsync = async (url) => {
   }
 }
 
-function connectToSignalR() {
-  let singalrInfo = getSignalRInfoAsync(window.singalrInfoUrl);
+connectToSignalRAsync = async () => {
+  let singalrInfo = await getSignalRInfoAsync(window.singalrInfoUrl);
   if (singalrInfo != null) {
     let options = {
       accessTokenFactory: () => singalrInfo.accessKey
