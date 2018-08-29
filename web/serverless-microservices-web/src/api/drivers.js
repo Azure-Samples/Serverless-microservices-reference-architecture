@@ -33,14 +33,14 @@ export function getDriverLocationChanges (driverCode) {
 
 // POST methods
 export function createDriver (driver) {
-  return postApi(`${baseUrl}/drivers?${code}`, {}, apiKey, driver).then(checkResponse);
+  return postApi(`${baseUrl}/drivers?${code}`, driver, apiKey).then(checkResponse);
 }
 
 // PUT methods
 export function updateDriver (driver) {
-  return putApi(`${baseUrl}/drivers?${code}`, {}, apiKey, driver).then(checkResponse);
+  return putApi(`${baseUrl}/drivers?${code}`, driver, apiKey).then(checkResponse);
 }
 
 export function updateDriverLocation (driver) {
-  return putApi(`${baseUrl}/driverlocations?${code}`, {}, apiKey, driver).then(checkResponse);
+  return putApi(`${baseUrl}/driverlocations?${code}`, driver, apiKey).then(checkResponse);
 }
