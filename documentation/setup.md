@@ -80,7 +80,7 @@ There are 3 ways to provision the required resources:
 
 - [Manual via the Portal](#manual-via-the-portal)
 - [ARM Template](#arm-template)
-- [Cake](#cake)
+- [Cake](#cake-provision)
 
 ### Manual via the Portal
 
@@ -462,23 +462,38 @@ Therefore we want to create a new product and add to it several APIs.
 
 5.  Repeat step 4 for the `Trips` and `Passengers` Function Apps. The `Orchestrators` are not exposed to the outside world and hence they should not be added to APIM.
 
-6. For each API we created, we need to design its operations. As noted aboce, this step will have to be done manually for V2 Beta. Select `Design` and click on **Add operation** for each operation (**please note** that the API operations are listed below so they can be added manually). Complete the operation form as shown here for a sample operation:
+6. For each API we created, we need to design its operations. As noted above, this step will have to be done manually for V2 Beta. Select `Design` and click on **Add operation** for each operation (**please note** that the API operations are listed below so they can be added manually). Complete the operation form as shown here for a sample operation:
 
     1. **Display Name**: Enter a name i.e. `Get Driver Locations`.
     2. **Name**: Enter an identifier `get-driver-locations`.
-    3. **URL**: `GET`//driverlocations/{code}
+    3. **URL**: `GET`/driverlocations/{code}
     4. **Description**: Enter optional description
     5. **Template**: The URL slug may contain replaceable parameters such as `/driverlocations/{code}`. The `{code}` needs to be defined in the template:
         - *Name*: code
         - *Description*: Driver Code
         - *Type*: string
         - *Required*: yes 
-    6. **Query**: The URL may need to contain a query parameters. In the function apps, the `code` is the function auth key. It must be defined here as a query parameter :
-        - *Name*: code
-        - *Description*: Function Code
-        - *Type*: string
-        - *Values*: Provide the Function Auth Code as a default value 
-        - *Required*: yes 
+    6. **Inbound Policy**: Add an inbound policy to automatically inject the `Function Auth Code` as a query parameter (if it does not exist) so it can be passed to the actual Function API. The inbound policy may look something like this:
+
+    ```xml
+    <policies>
+        <inbound>
+            <base />
+            <set-query-parameter name="code" exists-action="skip">
+                <value>--function code--</value>
+            </set-query-parameter>
+        </inbound>
+        <backend>
+            <base />
+        </backend>
+        <outbound>
+            <base />
+        </outbound>
+        <on-error>
+            <base />
+        </on-error>
+    </policies>
+    ```
 
     ![Screenshot of the API Management operation form](media/apim-operation-creation.png)
 
