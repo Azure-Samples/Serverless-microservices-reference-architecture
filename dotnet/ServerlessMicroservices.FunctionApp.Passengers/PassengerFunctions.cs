@@ -55,6 +55,7 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
                 var (passenger, error) = await passengers.GetUserById(userid);
                 if (!string.IsNullOrWhiteSpace(error))
                     throw new Exception(error);
+
                 return (ActionResult)new OkObjectResult(passenger);
             }
             catch (Exception e)
