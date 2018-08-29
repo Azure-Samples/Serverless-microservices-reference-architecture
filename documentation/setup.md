@@ -72,7 +72,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 
 :eight_spoked_asterisk: **Please note** that, in some cases, the resource names must be unique globally. We suggest you append an identifier to the above reosurce names so they become unique i.e. `ridesharefunctionstore-xyzw`, `rideshare-xyzw`, etc.   
 
-:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to [provision](#cake-provision) or [deploy](#cake-deployment), you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to [provision](#cake-provision) or [deploy](#cake-deployment), you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
 ## Provision
 
@@ -389,21 +389,21 @@ graphURL=https\://graph.windows.net/
 
 If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
 
-:eight_spoked_asterisk: **Please note** that you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
 Once the above is completed, from a PowerShell command, use the following commands to provision the `Dev` and `Prod` environments:
 
 - `./build.ps1 -Target Provision -ScriptArgs '--Env=Dev'`
 - `./build.ps1 -Target Provision -ScriptArgs '--Env=Prod'`
 
-**Please note** that provisiong a Cosmos DB Account takes a long time to be online. If you proceed with creating a database and the colections while the DB account status is `Creating`, you will get an error that says something like `bad request` without much of an explanation. Once the DB Account becomes `Online`, you can continue to provision the rest (by re-invoking the `provision` command). The exact error is: One or more errors occurred. Long running operation failed with status 'BadRequest'.
+**Please note** that provisiong a Cosmos DB Account takes a long time to be online. If you proceed with creating a database and the colections while the DB account status is `Creating`, you will get an error that says something like `bad request` without much of an explanation. Once the DB Account becomes `Online`, you can continue to provision the rest (by re-invoking the `provision` command). The exact error is: One or more errors occurred. Long running operation failed with status `BadRequest`.
 
 Unfortunately, the Cake script cannot provision the following resources because they are currently not supported in the [Azure Management Libraries for .NET](https://github.com/Azure/azure-libraries-for-net). So please complete the following provisions manually as described in the manual steps above:
 
 - [Event Grid](#create-the-event-grid-topic)
 - [Application Insights](#create-the-application-insights-resource)
 - [Logic App](#create-the-logic-app)
-- [API Manager](#create-the-api-management-service)
+- [API Management Service](#create-the-api-management-service)
 - [SignalR Service](#create-the-signalr-service)
 - [B2C Tenant](#create-the-b2c-tenant)
 
@@ -767,13 +767,13 @@ Web App
 
 ## Cake Deployment
 
-The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake) provision section to know how to do this. 
+The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake-provision) provision section to know how to do this. 
 
 **Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
 Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps. 
 
-:eight_spoked_asterisk: **Please note** that you must adjust the `paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
 From a PowerShell command, use the following commands for the `Dev` environment:
 
