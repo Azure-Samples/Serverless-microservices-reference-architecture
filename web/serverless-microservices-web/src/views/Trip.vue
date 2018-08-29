@@ -90,6 +90,10 @@
 import { createNamespacedHelpers } from 'vuex';
 const { mapGetters: commonGetters } = createNamespacedHelpers('common');
 import { getDrivers, getDriver } from '@/api/drivers';
+import { createTrip } from '@/api/trips';
+import { getPassenger } from '@/api/passengers';
+import { Authentication } from '@/utils/Authentication';
+const auth = new Authentication();
 
 export default {
   name: 'Drivers',
@@ -97,10 +101,12 @@ export default {
   data() {
     return {
       drivers: [],
+      trip: {},
       selectedDriver: null,
       selectedPickUpLocation: null,
       selectedDestinationLocation: null,
       driverInfo: null,
+      passengerInfo: null,
       html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
       fields: [
         { key: 'code', label: 'Code', sortable: true },
@@ -144,7 +150,7 @@ export default {
       return this.selectedPickUpLocation === null || this.selectedDestinationLocation === null;
     }
   },
-  methods: {
+  methods: {    
     retrieveDrivers() {
       getDrivers()
         .then(response => {
@@ -157,6 +163,30 @@ export default {
             this.notificationSystem.options.error
           );
         });
+    },
+    createTrip(trip) {
+      createTrip(trip)
+      .then(response => {
+        this.trip = response.data;
+        //TODO: Remove this when the SignalR Notifications is in place.
+        this.$toast.success(
+            `Request Code: <b>${this.trip.code}`,
+            'Driver Requested Successfully',
+            this.notificationSystem.options.success
+        );
+        // this.$toast.success(
+        //     `Name: <b>${driver.firstName} ${driver.lastName}</b>.<br/>Car: ${driver.car.color} ${driver.car.year} ${driver.car.make} ${driver.car.model}<br/>License Plate: ${driver.car.licensePlate}`,
+        //     'Driver Found',
+        //     this.notificationSystem.options.success
+        // );
+      })
+      .catch(err => {
+        this.$toast.error(
+          err.response,
+          'Error',
+          this.notificationSystem.options.error
+        );
+      });
     },
     requestDriver(){
         var selectedDriver;
@@ -171,9 +201,7 @@ export default {
                 break;
             }    
         }
-        this.selectDriver(selectedDriver);
-    },
-    selectDriver(driver) {
+
         if (driver === undefined){
             this.$toast.warning(
                 `Please try again later.`,
@@ -182,13 +210,44 @@ export default {
             );
         }
         else {
-            this.$toast.success(
-                `Name: <b>${driver.firstName} ${driver.lastName}</b>.<br/>Car: ${driver.car.color} ${driver.car.year} ${driver.car.make} ${driver.car.model}<br/>License Plate: ${driver.car.licensePlate}`,
-                'Driver Found',
-                this.notificationSystem.options.success
-            );
             this.selectedDriver = driver;
+            this.selectDriver();
         }
+    },
+    selectDriver(){
+        var user = auth.getUser();
+
+        getPassenger(user.idToken.oid)
+        .then(response => {
+            this.passengerInfo = response.data;
+
+            var trip = {
+                "passenger": {
+                    "code": this.passengerInfo.email,
+                    "firstName": this.passengerInfo.givenName,
+                    "surname": this.passengerInfo.surname,
+                    //"mobileNumber": this.passengerInfo.mobileNumber,
+                    "email": this.passengerInfo.givenName
+                },
+                "source": {
+                    "latitude": this.selectedPickUpLocation.latitude,
+                    "longitude": this.selectedPickUpLocation.longitude
+                },
+                "destination": {
+                    "latitude": this.selectedDestinationLocation.latitude,
+                    "longitude": this.selectedDestinationLocation.longitude
+                },
+                "type" : 1 //0 = Normal, 1 = Demo
+            }
+            this.createTrip(trip);
+        })
+        .catch(err => {
+            this.$toast.error(
+                err.response,
+                'Error',
+                this.notificationSystem.options.error
+            );
+        });
     },
     selectPickup(location) {
       this.$toast.success(
