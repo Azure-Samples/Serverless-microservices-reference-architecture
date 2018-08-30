@@ -165,8 +165,10 @@ export default {
         });
     },
     createTrip(trip) {
+      this.contentLoading = true;
       createTrip(trip)
       .then(response => {
+        this.contentLoading = false;
         this.trip = response.data;
         //TODO: Remove this when the SignalR Notifications is in place.
         this.$toast.success(
