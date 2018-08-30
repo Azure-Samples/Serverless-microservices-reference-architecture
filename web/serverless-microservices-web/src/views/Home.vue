@@ -5,7 +5,7 @@
             <div class="row h-100">
                 <div class="col-lg-7 my-auto">
                     <div class="mx-auto header-content">
-                        <h1 class="mb-5">Rideshare by Relecloud will get you there! Find a driver in seconds. Forget about the other crowded and tired options and improve your ride share experience today.</h1><a class="btn btn-outline-warning btn-xl js-scroll-trigger" role="button" href="trip.html">Find my ride!</a></div>
+                        <h1 class="mb-5">Rideshare by Relecloud will get you there! Find a driver in seconds. Forget about the other crowded and tired options and improve your ride share experience today.</h1><a class="btn btn-outline-warning btn-xl js-scroll-trigger" role="button" href="trip">Find my ride!</a></div>
                 </div>
                 <div class="col-lg-5 my-auto">
                     <div class="device-container">
@@ -85,7 +85,7 @@
     <section class="cta cta-background">
         <div class="cta-content">
             <div class="container">
-                <h2>Stop waiting.<br>Start riding.<br></h2><a class="btn btn-outline-warning btn-xl js-scroll-trigger" role="button" href="trip.html">Find my ride!</a></div>
+                <h2>Stop waiting.<br>Start riding.<br></h2><a class="btn btn-outline-warning btn-xl js-scroll-trigger" role="button" href="trip">Find my ride!</a></div>
         </div>
         <div class="overlay"></div>
     </section>
