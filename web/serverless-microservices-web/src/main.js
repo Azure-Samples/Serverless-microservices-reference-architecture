@@ -50,7 +50,7 @@ async function main() {
   //setHttpHeaders();
 
   /* eslint-disable no-new */
-  window.App = new Vue({
+  new Vue({
     el: '#app',
     store,
     router,

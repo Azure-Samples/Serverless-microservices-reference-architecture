@@ -1,8 +1,0 @@
-{
-  "IsEncrypted": false,
-  "Values": {
-    "FUNCTIONS_WORKER_RUNTIME": "node",
-    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
-    "AzureSignalRConnectionString" : "Endpoint=https://rideshare.service.signalr.net;AccessKey=s6iI47rcIhXfGzouajl9Vh0OBCTJAp/7YD07MkVwbZk=;"
-  }
-}
