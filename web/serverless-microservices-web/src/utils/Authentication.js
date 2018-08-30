@@ -50,16 +50,41 @@ export class Authentication {
   }
 
   getAccessToken() {
-    return this._userAgentApplication.acquireTokenSilent(this._scopes);
+    return this._userAgentApplication.acquireTokenSilent(this._scopes).then(
+      accessToken => {
+        return accessToken;
+      },
+      error => {
+        return this._userAgentApplication.acquireTokenPopup(this._scopes).then(
+          accessToken => {
+            return accessToken;
+          },
+          err => {
+            console.error(err);
+          }
+        );
+      }
+    );
   }
 
   login() {
-    this._userAgentApplication.loginRedirect(this._scopes);
+    //this._userAgentApplication.loginRedirect(this._scopes);
+    return this._userAgentApplication.loginPopup(this._scopes).then(
+      idToken => {
+        const user = this._userAgentApplication.getUser();
+        if (user) {
+          return user;
+        } else {
+          return null;
+        }
+      },
+      () => {
+        return null;
+      }
+    );
   }
 
   logout() {
-    localStorage.removeItem(ACCESS_TOKEN);
-    localStorage.removeItem(EXPIRES_AT);
     this._userAgentApplication.logout();
   }
 

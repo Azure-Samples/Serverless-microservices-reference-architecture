@@ -3,6 +3,7 @@ export default {
 
   state() {
     return {
+      user: null,
       notificationSystem: {
         options: {
           info: {
@@ -23,14 +24,22 @@ export default {
   },
 
   getters: {
+    user: state => state.user,
     notificationSystem: state => state.notificationSystem
   },
 
   mutations: {
+    user(state, value) {
+      state.user = value;
+    },
     notificationSystem(state, value) {
       state.notificationSystem = value;
     }
   },
 
-  actions: {}
+  actions: {
+    setUser({ commit }, value) {
+      commit('user', value);
+    }
+  }
 };

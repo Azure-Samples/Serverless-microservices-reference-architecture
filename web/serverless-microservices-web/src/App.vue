@@ -19,11 +19,11 @@
                   <li class="nav-item" role="presentation">
                     <router-link :to="{ name: 'drivers' }" class="nav-link">Drivers</router-link>
                   </li>
-                  <li class="nav-item" role="presentation" v-if="auth.isAuthenticated()" @click="logout()">
-                    <router-link :to="{ name: 'home' }" class="nav-link">Logout</router-link>
+                  <li class="nav-item" role="presentation" v-if="this.user">
+                    <a href="#" class="nav-link" @click.stop="logout()">Logout</a>
                   </li>
-                  <li class="nav-item" role="presentation" v-else> <!--Add this to Login  @click="login()"-->
-                    <router-link :to="{ name: 'login' }" class="nav-link">Login</router-link>
+                  <li class="nav-item" role="presentation" v-else>
+                    <a href="#" class="nav-link" @click.stop="login()">Login</a>
                   </li>
               </ul>
         </div>
@@ -36,9 +36,14 @@
 </template>
 
 <script>
+import { createNamespacedHelpers } from 'vuex';
 import { Authentication } from '@/utils/Authentication';
 const auth = new Authentication();
 const { login, logout, getUser, getAccessToken, authenticated } = auth;
+const {
+  mapGetters: commonGetters,
+  mapActions: commonActions
+} = createNamespacedHelpers('common');
 
 export default {
   name: 'App',
@@ -48,13 +53,38 @@ export default {
       authenticated
     };
   },
+  computed: {
+    ...commonGetters(['user'])
+  },
   methods: {
+    ...commonActions(['setUser']),
     login() {
-        auth.login();
-      },
+      auth.login().then(
+        user => {
+          if (user) {
+            this.setUser(user);
+          } else {
+            this.setUser(null);
+          }
+        },
+        () => {
+          this.setUser(null);
+        }
+      );
+    },
     logout() {
-        auth.logout();
-      },
+      auth.logout().then(() => {
+        this.setUser(null);
+      });
+    }
+  },
+  mounted() {
+    let user = auth.getUser();
+    if (user) {
+      this.setUser(user);
+    } else {
+      this.setUser(null);
+    }
   }
 };
 </script>
