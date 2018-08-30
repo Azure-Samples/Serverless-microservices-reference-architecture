@@ -62,7 +62,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripUpdated', (trip) => {
       console.log(`tripUpdated Trip code: ${trip.code}`);
       vueApp.$toast.success(
-        `tripUpdated for trip ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripUpdated.`,
         'Trip Updated',
         notificationSystem.options.success
       );
@@ -71,7 +71,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripDriversNotified', (trip) => {
       console.log(`tripDriversNotified Trip code: ${trip.code}`);
       vueApp.$toast.info(
-        `tripDriversNotified for trip ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripDriversNotified.`,
         'Drivers Notified',
         notificationSystem.options.info
       );
@@ -80,7 +80,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripDriverPicked', (trip) => {
       console.log(`tripDriverPicked Trip code: ${trip.code}`);
       vueApp.$toast.info(
-        `tripDriverPicked for trip ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripDriverPicked.`,
         'Driver Picked',
         notificationSystem.options.info
       );
@@ -89,7 +89,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripStarting', (trip) => {
       console.log(`tripStarting Trip code: ${trip.code}`);
       vueApp.$toast.info(
-        `tripStarting for trip ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripStarting.`,
         'Trip Starting',
         notificationSystem.options.info
       );
@@ -98,7 +98,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripRunning', (trip) => {
       console.log(`tripRunning Trip code: ${trip.code}`);
       vueApp.$toast.info(
-        `tripRunning for trip ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripRunning.`,
         'Trip Running',
         notificationSystem.options.info
       );
@@ -107,7 +107,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripCompleted', (trip) => {
       console.log(`tripCompleted Trip code: ${trip.code}`);
       vueApp.$toast.success(
-        `tripCompleted for trip ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripCompleted.`,
         'Trip Completed',
         notificationSystem.options.success
       );
@@ -116,7 +116,7 @@ connectToSignalRAsync = async () => {
     hubConnection.on('tripAborted', (trip) => {
       console.log(`tripAborted Trip code: ${trip.code}`);
       vueApp.$toast.warning(
-        `tripAborted for trip: ${trip.code}`,
+        `Trip Code: ${trip.code}. Message: tripAborted.`,
         'Trip Aborted',
         notificationSystem.options.warning
       );
