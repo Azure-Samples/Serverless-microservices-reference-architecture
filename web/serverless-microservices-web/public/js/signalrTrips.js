@@ -1,10 +1,27 @@
-let hubConnection = {};
-
-window.onload = function () {
-  connectToSignalR();
+var vueApp;
+var hubConnection;
+var notificationSystem = {
+  options: {
+    info: {
+      position: 'bottomRight'
+    },
+    success: {
+      position: 'bottomRight'
+    },
+    warning: {
+      position: 'bottomRight'
+    },
+    error: {
+      position: 'topRight'
+    }
+  }
 };
 
-var getSignalRInfoAsync = async (url) => {
+window.addEventListener("load", async e => {
+  await connectToSignalRAsync();
+});
+
+getSignalRInfoAsync = async (url) => {
   console.log(`SignalR Info URL ${url}`);
   const rawResponse = await fetch(url, {
     method: 'GET', // *GET, POST, PUT, DELETE, etc.
@@ -20,26 +37,16 @@ var getSignalRInfoAsync = async (url) => {
 
   if (rawResponse.status === 200) {
     let signalRInfo = await rawResponse.json();
-    console.log(`Connection Endpoint: ${signalRInfo.endpoint}`);
-    // this.$toast.success(
-    //   `Connection Endpoint: ${signalRInfo.endpoint}`,
-    //   'Success',
-    //   this.notificationSystem.options.success
-    // );
+    console.log(`Connection Endpoint: ${signalRInfo.endpoint}`);    
     return signalRInfo;
   } else {
     console.log(`getSignalRInfoAsync Response status: ${rawResponse.status}`);
-    // this.$toast.warning(
-    //   `Connection Failure: ${rawResponse.status}`,
-    //   'Error',
-    //   this.notificationSystem.options.success
-    // );
     return null;
   }
 }
 
-function connectToSignalR() {
-  let singalrInfo = getSignalRInfoAsync(window.singalrInfoUrl);
+connectToSignalRAsync = async () => {
+  let singalrInfo = await getSignalRInfoAsync(window.singalrInfoUrl);
   if (singalrInfo != null) {
     let options = {
       accessTokenFactory: () => singalrInfo.accessKey
@@ -50,67 +57,69 @@ function connectToSignalR() {
       .configureLogging(signalR.LogLevel.Information)
       .build();
 
+    vueApp = window.App;
+
     hubConnection.on('tripUpdated', (trip) => {
       console.log(`tripUpdated Trip code: ${trip.code}`);
-      // this.$toast.success(
-      //   `Trip code: ${trip.code}`,
-      //   'Trip Updated',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.success(
+        `tripUpdated for trip ${trip.code}`,
+        'Trip Updated',
+        notificationSystem.options.success
+      );
     });
 
     hubConnection.on('tripDriversNotified', (trip) => {
       console.log(`tripDriversNotified Trip code: ${trip.code}`);
-      // this.$toast.success(
-      //   `Trip code: ${trip.code}`,
-      //   'tripDriversNotified',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.info(
+        `tripDriversNotified for trip ${trip.code}`,
+        'Drivers Notified',
+        notificationSystem.options.info
+      );
     });
 
     hubConnection.on('tripDriverPicked', (trip) => {
       console.log(`tripDriverPicked Trip code: ${trip.code}`);
-      // this.$toast.success(
-      //   `Trip code: ${trip.code}`,
-      //   'tripDriverPicked',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.info(
+        `tripDriverPicked for trip ${trip.code}`,
+        'Driver Picked',
+        notificationSystem.options.info
+      );
     });
 
     hubConnection.on('tripStarting', (trip) => {
       console.log(`tripStarting Trip code: ${trip.code}`);
-      // this.$toast.success(
-      //   `Trip code: ${trip.code}`,
-      //   'tripStarting',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.info(
+        `tripStarting for trip ${trip.code}`,
+        'Trip Starting',
+        notificationSystem.options.info
+      );
     });
 
     hubConnection.on('tripRunning', (trip) => {
       console.log(`tripRunning Trip code: ${trip.code}`);
-      // this.$toast.success(
-      //   `Trip code: ${trip.code}`,
-      //   'tripRunning',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.info(
+        `tripRunning for trip ${trip.code}`,
+        'Trip Running',
+        notificationSystem.options.info
+      );
     });
 
     hubConnection.on('tripCompleted', (trip) => {
       console.log(`tripCompleted Trip code: ${trip.code}`);
-      // this.$toast.success(
-      //   `Trip code: ${trip.code}`,
-      //   'tripCompleted',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.success(
+        `tripCompleted for trip ${trip.code}`,
+        'Trip Completed',
+        notificationSystem.options.success
+      );
     });
 
     hubConnection.on('tripAborted', (trip) => {
       console.log(`tripAborted Trip code: ${trip.code}`);
-      // this.$toast.warning(
-      //   `Trip code: ${trip.code}`,
-      //   'tripAborted',
-      //   this.notificationSystem.options.success
-      // );
+      vueApp.$toast.warning(
+        `tripAborted for trip: ${trip.code}`,
+        'Trip Aborted',
+        notificationSystem.options.warning
+      );
     });
 
     hubConnection.start().catch(err => console.log(err.toString()));
