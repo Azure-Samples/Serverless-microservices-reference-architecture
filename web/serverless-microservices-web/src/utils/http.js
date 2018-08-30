@@ -8,13 +8,27 @@ const validStatuses = [200, 201, 202, 203, 204, 300, 301, 302, 303, 304];
  * Returns default headers list
  * which will be used with every request.
  */
-function getHeaders(token) {
+function getHeaders(token, apiKey) {
   let defaultHeaders = '';
+  let authHeaders = '';
+
+  if (apiKey) {
+    defaultHeaders = {
+      'Cache-Control': 'no-cache',
+      'Ocp-Apim-Trace': true,
+      'Ocp-Apim-Subscription-Key': apiKey
+    };
+  }
 
   if (token) {
-    defaultHeaders = {
+    authHeaders = {
       Authorization: `Bearer ${token}`
     };
+    if (apiKey) {
+      defaultHeaders = { ...defaultHeaders, ...authHeaders };
+    } else {
+      defaultHeaders = authHeaders;
+    }
   }
 
   return defaultHeaders;
@@ -65,58 +79,51 @@ export function qs(params) {
 }
 
 /*
- * Wraps axios and provides
- * more convenient post method
- * calls with data
+ * Helper for POST-ing with required headers.
  */
-export function post(uri, data) {
+export function post(uri, data, apiKey) {
   return auth.getAccessTokenOrLoginWithPopup().then(token => {
     return axios.post(uri, data, {
-      headers: getHeaders(token),
+      headers: getHeaders(token, apiKey),
       withCredentials: false
     });
   });
 }
 
 /*
- * Wraps axios and provides
- * more convenient put method
- * calls with data
+ * Helper for PUT-ing with required headers.
  */
-export function put(uri, data) {
+export function put(uri, data, apiKey) {
   return auth.getAccessTokenOrLoginWithPopup().then(token => {
     return axios.put(uri, data, {
-      headers: getHeaders(token),
+      headers: getHeaders(token, apiKey),
       withCredentials: false
     });
   });
 }
 
 /*
- * Wraps axios and provides
- * more convenient delete method
+ * Helper for DELETE-ing with required headers.
  */
-export function remove(uri) {
+export function remove(uri, apiKey) {
   return auth.getAccessTokenOrLoginWithPopup().then(token => {
     return axios.delete(uri, {
-      headers: getHeaders(token),
+      headers: getHeaders(token, apiKey),
       withCredentials: false
     });
   });
 }
 
 /*
- * Wraps axios and provides
- * more convenient get method
- * calls with data.
+ * Helper for GET-ing with required headers.
  */
-export function get(uri, data = {}) {
+export function get(uri, data = {}, apiKey) {
   if (Object.keys(data).length > 0) {
     uri = `${uri}?${qs(data)}`;
   }
   return auth.getAccessTokenOrLoginWithPopup().then(token => {
     return axios.get(uri, {
-      headers: getHeaders(token),
+      headers: getHeaders(token, apiKey),
       withCredentials: false
     });
   });
@@ -149,7 +156,7 @@ function getApiHeaders(apiKey) {
  * more convenient post method
  * calls with data
  */
-export function postApi (uri, data, apiKey) {
+export function postApi(uri, data, apiKey) {
   return axios.post(uri, data, {
     headers: getApiHeaders(apiKey),
     withCredentials: false
@@ -161,7 +168,7 @@ export function postApi (uri, data, apiKey) {
  * more convenient put method
  * calls with data
  */
-export function putApi (uri, data, apiKey) {
+export function putApi(uri, data, apiKey) {
   return axios.put(uri, data, {
     headers: getApiHeaders(apiKey),
     withCredentials: false
@@ -173,7 +180,7 @@ export function putApi (uri, data, apiKey) {
  * more convenient get method
  * calls with data.
  */
-export function getApi (uri, data = {}, apiKey) {
+export function getApi(uri, data = {}, apiKey) {
   if (Object.keys(data).length > 0) {
     uri = `${uri}?${qs(data)}`;
   }

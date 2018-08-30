@@ -252,19 +252,19 @@ export default {
         });
     },
     selectPickup(location) {
-      this.$toast.success(
-        `Set pickup location to ${location.name} (${location.latitude}, ${location.longitude})`,
-        'Success',
-        this.notificationSystem.options.success
-      );
+    //   this.$toast.success(
+    //     `Set pickup location to ${location.name} (${location.latitude}, ${location.longitude})`,
+    //     'Success',
+    //     this.notificationSystem.options.success
+    //   );
        this.selectedPickUpLocation = location;
     },
     selectDestination(location) {
-      this.$toast.success(
-        `Set destination to ${location.name} (${location.latitude}, ${location.longitude})`,
-        'Success',
-        this.notificationSystem.options.success
-      );
+    //   this.$toast.success(
+    //     `Set destination to ${location.name} (${location.latitude}, ${location.longitude})`,
+    //     'Success',
+    //     this.notificationSystem.options.success
+    //   );
        this.selectedDestinationLocation = location;
     }
   },
