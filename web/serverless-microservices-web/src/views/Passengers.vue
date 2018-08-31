@@ -127,10 +127,7 @@ export default {
   },
   computed: {
     ...commonGetters(['notificationSystem']),
-    ...passengerGetters(['selectedPassenger', 'contentLoading']),
-    totalRows() {
-      return this.passengers.length;
-    }
+    ...passengerGetters(['selectedPassenger', 'contentLoading'])
   },
   methods: {
     ...passengerActions(['getPassengers', 'setSelectedPassenger']),

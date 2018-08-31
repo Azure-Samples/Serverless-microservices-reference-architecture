@@ -141,10 +141,7 @@ export default {
   },
   computed: {
     ...commonGetters(['notificationSystem']),
-    ...driverGetters(['selectedDriver', 'contentLoading']),
-    totalRows() {
-      return this.stories.length;
-    }
+    ...driverGetters(['selectedDriver', 'contentLoading'])
   },
   methods: {
     ...driverActions(['getDrivers', 'setSelectedDriver']),

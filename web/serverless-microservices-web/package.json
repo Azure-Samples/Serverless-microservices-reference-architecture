@@ -1,5 +1,5 @@
 {
-  "name": "servereless-microservices-web",
+  "name": "serverless-microservices-web",
   "version": "1.0.0",
   "description": "Serverless microservices reference architecture sample ride share website",
   "author": "joelhulen <joelhulen@gmail.com>",
@@ -20,7 +20,8 @@
     "vue-flatpickr-component": "^6.2.0",
     "vue-izitoast": "^1.1.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1"
+    "vuex": "^3.0.1",
+    "signalrcoreclientpreview": "^1.0.0-preview1-t000"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",

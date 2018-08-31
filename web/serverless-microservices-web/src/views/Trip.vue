@@ -20,67 +20,81 @@
                 <hr>
             </div>
             <div class="row">
-                <div class="col-lg-4">
-                    <div class="device-container">
-                        <div><img class="img-fluid" src="../assets/img/yellow-car.png" alt="Yellow car"></div>
-                    </div>
-                    <p class="text-muted" style="margin-top:28px;font-size:16px;">Our drivers pass rigorous background checks and are required to maintain a high standard of driving, customer satisfaction, and vehicle maintenance. You will be rolling like a rockstar in no time!</p>
-                </div>
-                <div class="col-lg-8">
-                    <div class="container-fluid">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="feature-item"><i class="icon-location-pin text-primary"></i>
-                                    <h3>Confirm pickup location</h3>
+                <div class="container-fluid">
+                    <div class="row">
+                        <div class="col-md-4">
+                            <div class="feature-item"><i class="icon-location-pin text-primary"></i>
+                                <h3>Confirm pickup location</h3>
+                            </div>
+                            <div class="feature-item">
+                                <b-dropdown id="ddown-pickup" text="Pickup Location" variant="info" class="">
+                                    <b-dropdown-item-button @click.stop="selectPickup(location)" v-bind:key ="location.id" v-for="location in pickUpLocations">{{location.name}}</b-dropdown-item-button>
+                                </b-dropdown>
+                                <div v-show="selectedPickUpLocationName !== null">
+                                    {{ selectedPickUpLocationName }}
                                 </div>
                             </div>
-                            <div class="col-lg-6 align-self-center">
-                                <div class="feature-item">
-                                    <!-- <div class="dropdown"><button class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">Pickup Location</button>
-                                        <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>
-                                    </div> -->
-                                    <b-dropdown id="ddown-pickup" text="Pickup Location" variant="info" class="">
-                                        <b-dropdown-item-button @click.stop="selectPickup(location)" v-bind:key ="location.id" v-for="location in pickUpLocations">{{location.name}}</b-dropdown-item-button>
-                                    </b-dropdown>
-                                    <div v-if="selectedPickUpLocation !== null">
-                                        {{ selectedPickUpLocation.name }}
-                                    </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-item"><i class="icon-map text-primary"></i>
+                                <h3>Select destination</h3>
+                            </div>
+                            <div class="feature-item">
+                                <b-dropdown id="ddown-pickup" text="Destination" variant="info" class="">
+                                    <b-dropdown-item-button @click.stop="selectDestination(location)" v-bind:key ="location.id" v-for="location in destinationLocations">{{location.name}}</b-dropdown-item-button>
+                                </b-dropdown>
+                                <div v-show="selectedDestinationLocationName !== null">
+                                    {{ selectedDestinationLocationName }}
                                 </div>
                             </div>
-                            <div class="col-lg-6">
-                                <div class="feature-item"><i class="icon-map text-primary"></i>
-                                    <h3>Select destination</h3>
-                                </div>
+                        </div>
+                        <div class="col-md-4">
+                            <div class="feature-item"><i class="icon-flag text-primary"></i>
+                                <h3>Request a driver</h3>
                             </div>
-                            <div class="col-lg-6 align-self-center">
-                                <div class="feature-item">
-                                    <!-- <div class="dropdown"><button class="btn btn-info btn-block dropdown-toggle" data-toggle="dropdown" aria-expanded="false" type="button">DESTINATION</button>
-                                        <div class="dropdown-menu" role="menu"><a class="dropdown-item" role="presentation" href="#">First Item</a><a class="dropdown-item" role="presentation" href="#">Second Item</a><a class="dropdown-item" role="presentation" href="#">Third Item</a></div>
-                                    </div> -->
-                                    <b-dropdown id="ddown-pickup" text="Destination" variant="info" class="">
-                                        <b-dropdown-item-button @click.stop="selectDestination(location)" v-bind:key ="location.id" v-for="location in destinationLocations">{{location.name}}</b-dropdown-item-button>
-                                    </b-dropdown>
-                                    <div v-if="selectedDestinationLocation !== null">
-                                        {{ selectedDestinationLocation.name }}
-                                    </div>
-                                </div>
-                            </div>
-                             <div class="col-lg-6">
-                                <div class="feature-item"><i class="icon-flag text-primary"></i>
-                                    <h3>Request a driver</h3>
-                                </div>
-                            </div>
-                              <div class="col-lg-6 align-self-center">
-                                <div class="feature-item">
-                                    <b-button id="request-driver" text="Request Driver" variant="info" class="" v-bind:disabled="requestDriverDisabled" @click="requestDriver()">
-                                        Request Driver
-                                    </b-button>
-                                </div>
+                            <div class="feature-item">
+                                <b-button id="request-driver" text="Request Driver" variant="primary" v-bind:disabled="requestDriverDisabled" @click="requestDriver()">
+                                    Request Driver
+                                </b-button>
+                                <p v-show="requestDriverDisabled" class="text-muted"><em>Select your pickup location and destination to start your trip</em></p>
                             </div>
                         </div>
                     </div>
                 </div>
             </div>
+            <hr>
+            <!-- <div class="section-heading text-center" style="margin-bottom:50px;">
+                <h2>Trip progress</h2>
+                <hr>
+            </div> -->
+            <ol class="step-indicator">
+                <li :class="this.indicatorclass(1)">
+                    <div class="step"><i class="fas fa-check"></i></div>
+                    <div class="caption hidden-xs hidden-sm">Trip requested</div>
+                </li>
+                <li :class="this.indicatorclass(2)">
+                    <div class="step"><i class="fas fa-car"></i></div>
+                    <div class="caption hidden-xs hidden-sm">Driver found</div>
+                </li>
+                <li :class="this.indicatorclass(3)">
+                    <div class="step"><i class="fas fa-car-side"></i></div>
+                    <div class="caption hidden-xs hidden-sm">Trip started</div>
+                </li>
+                <li :class="this.indicatorclass(4)">
+                    <div class="step"><i class="fas fa-flag-checkered"></i></div>
+                    <div class="caption hidden-xs hidden-sm">You have arrived!</div>
+                </li>
+            </ol>
+        </div>
+    </section>
+    <section id="features" class="features" style="padding-top:60px;">
+        <div class="container">
+            <b-col md="6" offset-md="3">
+                <div class="device-container">
+                    <div><img class="img-fluid" src="../assets/img/yellow-car.png" alt="Yellow car"></div>
+                </div>
+                <p class="text-muted" style="margin-top:28px;font-size:16px;">Our drivers pass rigorous background checks and are required to maintain a high standard of driving, customer satisfaction, and vehicle maintenance. You will be rolling like a rockstar in no time!</p>
+            </b-col>
         </div>
     </section>
   </div>
@@ -90,71 +104,136 @@
 import { createNamespacedHelpers } from 'vuex';
 const { mapGetters: commonGetters } = createNamespacedHelpers('common');
 import { getDrivers, getDriver } from '@/api/drivers';
-import { createTrip } from '@/api/trips';
 import { getPassenger } from '@/api/passengers';
 import { Authentication } from '@/utils/Authentication';
+const {
+  mapGetters: tripGetters,
+  mapActions: tripActions
+} = createNamespacedHelpers('trips');
+
 const auth = new Authentication();
 
 export default {
-  name: 'Drivers',
+  name: 'Trip',
   props: ['authenticated'],
   data() {
     return {
       drivers: [],
-      trip: {},
       selectedDriver: null,
       selectedPickUpLocation: null,
       selectedDestinationLocation: null,
       driverInfo: null,
       passengerInfo: null,
       html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
-      fields: [
-        { key: 'code', label: 'Code', sortable: true },
-        { key: 'firstName', label: 'First Name', sortable: true },
-        {
-          key: 'lastName',
-          label: 'Last Name',
-          sortable: true
-        },
-        { key: 'latitude', label: 'Latitude', class: 'text-right' },
-        { key: 'longitude', label: 'Longitude', class: 'text-right' },
-        {
-          key: 'isAcceptingRides',
-          label: 'Accepting rides?',
-          class: 'text-right'
-        },
-        { key: 'actions', label: '' }
-      ],
-      currentPage: 1,
-      perPage: 10,
-      pageOptions: [5, 10, 15],
-      contentLoading : '',
       pickUpLocations: [
-        { id: 1, name: 'Microsoft Corporate Office', latitude: 47.6423354, longitude: -122.1391189 },
-        { id: 2, name: 'Microsoft Conference Center', latitude: 47.6384841, longitude: -122.1449758 },
-        { id: 3, name: 'Microsoft Production Studios', latitude: 47.6490121, longitude: -122.139642 }
+        {
+          id: 1,
+          name: 'Microsoft Corporate Office',
+          latitude: 47.6423354,
+          longitude: -122.1391189
+        },
+        {
+          id: 2,
+          name: 'Microsoft Conference Center',
+          latitude: 47.6384841,
+          longitude: -122.1449758
+        },
+        {
+          id: 3,
+          name: 'Microsoft Production Studios',
+          latitude: 47.6490121,
+          longitude: -122.139642
+        }
       ],
       destinationLocations: [
-        { id: 1, name: 'Seattle, Washington', latitude: 47.6131746, longitude: -122.4821466 },
-        { id: 2, name: 'Bellevue, Washington', latitude: 47.5963256, longitude: -122.1928181 },
-        { id: 3, name: 'Redmond, Washington', latitude: 47.6721228, longitude: -122.1356409 }
-      ]        
+        {
+          id: 1,
+          name: 'Seattle, Washington',
+          latitude: 47.6131746,
+          longitude: -122.4821466
+        },
+        {
+          id: 2,
+          name: 'Bellevue, Washington',
+          latitude: 47.5963256,
+          longitude: -122.1928181
+        },
+        {
+          id: 3,
+          name: 'Redmond, Washington',
+          latitude: 47.6721228,
+          longitude: -122.1356409
+        }
+      ]
     };
   },
   computed: {
     ...commonGetters(['notificationSystem']),
-    totalRows() {
-      return this.stories.length;
-    },
+    ...tripGetters(['trip', 'currentStep', 'contentLoading']),
     requestDriverDisabled() {
-      return this.selectedPickUpLocation === null || this.selectedDestinationLocation === null;
+      return (
+        this.selectedPickUpLocation === null ||
+        this.selectedDestinationLocation === null
+      );
+    },
+    selectedPickUpLocationName() {
+      return this.selectedPickUpLocation !== null &&
+        this.selectedPickUpLocation !== undefined
+        ? this.selectedPickUpLocation.name
+        : null;
+    },
+    selectedDestinationLocationName() {
+      return this.selectedDestinationLocation !== null &&
+        this.selectedDestinationLocation !== undefined
+        ? this.selectedDestinationLocation.name
+        : null;
     }
   },
-  methods: {    
-    retrieveDrivers() {
-      getDrivers()
+  methods: {
+    ...tripActions(['setTrip', 'setCurrentStep', 'createTrip']),
+    createTripRequest(trip) {
+      this.createTrip(trip)
         .then(response => {
-          this.drivers = response.data;
+          this.$toast.success(
+            `Request Code: <b>${response.code}`,
+            'Driver Requested Successfully',
+            this.notificationSystem.options.success
+          );
+        })
+        .catch(err => {
+          this.$toast.error(
+            err.response ? err.response : err.message ? err.message : err,
+            'Error',
+            this.notificationSystem.options.error
+          );
+        });
+    },
+    requestDriver() {
+      var user = auth.getUser();
+
+      getPassenger(user.idToken.oid)
+        .then(response => {
+          this.passengerInfo = response.data;
+
+          var trip = {
+            passenger: {
+              code: this.passengerInfo.email,
+              firstName: this.passengerInfo.givenName,
+              surname: this.passengerInfo.surname,
+              //"mobileNumber": this.passengerInfo.mobileNumber,
+              email: this.passengerInfo.givenName
+            },
+            source: {
+              latitude: this.selectedPickUpLocation.latitude,
+              longitude: this.selectedPickUpLocation.longitude
+            },
+            destination: {
+              latitude: this.selectedDestinationLocation.latitude,
+              longitude: this.selectedDestinationLocation.longitude
+            },
+            type: 1 //0 = Normal, 1 = Demo
+          };
+          this.createTripRequest(trip);
         })
         .catch(err => {
           this.$toast.error(
@@ -164,115 +243,26 @@ export default {
           );
         });
     },
-    createTrip(trip) {
-      this.contentLoading = true;
-      createTrip(trip)
-      .then(response => {
-        this.contentLoading = false;
-        this.trip = response.data;
-        //TODO: Remove this when the SignalR Notifications is in place.
-        this.$toast.success(
-            `Request Code: <b>${this.trip.code}`,
-            'Driver Requested Successfully',
-            this.notificationSystem.options.success
-        );
-        // this.$toast.success(
-        //     `Name: <b>${driver.firstName} ${driver.lastName}</b>.<br/>Car: ${driver.car.color} ${driver.car.year} ${driver.car.make} ${driver.car.model}<br/>License Plate: ${driver.car.licensePlate}`,
-        //     'Driver Found',
-        //     this.notificationSystem.options.success
-        // );
-      })
-      .catch(err => {
-        this.$toast.error(
-          err.response,
-          'Error',
-          this.notificationSystem.options.error
-        );
-      });
-    },
-    requestDriver(){
-        var selectedDriver;
-
-        // Find first available driver
-        for (let index = 0; index < this.drivers.length; index++) {
-            var driver = this.drivers[index];
-
-            if (driver.isAcceptingRides){
-                selectedDriver = driver;
-                console.log(driver.car);
-                break;
-            }    
-        }
-
-        if (driver === undefined){
-            this.$toast.warning(
-                `Please try again later.`,
-                'No drivers available',
-                this.notificationSystem.options.warning
-            );
-        }
-        else {
-            this.selectedDriver = driver;
-            this.selectDriver();
-        }
-    },
-    selectDriver(){
-        var user = auth.getUser();
-
-        getPassenger(user.idToken.oid)
-        .then(response => {
-            this.passengerInfo = response.data;
-
-            var trip = {
-                "passenger": {
-                    "code": this.passengerInfo.email,
-                    "firstName": this.passengerInfo.givenName,
-                    "surname": this.passengerInfo.surname,
-                    //"mobileNumber": this.passengerInfo.mobileNumber,
-                    "email": this.passengerInfo.givenName
-                },
-                "source": {
-                    "latitude": this.selectedPickUpLocation.latitude,
-                    "longitude": this.selectedPickUpLocation.longitude
-                },
-                "destination": {
-                    "latitude": this.selectedDestinationLocation.latitude,
-                    "longitude": this.selectedDestinationLocation.longitude
-                },
-                "type" : 1 //0 = Normal, 1 = Demo
-            }
-            this.createTrip(trip);
-        })
-        .catch(err => {
-            this.$toast.error(
-                err.response,
-                'Error',
-                this.notificationSystem.options.error
-            );
-        });
-    },
     selectPickup(location) {
-    //   this.$toast.success(
-    //     `Set pickup location to ${location.name} (${location.latitude}, ${location.longitude})`,
-    //     'Success',
-    //     this.notificationSystem.options.success
-    //   );
-       this.selectedPickUpLocation = location;
+      this.selectedPickUpLocation = location;
     },
     selectDestination(location) {
-    //   this.$toast.success(
-    //     `Set destination to ${location.name} (${location.latitude}, ${location.longitude})`,
-    //     'Success',
-    //     this.notificationSystem.options.success
-    //   );
-       this.selectedDestinationLocation = location;
+      this.selectedDestinationLocation = location;
+    },
+    indicatorclass(step) {
+      return {
+        active: step === this.currentstep,
+        complete: this.currentstep > step
+      };
     }
-  },
-  mounted() {
-    this.retrieveDrivers();
   }
 };
 </script>
 
 <style scoped>
+section.features .feature-item {
+  padding-top: 0px;
+  padding-bottom: 0px;
+  text-align: center;
+}
 </style>
