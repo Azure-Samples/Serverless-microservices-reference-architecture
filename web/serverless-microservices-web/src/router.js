@@ -4,7 +4,6 @@ import Home from '@/views/Home.vue';
 import Trip from '@/views/Trip.vue';
 import Passengers from '@/views/Passengers.vue';
 import Drivers from '@/views/Drivers.vue';
-import Login from '@/views/Login.vue';
 
 Vue.use(Router);
 
@@ -31,11 +30,6 @@ export default new Router({
       path: '/drivers',
       name: 'drivers',
       component: Drivers
-    },
-    {
-      path: '/login',
-      name: 'login',
-      component: Login
     }
   ],
   scrollBehavior(to, from, savedPosition) {
