@@ -158,14 +158,13 @@ export default {
         })
         .catch(err => {
           this.$toast.error(
-            err.response,
+            err.response.data,
             'Error',
             this.notificationSystem.options.error
           );
         });
     },
-    createTrip(trip) {
-      this.contentLoading = true;
+    createTrip(trip) {      
       createTrip(trip)
       .then(response => {
         this.contentLoading = false;
@@ -183,8 +182,9 @@ export default {
         // );
       })
       .catch(err => {
+        this.contentLoading = false;
         this.$toast.error(
-          err.response,
+          err.response.data,
           'Error',
           this.notificationSystem.options.error
         );
@@ -192,7 +192,7 @@ export default {
     },
     requestDriver(){
         var selectedDriver;
-
+        this.contentLoading = true;
         // Find first available driver
         for (let index = 0; index < this.drivers.length; index++) {
             var driver = this.drivers[index];
@@ -205,6 +205,7 @@ export default {
         }
 
         if (driver === undefined){
+            this.contentLoading = false;
             this.$toast.warning(
                 `Please try again later.`,
                 'No drivers available',
@@ -244,8 +245,9 @@ export default {
             this.createTrip(trip);
         })
         .catch(err => {
+            this.contentLoading = false;
             this.$toast.error(
-                err.response,
+                err.response.data,
                 'Error',
                 this.notificationSystem.options.error
             );
