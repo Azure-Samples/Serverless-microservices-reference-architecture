@@ -33,6 +33,7 @@ In this document:
     - [Passengers Function App](#passengers-function-app)
     - [Orchestrators Function App](#orchestrators-function-app)
     - [Trips Function App](#trips-function-app)
+    - [Trip Archiver Function App](#trip-archiver-function-app)
 - [Build the solution](#build-the-solution)
     - [.NET](#.net)
     - [Node](#node)
@@ -57,7 +58,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 | RideShareTripsFunctionApp | RideShareTripsFunctionAppDev | Function App | Auto |
 | RideSharePassengersFunctionApp | RideSharePassengersFunctionAppDev | Function App | Auto |
 | RideShareOrchestratorsFunctionApp | RideShareOrchestratorsFunctionAppDev | Function App | Auto |
-| RideShareArchiverFunctionApp | RideShareArchiverFunctionAppDev | Function App | Auto |
+| RideShareTripArchiverFunctionApp | RideShareTripArchiverFunctionAppDev | Function App | Auto |
 | RideShareAppServicePlan | RideShareAppServicePlanDev | Web App Service Plan | Auto |
 | RelecloudRideshare | RelecloudRideshareDev | Web App Service | Auto |
 | rideshare-db | rideshare-db-dev | SQL Database Server | Auto |
@@ -188,6 +189,8 @@ Each of these function apps act as a hosting platform for one or more functions.
 5.  Repeat the steps above to create the **Orchestrators** function app.
 
 6.  Repeat the steps above to create the **Passengers** function app.
+
+7.  Repeat the steps above to create the **TripArchiver** function app.
 
 #### Create the Web App Service Plan
 
@@ -340,11 +343,13 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the B2C Tenant 
 
-TBA
+//TBA
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
 ### ARM Template
+
+//TBA
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
@@ -534,7 +539,6 @@ For each API, please add a new operation as defined below. Once completed, pleas
 | Get Passengers | get-passengers | `GET`/passengers | None | `GetPassengers` Auth Code | 
 | Get Passenger | get-passenger | `GET`/passengers/{code} | code = passenger code = string | `GetPassenger` Auth Code | 
 
-
 ### Connect Event Grid to Function Apps
 
 **Please note** that you should have created the [Event Grid Topic](#create-the-event-grid-topic) and the [Function Apps](#create-the-azure-function-apps) before you can proceed with this step. In addition, you should have already [deployed](#deployment) the Function Apps to Azure before you can make them listen to an Event Grid Topic. 
@@ -559,6 +563,8 @@ For each API, please add a new operation as defined below. Once completed, pleas
     ![Trips Function App PowerBI link](media/trips-function-app-link.png)
 
 5. Repeat step 4 for the `EVGH_TripExternalizations2SignalR` Function.
+
+6. Repeat step 5 for the `EVGH_TripExternalizations2CosmosDB` Function.
 
 ### Connect Event Grid to Logic App
 
@@ -755,6 +761,10 @@ The reference implementation solution requires several settings for each functio
 | TerminateTripMonitorOrchestratorApiKey|The Terminate Trip Demo Orchestrator trigger endpoint function code key |
 | TerminateTripMonitorOrchestratorBaseUrl|The Trip Terminate Demo Orchestrator trigger endpoint function base url |
 
+### Trip Archiver Function App
+
+//TBA
+
 ## Build the solution
 
 ### .NET
@@ -766,7 +776,11 @@ In order to build .NET solition form Visiual Studio, you need:
 
 ### Node
 
+//TBA
+
 ### Web
+
+//TBA
 
 ## Deployment
 
@@ -776,9 +790,7 @@ Relecloud decided to use [Visual Studio team Services](https://visualstudio.micr
 
 ### VSTS 
 
-TBA
-Function Apps
-Web App
+//TBA
 
 ## Cake Deployment
 

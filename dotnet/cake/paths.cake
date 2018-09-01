@@ -133,6 +133,8 @@ public static class Resources
     public const string DevPassengersFunctionApp = "RidesharePassengersFunctionAppDev";
     public const string ProdOrchestratorsFunctionApp = "RideshareOrchestratorsFunctionApp";
     public const string DevOrchestratorsFunctionApp = "RideshareOrchestratorsFunctionAppDev";
+    public const string ProdTripArchiverFunctionApp = "RideshareTripArchiverFunctionApp";
+    public const string DevTripArchiverFunctionApp = "RideshareTripArchiverFunctionAppDev";
 
     public static string GetDriversFunctionApp(string env)
     {
@@ -164,6 +166,14 @@ public static class Resources
             return ProdOrchestratorsFunctionApp;
         else   
             return DevOrchestratorsFunctionApp;
+    }
+
+    public static string GetTripArchiverFunctionApp(string env)
+    {
+        if (env.ToLower() == "prod")
+            return ProdTripArchiverFunctionApp;
+        else   
+            return DevTripArchiverFunctionApp;
     }
 
     // Web App 

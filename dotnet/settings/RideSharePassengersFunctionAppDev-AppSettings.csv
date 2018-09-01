@@ -1,6 +1,6 @@
 KEY|VALUE
 APPINSIGHTS_INSTRUMENTATIONKEY|546fbb26-8554-48fb-b370-12c8c5933541
-FUNCTIONS_EXTENSION_VERSION|beta
+FUNCTIONS_EXTENSION_VERSION|2.0.11961-alpha
 DocDbApiKey|QGwfwS1QQDgfmiE7PFwZoAZwtwdB3yzZT3A5LgeXe0Go4WRqYbnXurlcHbOUnpwTVrhNPF3azgd6c6GDMp6X4w==
 DocDbEndpointUri|https://ridesharedev.documents.azure.com:443/
 DocDbRideShareDatabaseName|RideShare
