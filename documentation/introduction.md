@@ -15,7 +15,7 @@ In this document:
             - [DOTNET SignalR Client](#dotnet-signalr-client)
             - [JavaScript SignalR Client](#javascript-signalr-client)
         - [PowerBI Handler](#powerbi-handler)
-        - [Archiver Handler](#archiver-handler)
+        - [Trip Archiver Handler](#trip-archiver-handler)
 - [DataStorage](#data-storage)
 - [Source Code Structure](#source-code-structure)
     - [DOTNET](#dotnet)
@@ -28,13 +28,13 @@ In this document:
 
 Explain in one or two paragraphs what microservices are, and the concepts. Link out to MS docs for full explanation.
 
-TBA - Joel
+//TBA
 
 ## What is serverless?
 
 Like the previous section, one or two paragraphs explaining serverless concepts, components in Azure, then links to docs.
 
-TBA - Joel
+//TBA
 
 ## Macro Architecture
 
@@ -85,7 +85,7 @@ Given the above principles, the following are identified as Microservices:
 
 ### Web App
 
-TBA - Joel
+//TBA
 
 Describe how the SPA communicates with the B2C AD to provide different levels of permissions.
 
@@ -761,9 +761,9 @@ This is a sample PowerBI report against test trip data:
 
 In addition, the handler sends trip information to the PowerBI Service which, if configured, sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.    
 
-##### Archiver Handler
+##### Trip Archiver Handler
 
-TBA
+//TBA
 
 ## Data storage
 
@@ -837,11 +837,11 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 
 ### Node
 
-TBA
+//TBA
 
 ### Web
 
-TBA
+//TBA
 
 ## Integration Testing
 
