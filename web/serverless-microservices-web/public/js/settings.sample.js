@@ -11,4 +11,4 @@ window.apiDriversBaseUrl = `${window.apiBaseUrl}/d`;
 window.apiTripsBaseUrl = `${window.apiBaseUrl}/t`;
 window.apiPassengersBaseUrl = `${window.apiBaseUrl}/p`;
 window.apiOrchestratorsBaseUrl = '';
-window.singalrInfoUrl = '';
+window.signalrInfoUrl = '';

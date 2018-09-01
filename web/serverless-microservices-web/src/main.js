@@ -1,6 +1,7 @@
 import Vue from 'vue';
 import App from './App.vue';
 import AppFooter from './components/AppFooter';
+import SignalRTrips from './components/SignalRTrips';
 import router from './router';
 import store from './store/index';
 
@@ -54,7 +55,7 @@ async function main() {
     el: '#app',
     store,
     router,
-    components: { App, AppFooter }
+    components: { App, AppFooter, SignalRTrips }
   });
 }
 
