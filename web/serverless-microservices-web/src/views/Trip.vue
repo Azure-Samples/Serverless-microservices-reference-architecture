@@ -67,20 +67,20 @@
                 <h2>Trip progress</h2>
                 <hr>
             </div> -->
-            <ol class="step-indicator">
-                <li :class="this.indicatorclass(1)">
+            <ol class="step-indicator" key="trip-progress">
+                <li :class="tripRequestedClass">
                     <div class="step"><i class="fas fa-check"></i></div>
                     <div class="caption hidden-xs hidden-sm">Trip requested</div>
                 </li>
-                <li :class="this.indicatorclass(2)">
+                <li :class="driverFoundClass">
                     <div class="step"><i class="fas fa-car"></i></div>
                     <div class="caption hidden-xs hidden-sm">Driver found</div>
                 </li>
-                <li :class="this.indicatorclass(3)">
+                <li :class="tripStartedClass">
                     <div class="step"><i class="fas fa-car-side"></i></div>
                     <div class="caption hidden-xs hidden-sm">Trip started</div>
                 </li>
-                <li :class="this.indicatorclass(4)">
+                <li :class="tripEndedClass">
                     <div class="step"><i class="fas fa-flag-checkered"></i></div>
                     <div class="caption hidden-xs hidden-sm">You have arrived!</div>
                 </li>
@@ -102,7 +102,10 @@
 
 <script>
 import { createNamespacedHelpers } from 'vuex';
-const { mapGetters: commonGetters } = createNamespacedHelpers('common');
+const {
+  mapGetters: commonGetters,
+  mapActions: commonActions
+} = createNamespacedHelpers('common');
 import { getDrivers, getDriver } from '@/api/drivers';
 import { getPassenger } from '@/api/passengers';
 import { Authentication } from '@/utils/Authentication';
@@ -168,7 +171,7 @@ export default {
     };
   },
   computed: {
-    ...commonGetters(['notificationSystem']),
+    ...commonGetters(['notificationSystem', 'user']),
     ...tripGetters(['trip', 'currentStep', 'contentLoading']),
     requestDriverDisabled() {
       return (
@@ -187,13 +190,39 @@ export default {
         this.selectedDestinationLocation !== undefined
         ? this.selectedDestinationLocation.name
         : null;
+    },
+    tripRequestedClass() {
+      return {
+        active: this.currentStep === 1,
+        complete: this.currentStep > 1
+      };
+    },
+    driverFoundClass() {
+      return {
+        active: this.currentStep === 2,
+        complete: this.currentStep > 2
+      };
+    },
+    tripStartedClass() {
+      return {
+        active: this.currentStep === 3,
+        complete: this.currentStep > 3
+      };
+    },
+    tripEndedClass() {
+      return {
+        active: this.currentStep === 4,
+        complete: this.currentStep > 4
+      };
     }
   },
   methods: {
+    ...commonActions(['setUser']),
     ...tripActions(['setTrip', 'setCurrentStep', 'createTrip']),
     createTripRequest(trip) {
       this.createTrip(trip)
         .then(response => {
+          this.setCurrentStep(1);
           this.$toast.success(
             `Request Code: <b>${response.code}`,
             'Driver Requested Successfully',
@@ -209,51 +238,67 @@ export default {
         });
     },
     requestDriver() {
-      var user = auth.getUser();
+      if (this.user) {
+        getPassenger(this.user.idToken.oid)
+          .then(response => {
+            this.passengerInfo = response.data;
 
-      getPassenger(user.idToken.oid)
-        .then(response => {
-          this.passengerInfo = response.data;
-
-          var trip = {
-            passenger: {
-              code: this.passengerInfo.email,
-              firstName: this.passengerInfo.givenName,
-              surname: this.passengerInfo.surname,
-              //"mobileNumber": this.passengerInfo.mobileNumber,
-              email: this.passengerInfo.givenName
-            },
-            source: {
-              latitude: this.selectedPickUpLocation.latitude,
-              longitude: this.selectedPickUpLocation.longitude
-            },
-            destination: {
-              latitude: this.selectedDestinationLocation.latitude,
-              longitude: this.selectedDestinationLocation.longitude
-            },
-            type: 1 //0 = Normal, 1 = Demo
-          };
-          this.createTripRequest(trip);
-        })
-        .catch(err => {
-          this.$toast.error(
-            err.response,
-            'Error',
-            this.notificationSystem.options.error
-          );
-        });
+            var trip = {
+              passenger: {
+                code: this.passengerInfo.email,
+                firstName: this.passengerInfo.givenName,
+                surname: this.passengerInfo.surname,
+                //"mobileNumber": this.passengerInfo.mobileNumber,
+                email: this.passengerInfo.givenName
+              },
+              source: {
+                latitude: this.selectedPickUpLocation.latitude,
+                longitude: this.selectedPickUpLocation.longitude
+              },
+              destination: {
+                latitude: this.selectedDestinationLocation.latitude,
+                longitude: this.selectedDestinationLocation.longitude
+              },
+              type: 1 //0 = Normal, 1 = Demo
+            };
+            this.createTripRequest(trip);
+          })
+          .catch(err => {
+            this.$toast.error(
+              err.response,
+              'Error',
+              this.notificationSystem.options.error
+            );
+          });
+      } else {
+        this.$toast.error(
+          'You must be logged in to start a new trip!',
+          'Error',
+          this.notificationSystem.options.error
+        );
+      }
     },
     selectPickup(location) {
       this.selectedPickUpLocation = location;
     },
     selectDestination(location) {
       this.selectedDestinationLocation = location;
-    },
-    indicatorclass(step) {
-      return {
-        active: step === this.currentstep,
-        complete: this.currentstep > step
-      };
+    }
+  },
+  mounted() {
+    if (!this.user) {
+      auth.login().then(
+        user => {
+          if (user) {
+            this.setUser(user);
+          } else {
+            this.setUser(null);
+          }
+        },
+        () => {
+          this.setUser(null);
+        }
+      );
     }
   }
 };
@@ -264,5 +309,78 @@ section.features .feature-item {
   padding-top: 0px;
   padding-bottom: 0px;
   text-align: center;
+}
+
+.step-indicator {
+  border-collapse: separate;
+  display: table;
+  margin-left: 0px;
+  position: relative;
+  table-layout: fixed;
+  text-align: center;
+  vertical-align: middle;
+  padding-left: 0;
+  padding-top: 20px;
+}
+.step-indicator li {
+  display: table-cell;
+  position: relative;
+  float: none;
+  padding: 0;
+  width: 1%;
+}
+.step-indicator li:after {
+  background-color: #ccc;
+  content: '';
+  display: block;
+  height: 1px;
+  position: absolute;
+  width: 100%;
+  top: 32px;
+}
+.step-indicator li:after {
+  left: 50%;
+}
+.step-indicator li:last-child:after {
+  display: none;
+}
+.step-indicator li.active .step {
+  border-color: #007bff;
+  color: #007bff;
+}
+.step-indicator li.active .caption {
+  color: #007bff;
+}
+.step-indicator li.complete:after {
+  /* background-color: #fdcc52; */
+  background: #339933;
+}
+.step-indicator li.complete .step {
+  /* border-color: #fdcc52; */
+  color: #339933;
+  border-color: #339933;
+}
+.step-indicator li.complete .caption {
+  color: #339933;
+}
+.step-indicator .step {
+  background-color: #fff;
+  border-radius: 50%;
+  border: 1px solid #ccc;
+  color: #ccc;
+  font-size: 24px;
+  height: 64px;
+  line-height: 64px;
+  margin: 0 auto;
+  position: relative;
+  width: 64px;
+  z-index: 1;
+}
+.step-indicator .step:hover {
+  cursor: pointer;
+}
+.step-indicator .caption {
+  color: #ccc;
+  padding: 11px 16px;
 }
 </style>

@@ -35,10 +35,9 @@ export default {
         referrer: 'no-referrer' // no-referrer, *client
       });
       if (rawResponse.status === 200) {
-        rawResponse.json().then(signalRInfo => {
-          console.log(`Connection Endpoint: ${signalRInfo.endpoint}`);
-          return signalRInfo;
-        });
+        let signalRInfo = await rawResponse.json();
+        console.log(`Connection Endpoint: ${signalRInfo.endpoint}`);
+        return signalRInfo;
       } else {
         console.log(`getSignalRInfo Response status: ${rawResponse.status}`);
         throw `Could not obtain SignalR info. Response was ${
@@ -55,10 +54,12 @@ export default {
               accessTokenFactory: () => signalrInfo.accessKey
             };
 
-            hubConnection = new signalR.HubConnectionBuilder()
+            let hubConnection = new signalR.HubConnectionBuilder()
               .withUrl(signalrInfo.endpoint, options)
               .configureLogging(signalR.LogLevel.Information)
               .build();
+
+            console.log('Connected to SignalR');
 
             hubConnection.on('tripUpdated', trip => {
               console.log(`tripUpdated Trip code: ${trip.code}`);
@@ -130,6 +131,8 @@ export default {
             });
 
             hubConnection.start().catch(err => console.log(err.toString()));
+          } else {
+            console.log('signalrInfo is null');
           }
         })
         .catch(err => {

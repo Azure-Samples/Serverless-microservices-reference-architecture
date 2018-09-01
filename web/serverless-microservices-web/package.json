@@ -21,7 +21,7 @@
     "vue-izitoast": "^1.1.0",
     "vue-router": "^3.0.1",
     "vuex": "^3.0.1",
-    "signalrcoreclientpreview": "^1.0.0-preview1-t000"
+    "signalrcoreclientpreview": "~1.0.0-preview1-t000"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",
