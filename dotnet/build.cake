@@ -106,6 +106,7 @@ IFunctionApp  driversFunctionsApp = null;
 IFunctionApp  tripsFunctionsApp = null;
 IFunctionApp  passengersFunctionsApp = null;
 IFunctionApp  orchestratorsFunctionsApp = null;
+IFunctionApp  archiverFunctionsApp = null;
 ISqlServer sqlDatabaseServer = null;
 ISqlDatabase sqlDatabase = null;
 
@@ -522,6 +523,20 @@ Task("ProvisionFunctionApps")
 	}
 	else
 		Information($"Functions App: {orchestratorsFunctionsApp.Name} already created!");
+
+	archiverFunctionsApp = azure.AppServices.FunctionApps.ListByResourceGroup(resourceGroup.Name).Where(r => r.Name.ToLower() == Resources.GetTripArchiverFunctionApp(env).ToLower()).FirstOrDefault();
+	if (archiverFunctionsApp == null)
+	{
+		archiverFunctionsApp = azure.AppServices.FunctionApps
+							.Define(Resources.GetTripArchiverFunctionApp(env))
+							.WithExistingAppServicePlan(appServicePlan)
+							.WithExistingResourceGroup(resourceGroup)
+							.WithExistingStorageAccount(storageAccount)
+							.Create();
+		Information($"Functions App: {archiverFunctionsApp.Name} created!");
+	}
+	else
+		Information($"Functions App: {archiverFunctionsApp.Name} already created!");
 });
 
 Task("ProvisionWebApp")
