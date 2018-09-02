@@ -16,18 +16,61 @@ namespace ServerlessMicroservices.Seeder
         static void Main(string[] args)
         {
             var app = new CommandLineApplication();
-            app.FullName = "RideShare Test Sampels";
+            app.FullName = "RideShare Seed & Test Commands";
             app.HelpOption("--help");
 
+            // `seed` Seed Command
+            var seedUrlOption = app.Option("-t|--seedbaseurl", "Set seed base url", CommandOptionType.SingleValue, true);
+            var seedGetDriversFunctionCodeOption = app.Option("-t|--seedgetdriverscode", "Set seed get drivers function cpde", CommandOptionType.SingleValue, true);
+            var seedPostDriversFunctionCodeOption = app.Option("-t|--seedpostdriverscode", "Set seed post drivers function cpde", CommandOptionType.SingleValue, true);
+            var seedGetPassengersFunctionCodeOption = app.Option("-t|--seedgetpassengerscode", "Set seed get passengers function cpde", CommandOptionType.SingleValue, true);
+            var seedPostPassengersFunctionCodeOption = app.Option("-t|--seedpostpassengerscode", "Set seed post passengers function cpde", CommandOptionType.SingleValue, true);
+
+            // `testTrips` Test Trips Command
             var testUrlOption = app.Option("-t|--testurl", "Set test url", CommandOptionType.SingleValue, true);
-            var iterationsOption = app.Option("-i|--iterations", "Set iterations", CommandOptionType.SingleValue, true);
-            var secondsOption = app.Option("-s|--seconds", "Set seconds", CommandOptionType.SingleValue, true);
-            var envOption = app.Option("-v|--env", "Set Env", CommandOptionType.SingleValue, true);
+            var testIterationsOption = app.Option("-i|--testiterations", "Set test iterations", CommandOptionType.SingleValue, true);
+            var testSecondsOption = app.Option("-s|--testseconds", "Set test seconds", CommandOptionType.SingleValue, true);
+
+            // `testSignalr` Test SignalR Command
+            var signalRInfoUrlOption = app.Option("-v|--signalrinfourl", "Set SignalR Info URL", CommandOptionType.SingleValue, true);
 
             var configuration = new ConfigurationBuilder()
                 .SetBasePath(Directory.GetCurrentDirectory())
-                //.AddUserSecrets<Program>()
                 .Build();
+
+            app.Command("seed", cmd =>
+            {
+                cmd.Description = "Seed Drivers & Passengers";
+                cmd.HelpOption("--help");
+
+                cmd.OnExecute(async () =>
+                {
+                    var baseUrl = seedUrlOption.Value();
+                    var getDriversCode = seedGetDriversFunctionCodeOption.Value();
+                    var postDriversCode = seedPostDriversFunctionCodeOption.Value();
+                    var getPassengersCode = seedGetPassengersFunctionCodeOption.Value();
+                    var postPassengersCode = seedPostPassengersFunctionCodeOption.Value();
+
+                    if (string.IsNullOrEmpty(baseUrl) || 
+                        !seedUrlOption.HasValue() ||
+                        string.IsNullOrEmpty(getDriversCode) ||
+                        !seedGetDriversFunctionCodeOption.HasValue() ||
+                        string.IsNullOrEmpty(postDriversCode) ||
+                        !seedPostDriversFunctionCodeOption.HasValue() ||
+                        string.IsNullOrEmpty(getPassengersCode) ||
+                        !seedGetPassengersFunctionCodeOption.HasValue() ||
+                        string.IsNullOrEmpty(postPassengersCode) ||
+                        !seedPostPassengersFunctionCodeOption.HasValue()
+                        )
+                    {
+                        MissingSeedOptions();
+                        return 0;
+                    }
+
+                    await Seed(baseUrl, getDriversCode, postDriversCode, getPassengersCode, postPassengersCode);
+                    return 0;
+                });
+            });
 
             app.Command("testTrips", cmd =>
             {
@@ -40,12 +83,12 @@ namespace ServerlessMicroservices.Seeder
 
                     if (string.IsNullOrEmpty(url) || !testUrlOption.HasValue())
                     {
-                        MissingTestDemoOptions();
+                        MissingTestTripsOptions();
                         return 0;
                     }
 
-                    int iterations = iterationsOption.HasValue() ? Int32.Parse(iterationsOption.Value()) : 1;
-                    int seconds = secondsOption.HasValue() ? Int32.Parse(secondsOption.Value()) : 60;
+                    int iterations = testIterationsOption.HasValue() ? Int32.Parse(testIterationsOption.Value()) : 1;
+                    int seconds = testSecondsOption.HasValue() ? Int32.Parse(testSecondsOption.Value()) : 60;
 
                     for (int i = 0; i < iterations; i++)
                     {
@@ -64,15 +107,21 @@ namespace ServerlessMicroservices.Seeder
                 });
             });
 
-            app.Command("signalr", cmd =>
+            app.Command("testSignalr", cmd =>
             {
                 cmd.Description = "Test SignalR .NET Client";
                 cmd.HelpOption("--help");
 
                 cmd.OnExecute(async () =>
                 {
-                    string env = envOption.HasValue() ? envOption.Value() : "Dev";
-                    await TestSignalR(env);
+                    string url = signalRInfoUrlOption.HasValue() ? signalRInfoUrlOption.Value() : "Dev";
+                    if (string.IsNullOrEmpty(url) || !testUrlOption.HasValue())
+                    {
+                        MissingTestSignalROptions();
+                        return 0;
+                    }
+
+                    await TestSignalR(url);
                     return 0;
                 });
             });
@@ -80,9 +129,54 @@ namespace ServerlessMicroservices.Seeder
             app.Execute(args);
         }
 
+        //*** Auxiliary Methods ***//
+
         /*
-         * Test Routines
+         * Seed 
          */
+        static async Task Seed(string baseUrl, string getDriversFunctionCode, string postDriversFunctionCode, string getPassengersFunctionCodestring, string postPassengersFunctionCode)
+        {
+            // Read existing entities
+            List<DriverItem> drivers = await Utilities.Get<List<DriverItem>>(null, $"{baseUrl}/api/drivers?code={getDriversFunctionCode}", new Dictionary<string, string>());
+            List<PassengerItem> passengers = await Utilities.Get<List<PassengerItem>>(null, $"{baseUrl}/api/passengers?code={getPassengersFunctionCodestring}", new Dictionary<string, string>());
+
+            if (drivers == null || drivers.Count == 0)
+            {
+                drivers = new List<DriverItem>()
+                {
+                    new DriverItem() { Code = "AA100", FirstName = "James", LastName = "Beaky", Latitude = 31.7157, Longitude = 117.1611, Car = new  CarItem () { DriverCode = "AA100", Make = "BMW", Model = "735", Year = "2015", Color = "Silver", LicensePlate = "CA-91099"} },
+                    new DriverItem() { Code = "AA110", FirstName = "Rod", LastName = "Snow", Latitude = 34.0552, Longitude = 118.2437, Car = new  CarItem () { DriverCode = "AA110", Make = "Toyota", Model = "Camry", Year = "2013", Color = "Gray", LicensePlate = "CA-78209"} },
+                    new DriverItem() { Code = "AA120", FirstName = "Sam", LastName = "Imada", Latitude = 37.7749, Longitude = 122.4194, Car = new  CarItem () { DriverCode = "AA120", Make = "Honda", Model = "Accord", Year = "2017", Color = "Black", LicensePlate = "CA-76215"} }
+                };
+
+                foreach(var driver in drivers)
+                {
+                    await Utilities.Post<dynamic, dynamic>(null, driver, $"{baseUrl}/api/drivers?code={postDriversFunctionCode}", new Dictionary<string, string>());
+                }
+            }
+            else
+                Console.WriteLine("No need to seed ...there are drivers in the solution!");
+
+            if (passengers == null || passengers.Count == 0)
+            {
+                passengers = new List<PassengerItem>()
+                {
+                    new PassengerItem() { Code = "joe.kassini@gmail.com", FirstName = "Joe", LastName = "Kassini", MobileNumber =  "3105551212", Email = "joe.kassini@gmail.com" },
+                    new PassengerItem() { Code = "rob.dart@gmail.com", FirstName = "Rob", LastName = "Dart", MobileNumber =  "7145551313", Email = "rob.dart@gmail.com" },
+                    new PassengerItem() { Code = "sue.faming@gmail.com", FirstName = "Sue", LastName = "Faming", MobileNumber =  "7145551414", Email = "sue.faming@gmail.com" }
+                };
+
+                foreach (var passenger in passengers)
+                {
+                    await Utilities.Post<dynamic, dynamic>(null, passenger, $"{baseUrl}/api/passengers?code={postPassengersFunctionCode}", new Dictionary<string, string>());
+                }
+            }
+            else
+                Console.WriteLine("No need to seed ...there are passengers in the solution!");
+
+            Console.WriteLine("Seed completed......press any key!");
+            Console.ReadLine();
+        }
 
         /*
          * This is end-to-end trip testing
@@ -176,10 +270,10 @@ namespace ServerlessMicroservices.Seeder
         /*
          * SignalR testing
          */
-        static async Task TestSignalR(string env)
+        static async Task TestSignalR(string url)
         {
             // Get the SingalR service url and access token by calling the `signalrinfo` API
-            var singnalRInfo = await GetSignalRInfo(env);
+            var singnalRInfo = await Utilities.Get<SignalRInfo>(null, url, new Dictionary<string, string>());
             if (singnalRInfo == null)
                 throw new Exception("SignalR info is NULL!");
 
@@ -238,16 +332,17 @@ namespace ServerlessMicroservices.Seeder
             Console.ReadLine();
         }
 
-        private static async Task<SignalRInfo> GetSignalRInfo(string env)
+        private static void MissingSeedOptions()
         {
-            if (env.ToLower() == "dev")
-                return await Utilities.Get<SignalRInfo>(null, "https://ridesharetripsfunctionappdev.azurewebsites.net/api/signalrinfo", new Dictionary<string, string>());
-            else 
-                return await Utilities.Get<SignalRInfo>(null, "https://ridesharetripsfunctionapp.azurewebsites.net/api/signalrinfo", new Dictionary<string, string>());
-
+            Console.WriteLine("Required options: seedbaseurl, seedgetdriverscode, seedpostdriverscode, seedgetpassengerscode, seedpostpassengerscode");
         }
 
-        private static void MissingTestDemoOptions()
+        private static void MissingTestTripsOptions()
+        {
+            Console.WriteLine("Required options: testUrl");
+        }
+
+        private static void MissingTestSignalROptions()
         {
             Console.WriteLine("Required options: testUrl");
         }

@@ -28,13 +28,13 @@ In this document:
 
 Explain in one or two paragraphs what microservices are, and the concepts. Link out to MS docs for full explanation.
 
-//TBA
+//TBA - Joel
 
 ## What is serverless?
 
 Like the previous section, one or two paragraphs explaining serverless concepts, components in Azure, then links to docs.
 
-//TBA
+//TBA - Joel
 
 ## Macro Architecture
 
@@ -85,7 +85,7 @@ Given the above principles, the following are identified as Microservices:
 
 ### Web App
 
-//TBA
+//TBA - Joel
 
 Describe how the SPA communicates with the B2C AD to provide different levels of permissions.
 
@@ -763,7 +763,7 @@ In addition, the handler sends trip information to the PowerBI Service which, if
 
 ##### Trip Archiver Handler
 
-//TBA
+//TBA - Gerardo
 
 ## Data storage
 
@@ -837,19 +837,19 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 
 ### Node
 
-//TBA
+//TBA - Gerardo
 
 ### Web
 
-//TBA
+//TBA - Joel
 
 ## Integration Testing
 
 The .NET `ServerlessMicroservices.Seeder` project contains a multi-thread tester that can be used to submit `demo` trip requests against the `Trips` API. The test will simulate load on the deployed solution and test end-to-end. 
 
-**Please note** that the test will usually run against a dev environment where the `AuthEnabled` setting is set to false.
+**Please note** that the test will usually run against a deployment environment where the `AuthEnabled` setting is set to false.
 
-The `Seeder` main `Program` takes 3 arguments i.e. `seeder.exe url 2 60`
+The `testTrips` command takes 1 mandatory arguments and 2 optional arguments i.e. `ServerlessMicroservices.Seeder testTrips testUrl testiterations testseconds`
 
 - Test Parameters URL to read the test data from. 
 - Optional: # of iterations. Default to 1. 

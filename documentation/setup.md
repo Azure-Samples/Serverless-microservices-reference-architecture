@@ -41,6 +41,7 @@ In this document:
 - [Deployment](#deployment)
     - [VSTS](#vsts)
     - [Cake Deployment](#cake-deployment)
+- [Seeding](#seeding)
 
 ## Resources
 
@@ -343,13 +344,13 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 #### Create the B2C Tenant 
 
-//TBA
+//TBA - Joel
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
 ### ARM Template
 
-//TBA
+//TBA - ???
 
 Once completed, please jump to the [setup](#setup) section to continue. 
 
@@ -763,7 +764,7 @@ The reference implementation solution requires several settings for each functio
 
 ### Trip Archiver Function App
 
-//TBA
+//TBA - Gerardo
 
 ## Build the solution
 
@@ -776,11 +777,11 @@ In order to build .NET solition form Visiual Studio, you need:
 
 ### Node
 
-//TBA
+//TBA - Gerardo
 
 ### Web
 
-//TBA
+//TBA - Joel
 
 ## Deployment
 
@@ -790,9 +791,9 @@ Relecloud decided to use [Visual Studio team Services](https://visualstudio.micr
 
 ### VSTS 
 
-//TBA
+//TBA - Joel
 
-## Cake Deployment
+### Cake Deployment
 
 The `Cake` script reponsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake-provision) provision section to know how to do this. 
 
@@ -815,5 +816,19 @@ From a PowerShell command, use the following commands for the `Prod` environment
 - `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Orchestrators','--App=ServerlessMicroservices.FunctionApp.Orchestrators','--Env=Prod'`
 - `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Trips','--App=ServerlessMicroservices.FunctionApp.Trips','--Env=Prod'`
 - `./build.ps1 -Target Deploy -Configuration Release -ScriptArgs '--Site=Passengers','--App=ServerlessMicroservices.FunctionApp.Passengers','--Env=Prod'`
+
+## Seeding
+
+The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs` respectively. 
+
+**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.  
+
+The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed https://ridesharetripsfunctionapp.azurewebsites.net getdriversfunctioncode postdriversfunctioncode getpassengersfunctioncode postpassengersfunctioncode`
+
+- Deployment Base URL  
+- GetDrivers Function Code 
+- PostDrivers Function Code 
+- GetPassengers Function Code 
+- PostPassengers Function Code 
 
 
