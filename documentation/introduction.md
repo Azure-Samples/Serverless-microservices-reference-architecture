@@ -2,8 +2,8 @@
 
 In this document:
 
-- [What are Microservics?](#what-are-microservices?)
-- [What is serverless?](#what-is-serverless?)
+- [What are Microservices?](#what-are-microservices)
+- [What is serverless?](#what-is-serverless)
 - [Macro Architecture](#macro-architecture)
     - [Web App](#web-app)
     - [API Management](#api-management)
