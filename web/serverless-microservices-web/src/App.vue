@@ -73,9 +73,11 @@ export default {
       );
     },
     logout() {
-      auth.logout().then(() => {
-        this.setUser(null);
-      });
+      if (confirm('Are you sure you wish to log out?')) {
+        auth.logout().then(() => {
+          this.setUser(null);
+        });
+      }
     }
   },
   mounted() {

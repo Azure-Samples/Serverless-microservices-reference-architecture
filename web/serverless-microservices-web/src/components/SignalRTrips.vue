@@ -72,7 +72,6 @@ export default {
 
             hubConnection.on('tripDriversNotified', trip => {
               console.log(`tripDriversNotified Trip code: ${trip.code}`);
-              this.setCurrentStep(1);
               this.$toast.info(
                 `Trip Code: ${trip.code}. Message: tripDriversNotified.`,
                 'Drivers Notified',
@@ -92,7 +91,7 @@ export default {
 
             hubConnection.on('tripStarting', trip => {
               console.log(`tripStarting Trip code: ${trip.code}`);
-              this.setCurrentStep(1);
+              this.setCurrentStep(3);
               this.$toast.info(
                 `Trip Code: ${trip.code}. Message: tripStarting.`,
                 'Trip Starting',
@@ -102,7 +101,6 @@ export default {
 
             hubConnection.on('tripRunning', trip => {
               console.log(`tripRunning Trip code: ${trip.code}`);
-              this.setCurrentStep(3);
               this.$toast.info(
                 `Trip Code: ${trip.code}. Message: tripRunning.`,
                 'Trip Running',
