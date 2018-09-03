@@ -834,7 +834,7 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 ```
 
 - `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.
-- The `CosmosPersistenceService` assigns Cosmos ids manually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
+- The `CosmosPersistenceService` assigns Cosmos ids ma![](media/2018-09-03-14-34-52.png)nually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
 - The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicte with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
 
 ### Node
@@ -843,7 +843,20 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 
 ### Web
 
-//TBA - Joel
+The [web](../web) folder contains the Vue.js-based SPA website with the following folder structure:
+
+![Website folder structure](media/website-folder-structure.png)
+
+- The **public** folder contains the `index.html` page, as well as `js` folder that contains important settings for the SPA. The `settings.sample.js` file is included and shows the expected settings for reference. The `settings.js` file is excluded to prevent sensitive data from leaking. This file is added via Azure Cloud Shell after deploying the website.
+- The **src** folder contains the bulk of the files:
+  - **api**: these files use the http helper (`utils/http.js`) to execute REST calls against the API Management endpoints.
+  - **assets**: site images.
+  - **components**: Vue.js components, including a SignalR component that contains the [client-side functions](#javascript-signalr-client) called by the SignalR Service.
+  - **store**: [Vuex store](https://vuex.vuejs.org/), which represents the state management components for the SPA site.
+  - **utils**: utilities for authentication (wraps the [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-js)) and HTTP (wraps the [Axios](https://github.com/axios/axios) library)
+  - **views**: Vue.js files for each of the SPA "pages".
+
+The following are some notes about the source code:
 
 ## Integration Testing
 
