@@ -38,7 +38,16 @@ export default {
       try {
         commit('contentLoading', true);
         let passengers = await getPassengers();
-        return passengers.data;
+        if (passengers.data) {
+          // Filter out any passengers whose first name includes an @ symbol.
+          // These are accounts added when linking an Azure subscription to Azure B2C.
+          let filtered = passengers.data.filter(el => {
+            return el.givenName === null || el.givenName.indexOf('@') === -1;
+          });
+          return filtered;
+        } else {
+          return null;
+        }
       } catch (e) {
         throw e;
       } finally {
