@@ -90,7 +90,7 @@
     <section id="features" class="features" style="padding-top:10px;">
         <div class="container">
              <div class="row">
-                <div class="col-lg-6 my-auto">
+                <div class="col-lg-6 my-auto" v-if="currentStep > 0">
                     <div class="container-fluid" v-if="driverFound">
                         <div class="row">
                             <div class="col-lg-6">
@@ -123,13 +123,18 @@
                         </div>
                     </div>
                     <div class="container-fluid" v-else>
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="feature-item"><i class="icon-user text-primary"></i>
-                                    <h3>Searching for a nearby driver...</h3>
-                                    <p class="text-muted">Your driver's information will appear here once found.</p>
-                                </div>
-                            </div>
+                        <div class="feature-item"><i class="icon-user text-primary"></i>
+                            <h3>Searching for a nearby driver...</h3>
+                            <p class="text-muted">Your driver's information will appear here once found.</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 my-auto" v-else>
+                    <div class="container-fluid">
+                        <div class="feature-item"><i class="icon-screen-smartphone text-primary"></i>
+                            <h3>Use the options above to find a ride</h3>
+                            <p class="text-muted">Confirm your pickup location, set your destination, then select <strong>request driver</strong>
+                            to get started. Your driver information will appear here once they are found!</p>
                         </div>
                     </div>
                 </div>
