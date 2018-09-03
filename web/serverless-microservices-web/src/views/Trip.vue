@@ -87,17 +87,64 @@
             </ol>
         </div>
     </section>
-    <section id="features" class="features" style="padding-top:60px;">
+    <section id="features" class="features" style="padding-top:10px;">
         <div class="container">
-            <b-col md="6" offset-md="3">
-                <div class="device-container">
-                    <div><img class="img-fluid" src="../assets/img/yellow-car.png" alt="Yellow car"></div>
+             <div class="row">
+                <div class="col-lg-6 my-auto">
+                    <div class="container-fluid" v-if="driverFound">
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="feature-item"><i class="icon-user text-primary"></i>
+                                    <h3>Your driver is {{trip.driver.firstName}} {{trip.driver.lastName}}</h3>
+                                    <p class="text-muted">Meet {{trip.driver.firstName}} at the pickup point.</p>
+                                </div>
+                            </div>
+                            <div class="col-lg-6">
+                                <div class="feature-item">
+                                    <div class="card text-black bg-warning">
+                                        <div class="card-header">CAR</div>
+                                        <div class="card-body">
+                                            <b-form-row>
+                                            <b-col><em><strong>Make</strong></em></b-col><b-col>{{trip.driver.car.make}}</b-col>
+                                            </b-form-row>
+                                            <b-form-row>
+                                            <b-col><em><strong>Model</strong></em></b-col><b-col>{{trip.driver.car.model}}</b-col>
+                                            </b-form-row>
+                                            <b-form-row>
+                                            <b-col><em><strong>Color</strong></em></b-col><b-col>{{trip.driver.car.color}}</b-col>
+                                            </b-form-row>
+                                            <b-form-row>
+                                            <b-col><em><strong>License plate</strong></em></b-col><b-col>{{trip.driver.car.licensePlate}}</b-col>
+                                            </b-form-row>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="container-fluid" v-else>
+                        <div class="row">
+                            <div class="col-lg-6">
+                                <div class="feature-item"><i class="icon-user text-primary"></i>
+                                    <h3>Searching for a nearby driver...</h3>
+                                    <p class="text-muted">Your driver's information will appear here once found.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <p class="text-muted" style="margin-top:28px;font-size:16px;">Our drivers pass rigorous background checks and are required to maintain a high standard of driving, customer satisfaction, and vehicle maintenance. You will be rolling like a rockstar in no time!</p>
-            </b-col>
-        </div>
-    </section>
-  </div>
+                <div class="col-lg-6 my-auto">
+                    <div class="device-container">
+                        <div class="device-container">
+                            <div><img class="img-fluid" src="../assets/img/yellow-car.png" alt="Yellow car"></div>
+                        </div>
+                            <p class="text-muted" style="margin-top:28px;font-size:16px;">Our drivers pass rigorous background checks and are required to maintain a high standard of driving, customer satisfaction, and vehicle maintenance. You will be rolling like a rockstar in no time!</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </div>
 </template>
 
 <script>
@@ -190,6 +237,14 @@ export default {
         this.selectedDestinationLocation !== undefined
         ? this.selectedDestinationLocation.name
         : null;
+    },
+    driverFound() {
+      return (
+        this.trip !== undefined &&
+        this.trip !== null &&
+        this.trip.driver !== undefined &&
+        this.trip.driver !== null
+      );
     },
     tripRequestedClass() {
       return {
@@ -286,20 +341,20 @@ export default {
     }
   },
   mounted() {
-    if (!this.user) {
-      auth.login().then(
-        user => {
-          if (user) {
-            this.setUser(user);
-          } else {
-            this.setUser(null);
-          }
-        },
-        () => {
-          this.setUser(null);
-        }
-      );
-    }
+    // if (!this.user) {
+    //   auth.login().then(
+    //     user => {
+    //       if (user) {
+    //         this.setUser(user);
+    //       } else {
+    //         this.setUser(null);
+    //       }
+    //     },
+    //     () => {
+    //       this.setUser(null);
+    //     }
+    //   );
+    // }
   }
 };
 </script>

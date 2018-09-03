@@ -82,6 +82,7 @@ export default {
             hubConnection.on('tripDriverPicked', trip => {
               console.log(`tripDriverPicked Trip code: ${trip.code}`);
               this.setCurrentStep(2);
+              this.setTrip(trip);
               this.$toast.info(
                 `Trip Code: ${trip.code}. Message: tripDriverPicked.`,
                 'Driver Picked',
