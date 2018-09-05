@@ -852,7 +852,7 @@ The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.
 
 ## Containers
 
-We have seen in the [deployment](#deployment) section, Function Apps in Azure are usually hosted in `App Services`. They can also run locally during development. However, there are other compelling deployment options if we are able to containerize the Functions Apps as Docker iamges. 
+We have seen in the [deployment](#deployment) section, Function Apps in Azure are usually hosted in `App Services`. They can also run locally during development. However, there are other compelling deployment options if we are able to containerize the Functions Apps as Docker images. 
 
 This is made easier in Function Apps v2 since they run on `.NET Core` and hence cross-platorm. This means that Function Apps can be containerized as Docker images and then deployed to one of many possibilities:
 
@@ -936,7 +936,7 @@ Once the above commands are run, issue `docker images` to make sure that the ima
 public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "trips")] HttpRequest req,
     ILogger log)
 ```
-- Changed the `DocumentDB` client not to use `TCP Direct Mode`! It turned out it is not supported in `Linux` which caused `Upserts` aganst Cosmos to cause `Service Unavailable` error. There is an issue in `GitHub` on [this](https://github.com/Azure/azure-cosmosdb-dotnet/issues/194).  
+- Changed the `DocumentDB` client not to use `TCP Direct Mode`! It turned out it is not supported in `Linux` which caused `Upserts` against Cosmos to cause `Service Unavailable` error. There is an issue in `GitHub` on [this](https://github.com/Azure/azure-cosmosdb-dotnet/issues/194).  
 
 ### Running Locally 
 
