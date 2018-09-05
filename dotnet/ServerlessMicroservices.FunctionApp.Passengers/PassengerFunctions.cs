@@ -14,7 +14,7 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
     public static class PassengerFunctions
     {
         [FunctionName("GetPassengers")]
-        public static async Task<IActionResult> GetPassengers([HttpTrigger(AuthorizationLevel.Function, "get",
+        public static async Task<IActionResult> GetPassengers([HttpTrigger(AuthorizationLevel.Anonymous, "get",
                 Route = "passengers")] HttpRequest req,
             ILogger log)
         {
@@ -42,7 +42,7 @@ namespace ServerlessMicroservices.FunctionApp.Passengers
         }
 
         [FunctionName("GetPassenger")]
-        public static async Task<IActionResult> GetPassenger([HttpTrigger(AuthorizationLevel.Function, "get", Route = "passengers/{userid}")] HttpRequest req,
+        public static async Task<IActionResult> GetPassenger([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "passengers/{userid}")] HttpRequest req,
             string userid,
             ILogger log)
         {

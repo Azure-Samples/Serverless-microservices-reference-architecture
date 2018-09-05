@@ -42,6 +42,12 @@ In this document:
     - [VSTS](#vsts)
     - [Cake Deployment](#cake-deployment)
 - [Seeding](#seeding)
+- [Containers](#containers)
+    - [Docker Files](#docker-files)
+    - [Docker Images](#docker-images)
+    - [Running Locally](#running-locally)
+    - [Running in ACI](#running-in-aci)
+    - [Running in AKS and Service Fabric](#running-in-aks-and-service-fabric)
 
 ## Resources
 
@@ -683,7 +689,7 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
 | DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
@@ -700,7 +706,9 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| AzureWebJobsDashboard | The Storage Account Connection String | 
+| AzureWebJobsStorage | The Storage Account Connection String | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
 | DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
@@ -720,7 +728,9 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| AzureWebJobsDashboard | The Storage Account Connection String | 
+| AzureWebJobsStorage | The Storage Account Connection String | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
 | DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
@@ -732,6 +742,9 @@ The reference implementation solution requires several settings for each functio
 | TripMonitorIntervalInSeconds | The number of seconds the `TripMonitor` waits in its monitoring loop i.e. 10 |
 | TripMonitorMaxIterations |The number of maximum iterations the `TripMonitor` loops before it aborts the trip i.e. 20|
 | IsPersistDirectly| If true, the orechestrators access the data storage layer directly. Default to true |
+| TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
+| TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
+| TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
 | TripExternalizationsEventGridTopicUrl| The URL of the event grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
 | TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
 
@@ -740,13 +753,19 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `beta` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| AzureWebJobsDashboard | The Storage Account Connection String | 
+| AzureWebJobsStorage | The Storage Account Connection String | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
 | DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
 | DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
 | DocDbThroughput | The provisioned collection RUs i.e. 400  | 
 | InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
+| IsEnqueueToOrchestrators | Trigger Orchestrators via queues indead of HTTP i.e. true  | 
+| TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
+| TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
+| TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
 | AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
 | ApiApplicationId | The B2C Client ID | 
 | ApiScopeName | The Scope Name i.e. rideshare | 
@@ -830,5 +849,255 @@ The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.
 - PostDrivers Function Code 
 - GetPassengers Function Code 
 - PostPassengers Function Code 
+
+## Containers
+
+We have seen in the [deployment](#deployment) section, Function Apps in Azure are usually hosted in `App Services`. They can also run locally during development. However, there are other compelling deployment options if we are able to containerize the Functions Apps as Docker iamges. 
+
+This is made easier in Function Apps v2 since they run on `.NET Core` and hence cross-platorm. This means that Function Apps can be containerized as Docker images and then deployed to one of many possibilities:
+
+- Docker on a VM or development machine with [Docker installed](https://docs.docker.com/docker-for-windows/)
+- [Azure Container Instances ACI](https://azure.microsoft.com/en-us/services/container-instances/)
+- [Azure Kubernetes Service AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/)  
+- [Azure Service Fabric Mesh Service](https://azure.microsoft.com/en-us/blog/azure-service-fabric-mesh-is-now-in-public-preview/)   
+- Other Cloud providers
+- On-Premises
+
+**Please note** that when Function Apps are not run in Azure consumption plan, it implies that:
+
+- The micro billing and the auto-scaling features are no longer applicable.
+- The connected Azure resources such as storage and event grids will still run in Azure.
+
+### Docker Files
+
+It turned out that Microsoft produces a Docker image for Azure Functions .NET Core V2 and is available via `DockerHub`:
+```
+microsoft/azure-functions-dotnet-core2.0
+```
+
+In the `Dockerfiles` folder of the `.NET` source code, there is a `docker` file for each .NET function app:
+
+**Drivers**:
+
+```docker
+FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+
+COPY ./ServerlessMicroservices.FunctionApp.Drivers/bin/Debug/netstandard2.0 /home/site/wwwroot
+```
+
+**Passengers**:
+
+```docker
+FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+
+COPY ./ServerlessMicroservices.FunctionApp.Passengers/bin/Debug/netstandard2.0 /home/site/wwwroot
+```
+
+**Orchestrators**:
+
+```docker
+FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+
+COPY ./ServerlessMicroservices.FunctionApp.Orchestrators/bin/Debug/netstandard2.0 /home/site/wwwroot
+```
+
+**Trips**:
+
+```docker
+FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+
+COPY ./ServerlessMicroservices.FunctionApp.Trips/bin/Debug/netstandard2.0 /home/site/wwwroot
+```
+
+The `Dockerfile` is straightforward! We base it on the `microsoft/azure-functions-dotnet-core2.0` image with `v2.0.11961-alpha` tag (as it is the current version) and we copy the output of the `bin\<build>\netstandard2.0` to the `wwwroot` of the image.
+
+### Docker Images
+
+**Please note** that this assumes that you have `Docker` installed on your Windows or Mac development machine.
+
+Once the .NET soultion is built, we can generate the `Docker` images for each function app:
+
+```
+docker build -t rideshare-drivers:v1 -f dockerfiles/drivers .
+docker build -t rideshare-passengers:v1 -f dockerfiles/passengers .
+docker build -t rideshare-orchestrators:v1 -f dockerfiles/orchestrators .
+docker build -t rideshare-trips:v1 -f dockerfiles/trips .
+```
+
+The `docker build` command uses the `dockerfile` specified in the `-f` switch, produces an image and tags it i.e. `rideshare-drivers:v1`.
+
+Once the above commands are run, issue `docker images` to make sure that the images do exist with proper tags. By the way, you can remove an image by ID using `docker rmi <id>`.
+
+**Please note** that there are some source code changes to support containers:
+
+- The Functions Authorization Level is set to `Anonymous` instead of `Function`:
+```csharp
+[FunctionName("GetTrips")]
+public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "trips")] HttpRequest req,
+    ILogger log)
+```
+- Changed the `DocumentDB` client not to use `TCP Direct Mode`! It turned out it is not supported in `Linux` which caused `Upserts` aganst Cosmos to cause `Service Unavailable` error. There is an issue in `GitHub` on [this](https://github.com/Azure/azure-cosmosdb-dotnet/issues/194).  
+
+### Running Locally 
+
+Now that the `Docker` images are produced, we can use `docker` commands to start the containers locally. Because the containers require the environment variables to be fed into the container at `run` time, we point to a file that contains the settings in the format required by `Docker`:
+
+```
+docker run --env-file settings/RideShareDriversDockerDev-AppSettings.csv -p 8080:80 rideshare-drivers:v1
+docker run --env-file settings/RideSharePassengersDockerDev-AppSettings.csv -p 8081:80 rideshare-passengers:v1
+docker run --env-file settings/RideShareOrchestratorsDockerDev-AppSettings.csv -p 8082:80 rideshare-orchestrators:v1
+docker run --env-file settings/RideShareTripsDockerDev-AppSettings.csv -p 8083:80 rideshare-trips:v1
+```
+
+**Please note**:
+
+- The `settings` folder contains all the environment variables for each function app.
+- The [Docker environment variables via a file](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file) requires that KEYs and VALUEs be seperated by a `=`. 
+- Map different port for each function app so we do not get into a conflict. So `Drivers` is mapped to 8080, `Passengers` is mapped to 8081, `Orchestrators` is mapped to 8082 and `Trips` is mapped to 8083. 
+- The connected Azure resources are still in Azure. For example, Cosmos DB and the storage accounts are still pointing to Azure.
+- Issue `docker ps` command to make sure that the containers are running.
+
+Once the containers are running, use something like `Postman` to interact with the different function apps using their respective ports. For example:
+
+| Fuction App | Verb | URL | Description |
+|---|---|---|---|
+| Drivers | GET | `GET http://localhost:8080/api/drivers` | Retrieve all drivers  | 
+| Trips | GET | `GET http://localhost:8083/api/trips` | Retrieve all trips  | 
+| Trips | POST | `POST http://localhost:8083/api/trips` | Create a new trip  |
+
+### Running in ACI
+
+In order to deploy our containers to [Azure Container Instances ACI](https://azure.microsoft.com/en-us/services/container-instances/), we must first publish them to a container registery such as [DockerHub](https://cloud.docker.com) or [Azure Container Registry](https://azure.microsoft.com/en-us/services/container-registry/). For our demo purposes, we can publish to [DockerHub](https://cloud.docker.com). Let us `tag` each container and `push`:
+
+```
+docker tag rideshare-drivers:v1 joesmith/rideshare-drivers:v1
+docker push joesmith/rideshare-drivers:v1
+docker tag rideshare-passengers:v1 joesmith/rideshare-passengers:v1
+docker push joesmith/rideshare-passengers:v1
+docker tag rideshare-orchestrators:v1 joesmith/rideshare-orchestrators:v1
+docker push joesmith/rideshare-orchestrators:v1
+docker tag rideshare-trips:v1 joesmith/rideshare-trips:v1
+docker push joesmith/rideshare-trips:v1
+```
+
+**Please note** that the above requires that you have signed in to [Docker hub](https://cloud.docker.com) account.
+
+In order to actually create an ACI , we use [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) with `YAML` files to drive the properties and setup the container environment variables. In the `yamlfiles` folder of the `.NET` source code, there is a `yaml` file for each .NET function app. Here is a sample:
+
+```yaml
+apiVersion: 2018-06-01
+location: eastus
+name: rideshare-drivers
+properties:
+  containers:
+  - name: rideshare-drivers
+    properties:
+      environmentVariables:
+        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
+          "value": "<your-own>"
+        - "name": "FUNCTIONS_EXTENSION_VERSION"
+          "value": "2.0.11961-alpha"
+        - "name": "AzureWebJobsDashboard"
+          "value": "<your-own>"
+        - "name": "AzureWebJobsStorage"
+          "value": "<your-own>"
+        - "name": "DocDbApiKey"
+          "value": "<your-own>"
+        - "name": "DocDbEndpointUri"
+          "value": "<your-own>"
+        - "name": "DocDbRideShareDatabaseName"
+          "value": "RideShare"
+        - "name": "DocDbRideShareMainCollectionName"
+          "value": "Main"
+        - "name": "DocDbThroughput"
+          "value": 400
+        - "name": "InsightsInstrumentationKey"
+          "value": "<your-own>"
+        - "name": "IsRunningInContainer"
+          "value": "true"
+        - "name": "IsPersistDirectly"
+          "value": "true"
+        - "name": "AuthorityUrl"
+          "value": "<your-own>"
+        - "name": "ApiApplicationId"
+          "value": "<your-own>"
+        - "name": "ApiScopeName"
+          "value": "rideshare"
+        - "name": "EnableAuth"
+          "value": "false"
+      image: joesmith/rideshare-drivers:v1
+      ports: 
+      - port: 80
+      resources:
+        requests:
+          cpu: 1.0
+          memoryInGB: 1.5
+  osType: Linux
+  ipAddress:
+    type: Public
+    dnsNameLabel: rideshare-drivers
+    ports:
+      - protocol: tcp
+        port: '80'
+  restartPolicy: Always
+tags: null
+type: Microsoft.ContainerInstance/containerGroups
+```
+ 
+**Please note** the following requires that you log in to Azure using `az login`. To learn how to manage ACI using [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/?view=azure-cli-latest), please use this [link](https://docs.microsoft.com/en-us/cli/azure/container?view=azure-cli-latest).
+
+In order to create the ACIs:
+
+```
+az container create --resource-group serverless-microservices-dev --file yamlfiles/aci_drivers.yaml
+az container create --resource-group serverless-microservices-dev --file yamlfiles/aci_passengers.yaml
+az container create --resource-group serverless-microservices-dev --file yamlfiles/aci_orchestrators.yaml
+az container create --resource-group serverless-microservices-dev --file yamlfiles/aci_trips.yaml
+```
+
+In order to check on the provision status of the ACIs:
+
+```
+az container show -n rideshare-drivers -g serverless-microservices-dev
+az container show -n rideshare-passengers -g serverless-microservices-dev
+az container show -n rideshare-orchestrators -g serverless-microservices-dev
+az container show -n rideshare-trips -g serverless-microservices-dev
+```
+
+In order to check the logs of the ACIs:
+
+```
+az container logs -n rideshare-drivers -g serverless-microservices-dev
+az container logs -n rideshare-passengers -g serverless-microservices-dev
+az container logs -n rideshare-orchestrators -g serverless-microservices-dev
+az container logs -n rideshare-trips -g serverless-microservices-dev
+```
+
+In order to delete the ACIs:
+
+```
+az container delete -n rideshare-drivers -g serverless-microservices-dev --yes -y
+az container delete -n rideshare-passengers -g serverless-microservices-dev --yes -y
+az container delete -n rideshare-orchestrators -g serverless-microservices-dev --yes -y
+az container delete -n rideshare-trips -g serverless-microservices-dev --yes -y
+```
+
+Once the containers are running, use something like `Postman` to interact with the different function apps using their respective urls. For example:
+
+| Fuction App | Verb | URL | Description |
+|---|---|---|---|
+| Drivers | GET | `GET http://rideshare-drivers.eastus.azurecontainer.io/api/drivers` | Retrieve all drivers  | 
+| Trips | GET | `GET http://rideshare-trips.eastus.azurecontainer.io/api/trips` | Retrieve all trips  | 
+| Trips | POST | `POST http://rideshare-trips.eastus.azurecontainer.io/api/trips` | Create a new trip  | 
+
+### Running in AKS and Service Fabric
+
+[Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) and [Service Fabric Mesh service](https://azure.microsoft.com/en-us/blog/azure-service-fabric-mesh-is-now-in-public-preview/) provide much more robust way to deploy and manage the different containers as they provide orchestration and self-healing capabilities. However, setting those up is beyond the scope of this solution.
+
+
+
+
+
+
 
 

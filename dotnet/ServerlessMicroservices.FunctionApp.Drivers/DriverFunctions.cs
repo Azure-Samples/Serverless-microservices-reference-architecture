@@ -16,7 +16,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
     public static class DriverFunctions
     {
         [FunctionName("GetDrivers")]
-        public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get", 
+        public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Anonymous, "get", 
                 Route = "drivers")] HttpRequest req, 
             ILogger log)
         {
@@ -40,7 +40,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("GetDriversWithinLocation")]
-        public static async Task<IActionResult> GetDriversWithinLocation([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{latitude}/{longitude}/{miles}")] HttpRequest req,
+        public static async Task<IActionResult> GetDriversWithinLocation([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "drivers/{latitude}/{longitude}/{miles}")] HttpRequest req,
             double latitude,
             double longitude,
             double miles, 
@@ -66,7 +66,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("GetActiveDrivers")]
-        public static async Task<IActionResult> GetActiveDrivers([HttpTrigger(AuthorizationLevel.Function, "get", Route = "activedrivers")] HttpRequest req,
+        public static async Task<IActionResult> GetActiveDrivers([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activedrivers")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("GetActiveDrivers triggered....");
@@ -89,7 +89,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("GetDriver")]
-        public static async Task<IActionResult> GetDriver([HttpTrigger(AuthorizationLevel.Function, "get", Route = "drivers/{code}")] HttpRequest req,
+        public static async Task<IActionResult> GetDriver([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "drivers/{code}")] HttpRequest req,
             string code,
             ILogger log)
         {
@@ -113,7 +113,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("CreateDriver")]
-        public static async Task<IActionResult> CreateDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "drivers")] HttpRequest req,
+        public static async Task<IActionResult> CreateDriver([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "drivers")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("CreateDriver triggered....");
@@ -138,7 +138,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("UpdateDriver")]
-        public static async Task<IActionResult> UpdateDriver([HttpTrigger(AuthorizationLevel.Function, "put", Route = "drivers")] HttpRequest req,
+        public static async Task<IActionResult> UpdateDriver([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "drivers")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("UpdateDriver triggered....");
@@ -163,7 +163,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("UpdateDriverLocation")]
-        public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Function, "put", Route = "driverlocations")] HttpRequest req,
+        public static async Task<IActionResult> UpdateDriverLocation([HttpTrigger(AuthorizationLevel.Anonymous, "put", Route = "driverlocations")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("UpdateDriverLocation triggered....");
@@ -188,7 +188,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("GetDriverLocations")]
-        public static async Task<IActionResult> GetDriverLocations([HttpTrigger(AuthorizationLevel.Function, "get", Route = "driverlocations/{code}")] HttpRequest req,
+        public static async Task<IActionResult> GetDriverLocations([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "driverlocations/{code}")] HttpRequest req,
             string code,
             ILogger log)
         {
@@ -212,7 +212,7 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
         }
 
         [FunctionName("DeleteDriver")]
-        public static async Task<IActionResult> DeleteDriver([HttpTrigger(AuthorizationLevel.Function, "delete", Route = "drivers/{code}")] HttpRequest req,
+        public static async Task<IActionResult> DeleteDriver([HttpTrigger(AuthorizationLevel.Anonymous, "delete", Route = "drivers/{code}")] HttpRequest req,
             string code,
             ILogger log)
         {
