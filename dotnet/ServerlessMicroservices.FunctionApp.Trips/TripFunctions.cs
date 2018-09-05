@@ -21,7 +21,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
     public static class TripFunctions
     {
         [FunctionName("GetTrips")]
-        public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Function, "get", Route = "trips")] HttpRequest req,
+        public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "trips")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("GetTrips triggered....");
@@ -44,7 +44,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         }
 
         [FunctionName("GetActiveTrips")]
-        public static async Task<IActionResult> GetActiveTrips([HttpTrigger(AuthorizationLevel.Function, "get", Route = "activetrips")] HttpRequest req,
+        public static async Task<IActionResult> GetActiveTrips([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "activetrips")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("GetActiveTrips triggered....");
@@ -67,7 +67,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         }
 
         [FunctionName("GetTrip")]
-        public static async Task<IActionResult> GetTrip([HttpTrigger(AuthorizationLevel.Function, "get", Route = "trips/{code}")] HttpRequest req,
+        public static async Task<IActionResult> GetTrip([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "trips/{code}")] HttpRequest req,
             string code,
             ILogger log)
         {
@@ -91,7 +91,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         }
 
         [FunctionName("CreateTrip")]
-        public static async Task<IActionResult> CreateTrip([HttpTrigger(AuthorizationLevel.Function, "post", Route = "trips")] HttpRequest req,
+        public static async Task<IActionResult> CreateTrip([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "trips")] HttpRequest req,
             ILogger log)
         {
             log.LogInformation("CreateTrip triggered....");
@@ -122,7 +122,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         }
 
         [FunctionName("AssignTripDriver")]
-        public static async Task<IActionResult> AssignTripDriver([HttpTrigger(AuthorizationLevel.Function, "post", Route = "trips/{code}/drivers/{drivercode}")] HttpRequest req,
+        public static async Task<IActionResult> AssignTripDriver([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "trips/{code}/drivers/{drivercode}")] HttpRequest req,
             string code,
             string drivercode,
             ILogger log)
@@ -266,7 +266,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
         /*** TEST SUPPORT ***/
         [FunctionName("StoreTripTestParameters")]
-        public static async Task<IActionResult> StoreTripTestParameters([HttpTrigger(AuthorizationLevel.Function, "post", Route = "triptestparameters")] HttpRequest req,
+        public static async Task<IActionResult> StoreTripTestParameters([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "triptestparameters")] HttpRequest req,
             [Blob("trips/testparams.json", FileAccess.Write, Connection = "AzureWebJobsStorage")] Stream outBlob,
             ILogger log)
         {
@@ -289,7 +289,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         }
 
         [FunctionName("RetrieveTripTestParameters")]
-        public static IActionResult RetrieveTripTestParameters([HttpTrigger(AuthorizationLevel.Function, "get", Route = "triptestparameters")] HttpRequest req,
+        public static IActionResult RetrieveTripTestParameters([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "triptestparameters")] HttpRequest req,
             [Blob("trips/testparams.json", FileAccess.Read, Connection = "AzureWebJobsStorage")] Stream inBlob,
             ILogger log)
         {

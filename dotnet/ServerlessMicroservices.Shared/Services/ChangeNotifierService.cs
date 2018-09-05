@@ -12,11 +12,13 @@ namespace ServerlessMicroservices.Shared.Services
 
         private ISettingService _settingService;
         private ILoggerService _loggerService;
+        private IStorageService _storageService;
 
-        public ChangeNotifierService(ISettingService setting, ILoggerService logger)
+        public ChangeNotifierService(ISettingService setting, ILoggerService logger, IStorageService storage)
         {
             _settingService = setting;
             _loggerService = logger;
+            _storageService = storage;
         }
 
         public async Task DriverChanged(DriverItem driver)
@@ -31,12 +33,19 @@ namespace ServerlessMicroservices.Shared.Services
             try
             {
                 // Start a trip manager 
-                var baseUrl = _settingService.GetStartTripManagerOrchestratorBaseUrl();
-                var key = _settingService.GetStartTripManagerOrchestratorApiKey();
-                if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
-                    throw new Exception("Trip manager orchestrator base URL and key must be both provided");
+                if (!_settingService.IsEnqueueToOrchestrators())
+                {
+                    var baseUrl = _settingService.GetStartTripManagerOrchestratorBaseUrl();
+                    var key = _settingService.GetStartTripManagerOrchestratorApiKey();
+                    if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
+                        throw new Exception("Trip manager orchestrator base URL and key must be both provided");
 
-                await Utilities.Post<dynamic, dynamic>(null, trip, $"{baseUrl}/tripmanagers?code={key}", new Dictionary<string, string>());
+                    await Utilities.Post<dynamic, dynamic>(null, trip, $"{baseUrl}/tripmanagers?code={key}", new Dictionary<string, string>());
+                }
+                else
+                {
+                    await _storageService.Enqueue(trip);
+                }
 
                 // Send an event telemetry
                 _loggerService.Log("Trip created", new Dictionary<string, string>
@@ -52,16 +61,23 @@ namespace ServerlessMicroservices.Shared.Services
 
                 if (trip.Type == TripTypes.Demo)
                 {
-                    baseUrl = _settingService.GetStartTripDemoOrchestratorBaseUrl();
-                    key = _settingService.GetStartTripDemoOrchestratorApiKey();
-                    if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
-                        throw new Exception("Trip demo orchestrator base URL and key must be both provided");
-
                     var tripDemoState = new TripDemoState();
                     tripDemoState.Code = trip.Code;
                     tripDemoState.Source = new TripLocation() { Latitude = trip.Source.Latitude, Longitude = trip.Source.Longitude };
                     tripDemoState.Destination = new TripLocation() { Latitude = trip.Destination.Latitude, Longitude = trip.Destination.Longitude };
-                    await Utilities.Post<dynamic, dynamic>(null, tripDemoState, $"{baseUrl}/tripdemos?code={key}", new Dictionary<string, string>());
+
+                    if (!_settingService.IsEnqueueToOrchestrators())
+                    {
+                        var baseUrl = _settingService.GetStartTripDemoOrchestratorBaseUrl();
+                        var key = _settingService.GetStartTripDemoOrchestratorApiKey();
+                        if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
+                            throw new Exception("Trip demo orchestrator base URL and key must be both provided");
+                        await Utilities.Post<dynamic, dynamic>(null, tripDemoState, $"{baseUrl}/tripdemos?code={key}", new Dictionary<string, string>());
+                    }
+                    else
+                    {
+                        await _storageService.Enqueue(tripDemoState);
+                    }
                 }
             }
             catch (Exception ex)

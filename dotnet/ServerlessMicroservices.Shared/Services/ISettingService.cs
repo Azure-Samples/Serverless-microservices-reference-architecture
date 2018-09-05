@@ -7,7 +7,15 @@
         // Global
         bool EnableAuth();
 
+        // Storage
+        string GetStorageAccount();
+        string GetTripManagersQueueName();
+        string GetTripMonitorsQueueName();
+        string GetTripDemosQueueName();
+
         // Management    
+        bool IsRunningInContainer();
+        bool IsEnqueueToOrchestrators();
         bool IsPersistDirectly();
         int GetDriversAcknowledgeMaxWaitPeriodInSeconds();
         double GetDriversLocationRadiusInMiles();

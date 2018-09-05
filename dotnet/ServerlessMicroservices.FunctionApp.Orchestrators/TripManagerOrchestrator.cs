@@ -169,7 +169,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         // Out does does not work in Async methods!!!
         [FunctionName("A_TM_CreateTripMonitor")]
         public static void CreateTripMonitor([ActivityTrigger] TripItem trip,
-            [Queue("trip-monitors", Connection = "AzureWebJobsStorage")] out string queueTripCode,
+            [Queue("%TripMonitorsQueue%", Connection = "AzureWebJobsStorage")] out string queueTripCode,
             ILogger log)
         {
             log.LogInformation($"CreateTripMonitor starting....");

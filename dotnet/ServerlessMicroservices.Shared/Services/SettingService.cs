@@ -11,6 +11,15 @@ namespace ServerlessMicroservices.Shared.Services
         // Global
         private const string EnableAuthKey = "EnableAuth";
 
+        // Storage
+        private const string StorageAccountKey = "AzureWebJobsStorage";
+        private const string TripManagersQueueKey = "TripManagersQueue";
+        private const string TripMonitorsQueueKey = "TripMonitorsQueue";
+        private const string TripDemosQueueKey = "TripDemosQueue";
+
+        // Management
+        private const string IsRunningInContainerKey = "IsRunningInContainer";
+        private const string IsEnqueueToOrchestratorsKey = "IsEnqueueToOrchestrators";
         private const string IsPersistDirectlyKey = "IsPersistDirectly";
         private const string DriversAcknowledgeMaxWaitPeriodInSecondsKey = "DriversAcknowledgeMaxWaitPeriodInSeconds";
         private const string DriversLocationRadiusInMilesKey = "DriversLocationRadiusInMiles";
@@ -76,7 +85,56 @@ namespace ServerlessMicroservices.Shared.Services
             return false;
         }
 
+        // Storage
+        public string GetStorageAccount()
+        {
+            return GetEnvironmentVariable(StorageAccountKey);
+        }
+
+        public string GetTripManagersQueueName()
+        {
+            return GetEnvironmentVariable(TripManagersQueueKey);
+        }
+
+        public string GetTripMonitorsQueueName()
+        {
+            return GetEnvironmentVariable(TripMonitorsQueueKey);
+        }
+
+        public string GetTripDemosQueueName()
+        {
+            return GetEnvironmentVariable(TripDemosQueueKey);
+        }
+
         // Management
+        public bool IsRunningInContainer()
+        {
+            if (
+                GetEnvironmentVariable(IsRunningInContainerKey) != null &&
+                !string.IsNullOrEmpty(GetEnvironmentVariable(IsRunningInContainerKey).ToString()) &&
+                GetEnvironmentVariable(IsRunningInContainerKey).ToString().ToLower() == "true"
+                )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
+        public bool IsEnqueueToOrchestrators()
+        {
+            if (
+                GetEnvironmentVariable(IsEnqueueToOrchestratorsKey) != null &&
+                !string.IsNullOrEmpty(GetEnvironmentVariable(IsEnqueueToOrchestratorsKey).ToString()) &&
+                GetEnvironmentVariable(IsEnqueueToOrchestratorsKey).ToString().ToLower() == "true"
+                )
+            {
+                return true;
+            }
+
+            return false;
+        }
+
         public bool IsPersistDirectly()
         {
             if (
