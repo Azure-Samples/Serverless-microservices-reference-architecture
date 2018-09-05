@@ -4,6 +4,8 @@ import Home from '@/views/Home.vue';
 import Trip from '@/views/Trip.vue';
 import Passengers from '@/views/Passengers.vue';
 import Drivers from '@/views/Drivers.vue';
+import NoAuth from '@/views/NoAuth.vue';
+import { requireAuth } from '@/utils/Authentication';
 
 Vue.use(Router);
 
@@ -19,17 +21,25 @@ export default new Router({
     {
       path: '/trip',
       name: 'trip',
-      component: Trip
+      component: Trip,
+      beforeEnter: requireAuth
     },
     {
       path: '/passengers',
       name: 'passengers',
-      component: Passengers
+      component: Passengers,
+      beforeEnter: requireAuth
     },
     {
       path: '/drivers',
       name: 'drivers',
-      component: Drivers
+      component: Drivers,
+      beforeEnter: requireAuth
+    },
+    {
+      path: '/no-auth',
+      name: 'no-auth',
+      component: NoAuth
     }
   ],
   scrollBehavior(to, from, savedPosition) {

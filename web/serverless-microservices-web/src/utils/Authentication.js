@@ -107,7 +107,7 @@ export function requireAuth(to, from, next) {
   const auth = new Authentication();
   if (!auth.isAuthenticated()) {
     next({
-      path: '/',
+      path: '/no-auth',
       query: { redirect: to.fullPath }
     });
   } else {
