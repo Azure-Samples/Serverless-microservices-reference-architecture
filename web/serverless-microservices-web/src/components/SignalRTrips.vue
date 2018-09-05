@@ -102,6 +102,9 @@ export default {
 
             hubConnection.on('tripRunning', trip => {
               console.log(`tripRunning Trip code: ${trip.code}`);
+              if (this.currentStep < 3) {
+                this.setCurrentStep(3);
+              }
               this.$toast.info(
                 `Trip Code: ${trip.code}. Message: tripRunning.`,
                 'Trip Running',
