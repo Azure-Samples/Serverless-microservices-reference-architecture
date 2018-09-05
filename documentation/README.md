@@ -14,7 +14,7 @@ During their initial research phase consisting of comparing serverless offerings
 
 ## Explore Relecloud's solution using serverless and microservices
 
-[Read about Relecloud's solution](./introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservics, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
+[Read about Relecloud's solution](./introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservices, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
 
 ## Deploy Relecloud's solution today with a hands-on lab
 
