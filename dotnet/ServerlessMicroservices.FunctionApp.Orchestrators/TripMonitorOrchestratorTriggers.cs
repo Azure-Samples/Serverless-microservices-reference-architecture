@@ -3,13 +3,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
-using Newtonsoft.Json;
-using ServerlessMicroservices.Models;
 using System;
-using System.IO;
-using System.Net.Http.Headers;
 using System.Threading.Tasks;
-using ServerlessMicroservices.Shared.Services;
 
 namespace ServerlessMicroservices.FunctionApp.Orchestrators
 {
@@ -18,7 +13,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         [FunctionName("T_StartTripMonitorViaQueueTrigger")]
         public static async Task StartTripMonitorViaQueueTrigger(
             [OrchestrationClient] DurableOrchestrationClient context,
-            [QueueTrigger("trip-monitors", Connection = "AzureWebJobsStorage")] string code,
+            [QueueTrigger("%TripMonitorsQueue%", Connection = "AzureWebJobsStorage")] string code,
             ILogger log)
         {
             try
@@ -35,7 +30,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         }
 
         [FunctionName("T_StartTripMonitor")]
-        public static async Task<IActionResult> StartTripMonitor([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors/{code}")] HttpRequest req,
+        public static async Task<IActionResult> StartTripMonitor([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmonitors/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
             ILogger log)
@@ -62,7 +57,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         }
 
         [FunctionName("T_GetTripMonitor")]
-        public static async Task<IActionResult> GetTripMonitor([HttpTrigger(AuthorizationLevel.Function, "get", Route = "tripmonitors/{code}")] HttpRequest req,
+        public static async Task<IActionResult> GetTripMonitor([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tripmonitors/{code}")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
             ILogger log)
@@ -84,7 +79,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         }
 
         [FunctionName("T_TerminateTripMonitor")]
-        public static async Task<IActionResult> TerminateTripMonitor([HttpTrigger(AuthorizationLevel.Function, "post", Route = "tripmonitors/{code}/terminate")] HttpRequest req,
+        public static async Task<IActionResult> TerminateTripMonitor([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmonitors/{code}/terminate")] HttpRequest req,
             [OrchestrationClient] DurableOrchestrationClient context,
             string code,
             ILogger log)

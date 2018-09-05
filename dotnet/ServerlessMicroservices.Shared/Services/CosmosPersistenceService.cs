@@ -775,12 +775,14 @@ namespace ServerlessMicroservices.Shared.Services
                 var docDbEndpointUrl = settingService.GetDocDbEndpointUri();
                 var docDbApiKey = settingService.GetDocDbApiKey();
 
-                _docDbSingletonClient = new DocumentClient(new Uri(docDbEndpointUrl), docDbApiKey, new ConnectionPolicy()
-                {
-                    ConnectionMode = ConnectionMode.Direct,
-                    ConnectionProtocol = Protocol.Tcp,
-                    MaxConnectionLimit = 200
-                });
+                // TODO: DocumentClient using direct TCP protocol does not work in Linux!!! 
+                //_docDbSingletonClient = new DocumentClient(new Uri(docDbEndpointUrl), docDbApiKey, new ConnectionPolicy()
+                //{
+                //    ConnectionMode = ConnectionMode.Direct,
+                //    ConnectionProtocol = Protocol.Tcp,
+                //    MaxConnectionLimit = 200
+                //});
+                _docDbSingletonClient = new DocumentClient(new Uri(docDbEndpointUrl), docDbApiKey);
 
 
                 // Do each collection seperately as we may need to set different create options for each

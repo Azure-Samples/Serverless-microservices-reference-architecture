@@ -5,6 +5,7 @@
     {
         private static ISettingService _settingService = null;
         private static ILoggerService _loggerService = null;
+        private static IStorageService _storageService = null;
         private static IChangeNotifierService _changeNotifierService = null;
         private static IPersistenceService _persistenceService = null;
         private static IPersistenceService _archiveService = null;
@@ -29,10 +30,18 @@
             return _loggerService;
         }
 
+        public static IStorageService GetStorageService()
+        {
+            if (_storageService == null)
+                _storageService = new StorageService(GetSettingService(), GetLoggerService());
+
+            return _storageService;
+        }
+
         public static IChangeNotifierService GetChangeNotifierService()
         {
             if (_changeNotifierService == null)
-            _changeNotifierService = new ChangeNotifierService(GetSettingService(), GetLoggerService());
+            _changeNotifierService = new ChangeNotifierService(GetSettingService(), GetLoggerService(), GetStorageService());
 
             return _changeNotifierService;
         }
