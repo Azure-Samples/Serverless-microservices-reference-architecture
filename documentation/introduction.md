@@ -105,7 +105,7 @@ Describe how the SPA communicates with the B2C AD to provide different levels of
 
 ### API Management
 
-There are many benefits to use an API manager. In the case the RideShare solution, there are really four major benefits:
+There are many benefits to using an API manager. In the case the Rideshare solution, there are really four major benefits:
 
 1. **Security**: the API manager layer verifies the incoming requests' [JWT](https://jwt.io/) token against the B2C Authority URL. This is accomplished via an inbound policy that intercepts each call:
 
