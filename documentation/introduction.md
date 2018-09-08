@@ -96,6 +96,64 @@ Given the above principles, the following are identified as Microservices:
 
 **Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Function App.
 
+### Data Flow
+
+The following is a detailed diagram showing how the different architecture components communicate and the Azure services they use:
+
+![RideShare Dataflow Architecture](media/dataflow-architecture.png)
+
+The sample uses a front-end SPA Web App to allow passengers to login in, manage trips and see previous trips. The SPA uses an API manager to access the solution front-end APIs.
+
+When a passenger decides to request a trip, a request containing the passenger information and the trip source and destination locations is posted to the `Trips` Microsorvice via is exposed front-end API:
+
+```json
+{
+	"passenger": {
+		"code": "joe@gmail.com",
+		"firstName": "Joe",
+		"lastName": "James",
+		"mobileNumber": "+13105551212",
+		"email": "joe@gmail.com"
+	},
+	"source": {
+		"latitude": -31.7654,
+		"longitude": 54.9011
+	},
+	"destination": {
+		"latitude": -32.5625,
+		"longitude": 60.6276
+	},
+	"type": 1
+}
+```
+
+The `Trips` Microservice stores the trip in Cosmos, enqueues the `Trip` item to the `Orchestrators` Microservice and returns the newly created `Trip` information such as code and other properties. Optionally the `Orchestrators` Microservice can also be triggered via its internally-exposed API.
+
+**For more information** on the operation of the durable orchestrators, please refer to the [Durable Orchestrators](#durable-orchestrators) section below. 
+
+The `Orchestrators` Microservice instantiates a Durable `Trip Manager` to manage the trip until it completes. The `Trip Manager` performs the following tasks:
+
+- Notify available drivers that a new trip is requested. Available drivers are identified as drivers who are within x mile radius from the trip source location and that they are currently not servicing other passengers. The `Trip Manager` sends `Drivers notified` state change event to the Event Grid. 
+- Wait for either a timeout timer to occur or an external event to signal that a driver accepted the trip:
+    - If a timeout occurs, the `Trip Manager` aborts the trip indicating that no driver is interested in the requested trip. The `Trip Manager` sends `Trip aborted` state change event to the Event Grid. 
+    - If an external signal is received, the `Trip Manager` proceeds with the orchestration. It is worth mentioning that when a driver accepts a trip, he/she posts a request (via the SPA or more realistically a Mobile App) to the `Trips` API indicating that a driver is willing to accept the trip i.e. `api/trips/{code}/drivers/{drivercode}`. The `Trips` Microservice then calls upon the `Orchestrators` Microservice API to trigger the external event.
+- Assign the driver (that accepted the trip) to the `Trip` item. The `Trip Manager` sends `Drivers picked` state change event to the Event Grid.
+- Enqueue a message to the `Trip Monitor` queue. 
+
+When the `Trip Monitor` queue is triggered, the `Orchestrators` Microservice instantiates a Durable `Trip Monitor` to monitor the trip progress and report state changes.
+
+- The `Trip Monitor` starts a timer to be triggered every x seconds to check whether the trip is completed or not. If completed, it indicates that the trip is completed and sends `Trip completed` state change event to the Event Grid. Otherwise, it sends `Trip running` state change event to the Event Grid.
+- The `Trip Monitor` does not let trips run forever! It aborts the trip if it does not complete within configurable amount of time.      
+
+When events are sent to the `Event Grid Topic`, they triggers the different handler Microservices to further process the trip:
+
+- Notification Microservice
+- SignalR Handler Microsevice
+- PowerBI Hanlder Microservice
+- Archiver Hanlder Microservice
+
+**Below** is a detailed description of the components that make up the architecture.
+
 ### Web App
 
 //TBA - Joel
