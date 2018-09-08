@@ -5,6 +5,7 @@ In this document:
 - [What are Microservices?](#what-are-microservices)
 - [What is serverless?](#what-is-serverless)
 - [Macro Architecture](#macro-architecture)
+- [Data Flow](#data-flow)
   - [Web App](#web-app)
   - [API Management](#api-management)
   - [RideShare APIs](#rideshare-apis)
@@ -96,7 +97,7 @@ Given the above principles, the following are identified as Microservices:
 
 **Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Function App.
 
-### Data Flow
+## Data Flow
 
 The following is a detailed diagram showing how the different architecture components communicate and the Azure services they use:
 
@@ -145,12 +146,12 @@ When the `Trip Monitor` queue is triggered, the `Orchestrators` Microservice ins
 - The `Trip Monitor` starts a timer to be triggered every x seconds to check whether the trip is completed or not. If completed, it indicates that the trip is completed and sends `Trip completed` state change event to the Event Grid. Otherwise, it sends `Trip running` state change event to the Event Grid.
 - The `Trip Monitor` does not let trips run forever! It aborts the trip if it does not complete within configurable amount of time.      
 
-When events are sent to the `Event Grid Topic`, they triggers the different handler Microservices to further process the trip:
+When events are sent to the `Event Grid Topic`, they trigger the different handler Microservices to further process the trip:
 
 - Notification Microservice
 - SignalR Handler Microsevice
 - PowerBI Hanlder Microservice
-- Archiver Hanlder Microservice
+- Archiver Handler Microservice
 
 **Below** is a detailed description of the components that make up the architecture.
 
