@@ -58,23 +58,22 @@ Relecloud decided to use the following macro architecture in their RideShare sol
 
 The architecture major building blocks are:
 
-| Component             | Technology                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                |
-| --------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| RideShare Web App     | Vue JS SPA                                                                                          | A multi-purpose, single-page application web app that allows users to sign up and sign in against a B2C Active Directory instance. Users have different levels and permissions. For example, passenger users can request rides and receive real-time notifications of ride status. Executive users, on the other hand, can view top-level reports that reveal rides and system performance |
-| API Manager           | [Azure API Manager](https://docs.microsoft.com/azure/api-management/)                               | An API gateway that acts as a front-end to the solution APIs. Among many other benefits, the API management service provides RideShare APIs with security verification, usage telemetry, documentation and rate limiting.                                                                                                                                                                  |
-| RideShare APIs        | C# [Azure Functions](https://azure.microsoft.com/services/functions/)                               | Three Function Apps are deployed to serve RideShare's APIs: Drivers, Trips and Passengers. These APIs are exposed to the Web App applications via the API manager and provide CRUD operations for each of RideShare entities                                                                                                                                                               |
-| Durable Orchestrators | C# [Durable Functions](https://docs.microsoft.com/azure/azure-functions/durable-functions-overview) | Trip Manager, Monitor and Demo orchestrators are deployed to manage the trip and provide real-time status updates. The orchestrators are launched for the duration of the trip and they perform management and monitoring functions as will be explained in more [details](#durable-orchestrators) later. In essence, these orchestrators make up the heart of the solution.               |
-| Event Emitter         | [Event Grid Topic](https://docs.microsoft.com/azure/event-grid/overview)                            | A custom topic used to externalize trips as they go through the different stages.                                                                                                                                                                                                                                                                                                          |
-| Event Subscribers     | Functions & Logic Apps                                                                              | Several event grid topic subscribers listen to the event grid topic events to provide multi-process capability of an externalized trip                                                                                                                                                                                                                                                     |
-
+| Component | Technology | Description |
+|---|---|---|
+| RideShare Web App | Vue JS SPA | A multi-purpose, single-page application web app that allows users to sign up and sign in against a B2C Active Directory instance. Users have different levels and permissions. For example, passenger users can request rides and receive real-time notifications of ride status. Executive users, on the other hand, can view top-level reports that reveal rides and system performance |
+| API Manager | [Azure API Manager](https://docs.microsoft.com/azure/api-management/) | An API gateway that acts as a front-end to the solution APIs. Among many other benefits, the API management service provides RideShare APIs with security verification, usage telemetry, documentation and rate limiting. | 
+| RideShare APIs | C# [Azure Functions](https://azure.microsoft.com/services/functions/) | Three Function Apps are deployed to serve RideShare's APIs: Drivers, Trips and Passengers. These APIs are exposed to the Web App applications via the API manager and provide CRUD operations for each of RideShare entities|
+| Durable Orchestrators | C# [Durable Functions](https://docs.microsoft.com/azure/azure-functions/durable-functions-overview) | Trip Manager, Monitor and Demo orchestrators are deployed to manage the trip and provide real-time status updates. The orchestrators are launched for the duration of the trip and they perform management and monitoring functions as will be explained in more [details](#durable-orchestrators) later. In essence, these orchestrators make up the heart of the solution. |
+| Event Emitter | [Event Grid Topic](https://docs.microsoft.com/azure/event-grid/overview) | A custom topic used to externalize trips as they go through the different stages. |
+| Event Subscribers     | Functions & Logic Apps  | Several Event Grid topic subscribers listen to the Event Grid topic events to provide multi-process capability of an externalized trip                                                                                                                                                                                                                                                     |
 The following are the Event Grid Subscribers:
 
-| Subscriber   | Technology                                                    | Description                                                                                              |
-| ------------ | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.    |
-| SignalR      | C# Azure Function                                             | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.      |
-| PowerBI      | C# Azure Function                                             | A trip processor to insert the trip into an SQL Database and possibly into a PowerBI dataset (via APIs). |
-| Archiver     | Node Azure Function                                           | A trip processor to archive the trip into Cosmos                                                         |
+| Subscriber   | Technology  | Description |
+|---|---|---|
+| Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.|
+| SignalR | C# Azure Function | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.|
+| PowerBI | C# Azure Function | A trip processor to insert the trip into an SQL Database and possibly into a PowerBI dataset (via APIs).|
+| Archiver     | Node Azure Function  | A trip processor to archive the trip into Cosmos|
 
 Relecloud decided to use the following criteria to determine when a certain piece of functionality is to be considered a Microservice:
 
@@ -84,18 +83,18 @@ Relecloud decided to use the following criteria to determine when a certain piec
 
 Given the above principles, the following are identified as Microservices:
 
-| Microservice                    | Technology | Reason                                                                                                                                                              |
-| ------------------------------- | ---------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| Drivers APIs                    | C#         | The `Drivers` API is code and deployment independent isolated in a functions app.                                                                                   |
-| Trips APIs                      | C#         | The `Trips` API is code and deployment independent isolated in a functions app.                                                                                     |
-| Passengers APIs                 | C#         | The `Passengers` API is code and deployment independent isolated in a functions app.                                                                                |
-| Durable Orchestrators           | C#         | The Trip `Manager`, `Monitor` and `Demo` i.e. Orchestrators are independent as they provide the heart of the solution. They need to scale and deploy independently. |
-| Event Grid Notification Handler | Logic App  | The `Logic App` handler adds value to the overall solution but work independently.                                                                                  |
-| Event Grid SignalR Handler      | C#         | The `SignalR` handler adds value to the overall solution but work independently.                                                                                    |
-| Event Grid PowerBI Handler      | C#         | The `PowerBI` handler adds value to the overall solution but work independently.                                                                                    |
-| Event Grid Archiver             | NodeJS     | The NodeJS `Archiver` handler adds value to the overall solution but work independently.                                                                            |
+| Microservice   | Technology  | Reason |
+|---|---|---|
+| Drivers APIs | C# | The `Drivers` API is code and deployment independent isolated in a Function App.|
+| Trips APIs | C# | The `Trips` API is code and deployment independent isolated in a Function App.|
+| Passengers APIs| C# | The `Passengers` API is code and deployment independent isolated in a Function App.|
+| Durable Orchestrators | C# | The Trip `Manager`, `Monitor` and `Demo` i.e. Orchestrators are independent as they provide the heart of the solution. They need to scale and deploy independently.|
+| Event Grid Notification Handler | Logic App  | The `Logic App` handler adds value to the overall solution but work independently.|
+| Event Grid SignalR Handler | C# | The `SignalR` handler adds value to the overall solution but work independently.|
+| Event Grid PowerBI Handler | C# | The `PowerBI` handler adds value to the overall solution but work independently.|
+| Event Grid Archiver | NodeJS | The NodeJS `Archiver` handler adds value to the overall solution but work independently.|
 
-**Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Functions App.
+**Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Function App.
 
 ### Web App
 
@@ -219,7 +218,12 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 ### RideShare APIs
 
-As the macro architecture depicts, the APIs are implemented using C# Azure Functions. They have a very simple architecture that can be illustrated as follows:
+The sample contains front-end APIs that are used to manage Drivers, Passengers and Trips:
+- They are built on Azure Functions using RESTful design principles. 
+- They use [Cosmos]() collection to store their respective data. **Please note**, however, that, due to cost constraints, the sample APIs share  the same Cosmos collection.
+- They use [Application Insights]() to send traces, metrics and telemetry to.
+
+As the macro architecture depicts, the APIs are implemented using C# Azure Functions. They have a simple architecture that can be illustrated as follows:
 
 ![APIs Architecture](media/function-apis-architecture.png)
 
@@ -345,9 +349,9 @@ In the RideShare solution, orchestrators are like Serverless [Actors](https://en
 
 Each orchestrator has 3 sections:
 
-- HTTP Trigger Endpoints - used to start, terminate and retrieve state of a particular orchestrator instance.
-- Orchestrator Function - used to provide the orchestrator main body of execution and state management.
-- Orchestrator Activity Functions - one or more activity functions that the orchestrator calls upon to run the different activities that make up the execution.
+- **HTTP Trigger Endpoints** - used to start, terminate and retrieve state of a particular orchestrator instance.
+- **Orchestrator Function** - used to provide the orchestrator main body of execution and state management.
+- **Activity Functions** - one or more activity functions that the orchestrator calls upon to run the different activities that make up the execution.
 
 To make functions easily identifiable, the reference implementation follows a naming convention where the Trigger Functions start with a `T_` i.e. `T_StartTripManager`, the Orchestrator Functions start with an `O_` i.e. `O_ManageTrip` and the Activity Functions start with an `A_` and a 2-digit identifier i.e. `A_TM_AssignTripDriver`. The `_TM_` denotes Trip Manager, for example.
 
@@ -398,20 +402,25 @@ it is still probably a good idea to store the instance ids and their status in a
 
 ### Event Grid
 
-The durable orchestrators externalize the trip at the following events:
+[Event Grid](https://docs.microsoft.com/azure/event-grid/overview) is a fully-managed event routing service. In the reference implementation, it is used to report `Trip` state changes and kick off different `Trip` processors. Each processor or handler is an independent Microservice that receives a discrete event and decides for itself what type of action it will need to take. The key advantages of Event Grid Topics are:
+
+- The emitter fires and forgets. No need to wait until a response arrives.
+- Events can be delivered to multiple listeners that can process the event data.
+- Events have data and meta data such as subject that can be used to determine processing. For example, the `PowerBI Trip Processor filters out events based on subject.
+
+Being an event source, the [Durable Orchestrators](#durable-orchestrators) externalize `Trip` state changes to an Event Grid Topic upon the following events:
 
 ```csharp
-    // Event Grid Event Subjects
-    public const string EVG_SUBJECT_TRIP_DRIVERS_NOTIFIED = "Drivers notified!";
-    public const string EVG_SUBJECT_TRIP_DRIVER_PICKED = "Driver picked :-)";
-    public const string EVG_SUBJECT_TRIP_STARTING = "Trip starting :-)";
-    public const string EVG_SUBJECT_TRIP_RUNNING = "Trip running...";
-    public const string EVG_SUBJECT_TRIP_COMPLETED = "Trip completed :-)";
-    public const string EVG_SUBJECT_TRIP_ABORTED = "Trip aborted :-(";
-}
+// Event Grid Event Subjects
+public const string EVG_SUBJECT_TRIP_DRIVERS_NOTIFIED = "Drivers notified!";
+public const string EVG_SUBJECT_TRIP_DRIVER_PICKED = "Driver picked :-)";
+public const string EVG_SUBJECT_TRIP_STARTING = "Trip starting :-)";
+public const string EVG_SUBJECT_TRIP_RUNNING = "Trip running...";
+public const string EVG_SUBJECT_TRIP_COMPLETED = "Trip completed :-)";
+public const string EVG_SUBJECT_TRIP_ABORTED = "Trip aborted :-(";
 ```
 
-The `trip item` is defined this way:
+A `TripItem` is defined this way:
 
 ```csharp
 public class TripItem : BaseItem
@@ -464,21 +473,15 @@ public class TripItem : BaseItem
 }
 ```
 
-The trips are externalized to an [Event Grid Topic](https://docs.microsoft.com/azure/event-grid/overview). The key advantages of the Event Grid Topic are:
-
-- The emitter fires and forgets. No need to wait until a response arrives.
-- Events can be delivered to multiple listeners that can process the event data.
-- Events have data and meta data such as subject that can be used to determine processing. For example, the `PowerBI Trip Processor filters out events based on subject.
-
 As shown in the macro architecture section, the solution implements several listeners for the trip:
 
 ![Event Grid Listeners](media/event-grid-listeners.png)
 
 ##### Logic App Handler
 
-[Logic Apps](https://azure.microsoft.com/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the event grid topic. Please refer to the [setup](./setup.md#connect-event-grid-to-logic-app) to see how to set this up.
+[Logic Apps](https://azure.microsoft.com/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the Event Grid topic. Please refer to the [setup](./setup.md#connect-event-grid-to-logic-app) to see how to set this up.
 
-In the reference implementation, the logic app is triggered by the Event Grid topic to send an Email to admins about the trip:
+In the reference implementation, the Logic App is triggered by the Event Grid Topic to notify admins of trip state changes:
 
 ![Logic App Listener](media/logic-app-listener.png)
 
@@ -486,7 +489,7 @@ In the reference implementation, the logic app is triggered by the Event Grid to
 
 ##### SignalR Handler
 
-Azure Functions provide a special binding `EventGridEvent` which makes receiving an Event Grid event a breeze:
+Azure Functions provide a special binding trigger `EventGridEvent` to handle the Event Grid event. In addition, there is a new [special binding](https://github.com/anthonychu/AzureAdvocates.WebJobs.Extensions.SignalRService) for [SignalR Service](https://azure.microsoft.com/en-us/services/signalr-service/) which makes broadcasting SignalR messages super flexible.
 
 ```csharp
 [FunctionName("EVGH_TripExternalizations2SignalR")]
@@ -542,14 +545,18 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 **Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
 
-The Event handler also has a special binding for `SignalR` service which defines a hub called `trips`. When an event arrives, the above function triggers a client method (based on the subject) to notify of the trip update.
+When an Event Grid Topic event arrives at the SignalR processor, it extracts the `TripItem` from the event data and calls different client methods based on the event subject to notify SignalR clients, in real-time, of trip state changes.    
+
+In this reference implementation, the SignalR client is the Web App SPA. But a Xamarin Mobile App or .NET client can also receive SignalR messages. When a client receives a SignalR message, they change the trip state so passengers and drivers become aware of the latest trip status. 
+
+**Below we provide two sample SignalR client implementations: .NET SignalR client and JavaScript SignalR client.**  
 
 ###### DOTNET SignalR Client
 
-A .NET SignalR client can be written to receive the `SignalR` messages:
+The following is sample .NET SignalR client written to receive the `SignalR` messages emitted by the `SignalR` handler:
 
 ```csharp
-// Get the SingalR service url and access token by calling the `signalrinfo` API
+// Get the SignalR service url and access token by calling the `signalrinfo` API
 var singnalRInfo = await GetSignalRInfo();
 if (singnalRInfo == null)
     throw new Exception("SignalR info is NULL!");
@@ -637,7 +644,7 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 ###### JavaScript SignalR Client
 
-A JavaScript SignalR client can be written to receive the `SignalR` messages:
+The following is sample JavaScript SignalR client written to receive the `SignalR` messages emitted by the `SignalR` handler:
 
 ```JavaScript
 let signalRInfoUrl = "<trips-function-app-base-url>/api/signalrinfo";
@@ -717,7 +724,7 @@ document.getElementById("start").addEventListener("click", async e => {
 
 ##### PowerBI Handler
 
-Similar to the SignalR handler above, the PowerBI event grid handler follows the same convention:
+Similar to the [SignalR](#signalr-handler) handler above, the PowerBI Event Grid handler uses the special binding rigger `EventGridEvent` to process the event:
 
 ```csharp
 [FunctionName("EVGH_TripExternalizations2PowerBI")]
@@ -758,11 +765,14 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 }
 ```
 
-**Please note** that the handler currently only processes the `completed` and `aborted` trip events. But it is a good idea to actually store all trip events which paves the way to support [Event Sourcing](https://microservices.io/patterns/data/event-sourcing.html) if desired. This is outside the scope of this solution.
+**Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
 
-The handler calls upon the SQL archive service to persist the data to Azure SQL database. Please see [Data storage](#data-storage) for more details on the SQL Database.
+When an Event Grid Topic event arrives at the PowerBI processor, it extracts the `TripItem` from the event data and, if the event subject is either `completed` or `aborted`, it:
 
-Once in SQL, the data can be used to construct a PowerBI report to provide different performance indicators:
+- Persists the trip in Azure SQL Database. 
+- Optionally, sends the trip to a streaming dataset in PowerBI.
+
+In addition to archiving trip summaries, persisting to an Azure SQL Database provides a way to report on trips using PowerBI for example. A PowerBI report can provide RideShare management with several performance indicators such:
 
 - Total Trips
 - Average Trip Duration
@@ -775,7 +785,7 @@ This is a sample PowerBI report against test trip data:
 
 ![Sample PowerBI Trip Report](media/sample-trip-powerbi-report.png)
 
-In addition, the handler sends trip information to the PowerBI Service which, if configured, sends it to a streaming dataset so real-time trip data can be displayed in a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.
+Sending trips to a streaming PowerBI dataset provides a way to display real-time trip information on a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.
 
 ##### Trip Archiver Handler
 
@@ -783,11 +793,16 @@ In addition, the handler sends trip information to the PowerBI Service which, if
 
 ## Data storage
 
-Relecloud decided to use [Azure Cosmos DB]() as the main data storage for the solution entities. With globally distributed capability, Comos DB can meet the scaling requirement of RideShare.
+Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) as the main data storage for the solution entities. Since Relecloud targets a world-wide audience accessing its services from different parts of the world, Cosmos provides key advantages:
 
-**Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. Obviously this needs to be better addressed in a real solution.
+- A global distribution capability replicates data in different Azure Data centers around the world making the data closer to  consumers thereby reducing the response time.
+- Indepenent storage and throughput scale capability allows for great granularity and flexibility that can be used to adjust for unpredictable usage patterns.     
+- Being the main centric entities in the solution, `Trip` entities capture the trip state such as the associated driver, the associated passenger, the available drivers and many other metrics. It is more convenient to query and store `Trip` entities as a whole without requiring transformation or complex object to relational mapping layers. 
+- Trip schema can change wihout having to go through database schema changes. Only the application code will have to adjust to the schema changes.        
 
-Relecloud also decided to use Azure SQL Database to persist trip summaries so they can be reported on in PowerBI, for example. To this end, the solution defines a `TripFact` table to store the trip flat summaries. Please refer to the [setup](./setup.md#create-tripfact-table) to learn how you provision it.
+**Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. This will have to be addressed in a real solution.
+
+In addition to Cosmos, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in PowerBI, for example. Please refer to [PowerBI Handler](#powerbi-handler) section for details on this. 
 
 ## Source Code Structure
 
@@ -828,7 +843,7 @@ var seconds = _settingService.GetTripMonitorIntervalInSeconds();
 var maxIterations = _settingService..GetTripMonitorMaxIterations();
 ```
 
-- The `ILoggerService` service implementation sends traces, exceptions, custom events and metrics to the `Application Insights` resource associated with the Functions App:
+- The `ILoggerService` service implementation sends traces, exceptions, custom events and metrics to the `Application Insights` resource associated with the Function App:
 
 ```csharp
     // Send a trace

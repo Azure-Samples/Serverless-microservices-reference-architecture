@@ -5,12 +5,12 @@ In this document:
 - [Resources](#resources)
 - [Provision](#provision)
     - [Manual via the Portal](#manual-via-the-portal)
-        - [Create the Azure function apps](#create-the-azure-apps)
+        - [Create the Azure Function Apps](#create-the-azure-apps)
         - [Create the Resource Group](#create-the-resource-group)
         - [Create the Cosmos Assets](#create-the-cosmos-assets)
         - [Create the Storage Account](#create-the-storage-account)
         - [Create the Storage Account](#create-the-storage-account)
-        - [Create the Azure function apps](#create-the-azure-apps)
+        - [Create the Azure Function Apps](#create-the-azure-apps)
         - [Create the Web App Service Plan](#create-the-web-app-service-plan)
         - [Create the Azure SQL Database Assets](#create-the-azure-sql-database-assets)
         - [Create the Event Grid Topic](#create-the-event-grid-topic)
@@ -47,7 +47,7 @@ In this document:
     - [Docker Images](#docker-images)
     - [Running Locally](#running-locally)
     - [Running in ACI](#running-in-aci)
-    - [Running in AKS and Service Fabric](#running-in-aks-and-service-fabric)
+    - [Running in AKS](#running-in-aks)
 
 ## Resources
 
@@ -163,11 +163,11 @@ Log in to the [Azure portal](https://portal.azure.com).
 
     ![Screenshot of the storage account](media/storage-creation2.png)
 
-#### Create the Azure function apps
+#### Create the Azure Function Apps
 
-In this step, you will be creating six new function apps in the Azure portal. There are many ways this can be accomplished, such as [publishing from Visual Studio](), [Visual Studio Code](), the [Azure CLI](), Azure [Cloud Shell](), an [Azure Resource Manager (ARM) template](), and through the Azure portal.
+In this step, you will be creating six new Function Apps in the Azure portal. There are many ways this can be accomplished, such as [publishing from Visual Studio](), [Visual Studio Code](), the [Azure CLI](), Azure [Cloud Shell](), an [Azure Resource Manager (ARM) template](), and through the Azure portal.
 
-Each of these function apps act as a hosting platform for one or more functions. In our solution, they double as microservices with each function serving as an endpoint or method. Having functions distributed amongst multiple function apps enables isolation, providing physical boundaries between the microservices, as well as independent release schedules, administration, and scaling.
+Each of these Function Apps act as a hosting platform for one or more functions. In our solution, they double as microservices with each function serving as an endpoint or method. Having functions distributed amongst multiple Function Apps enables isolation, providing physical boundaries between the microservices, as well as independent release schedules, administration, and scaling.
 
 1.  Log in to the [Azure portal](https://portal.azure.com).
 
@@ -175,29 +175,29 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Type Function App into the Search box](media/function-app-search-box.png 'Function App search')
 
-3.  Complete the function app creation form with the following:
+3.  Complete the Function App creation form with the following:
 
-    1. **App name**: Enter a unique value for the **Drivers** function app.
+    1. **App name**: Enter a unique value for the **Drivers** Function App.
     2. **Subscription**: Select your Azure subscription.
     3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
     4. **OS**: Select Windows.
     5. **Hosting Plan**: Select Consumption Plan.
     6. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    7. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
+    7. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining Function Apps.
     8. **Application Insights**: Set to Off. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
 
     ![Screenshot of the Function App creation form](media/new-function-app-form.png 'Create Function App form')
 
-4.  Repeat the steps above to create the **Trips** function app.
+4.  Repeat the steps above to create the **Trips** Function App.
 
     1. Enter a unique value for the App name, ensuring it has the word **Trips** within the name so you can easily identify it.
     2. Make sure you enter the same remaining settings and select the storage account you created in the previous step.
 
-5.  Repeat the steps above to create the **Orchestrators** function app.
+5.  Repeat the steps above to create the **Orchestrators** Function App.
 
-6.  Repeat the steps above to create the **Passengers** function app.
+6.  Repeat the steps above to create the **Passengers** Function App.
 
-7.  Repeat the steps above to create the **TripArchiver** function app.
+7.  Repeat the steps above to create the **TripArchiver** Function Appp.
 
 #### Create the Web App Service Plan
 
@@ -273,7 +273,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
 2.  Click the **Add** button to create a new Event Grid Topic.
 
-3.  Complete the event grid topic creation form with the following:
+3.  Complete the Event Grid topic creation form with the following:
 
     1. **Name**: Enter a unique value for the Event Grid **Topic** i.e. `RideShareExternalizations`.
     2. **Subscription**: Select your Azure subscription.
@@ -682,7 +682,7 @@ Connect to the SQL database and run the following script to create the `TripFact
 
 ## Setting Files
 
-The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting file for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each function app. The Cake deployment script can auto-import these files into the `Application Settings`.
+The reference implementation solution requires several settings for each Function App. The `settings` directory contains the setting file for each Function App. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each Function App. The Cake deployment script can auto-import these files into the `Application Settings`.
 
 ### Drivers Function App
 
@@ -745,8 +745,8 @@ The reference implementation solution requires several settings for each functio
 | TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
 | TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
 | TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
-| TripExternalizationsEventGridTopicUrl| The URL of the event grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
-| TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
+| TripExternalizationsEventGridTopicUrl| The URL of the Event Grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
+| TripExternalizationsEventGridTopicApiKey|The API Key of the Event Grid topic |
 
 ### Trips Function App
 
@@ -818,7 +818,7 @@ The `Cake` script reponsible to `deploy` and `provision` is included in the `dot
 
 **Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
-Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps. 
+Once all of the above is in place, Cake is now able to authenticate and deploy the C# Function Apps. 
 
 :eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
 
@@ -852,7 +852,7 @@ The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.
 
 ## Containers
 
-We have seen in the [deployment](#deployment) section, Function Apps in Azure are usually hosted in `App Services`. They can also run locally during development. However, there are other compelling deployment options if we are able to containerize the Functions Apps as Docker images. 
+We have seen in the [deployment](#deployment) section, Function Apps in Azure are usually hosted in `App Services`. They can also run locally during development. However, there are other compelling deployment options if we are able to containerize the Function Apps as Docker images. 
 
 This is made easier in Function Apps v2 since they run on `.NET Core` and hence cross-platorm. This means that Function Apps can be containerized as Docker images and then deployed to one of many possibilities:
 
@@ -866,7 +866,7 @@ This is made easier in Function Apps v2 since they run on `.NET Core` and hence 
 **Please note** that when Function Apps are not run in Azure consumption plan, it implies that:
 
 - The micro billing and the auto-scaling features are no longer applicable.
-- The connected Azure resources such as storage and event grids will still run in Azure.
+- The connected Azure resources such as storage and Event Grids will still run in Azure.
 
 ### Docker Files
 
@@ -875,7 +875,7 @@ It turned out that Microsoft produces a Docker image for Azure Functions .NET Co
 microsoft/azure-functions-dotnet-core2.0
 ```
 
-In the `Dockerfiles` folder of the `.NET` source code, there is a `docker` file for each .NET function app:
+In the `Dockerfiles` folder of the `.NET` source code, there is a `docker` file for each .NET Function App:
 
 **Drivers**:
 
@@ -915,7 +915,7 @@ The `Dockerfile` is straightforward! We base it on the `microsoft/azure-function
 
 **Please note** that this assumes that you have `Docker` installed on your Windows or Mac development machine.
 
-Once the .NET soultion is built, we can generate the `Docker` images for each function app:
+Once the .NET soultion is built, we can generate the `Docker` images for each Function App:
 
 ```
 docker build -t rideshare-drivers:v1 -f dockerfiles/drivers .
@@ -951,13 +951,13 @@ docker run --env-file settings/RideShareTripsDockerDev-AppSettings.csv -p 8083:8
 
 **Please note**:
 
-- The `settings` folder contains all the environment variables for each function app.
+- The `settings` folder contains all the environment variables for each Function App.
 - The [Docker environment variables via a file](https://docs.docker.com/engine/reference/commandline/run/#set-environment-variables--e---env---env-file) requires that KEYs and VALUEs be seperated by a `=`. 
-- Map different port for each function app so we do not get into a conflict. So `Drivers` is mapped to 8080, `Passengers` is mapped to 8081, `Orchestrators` is mapped to 8082 and `Trips` is mapped to 8083. 
+- Map different port for each Function App so we do not get into a conflict. So `Drivers` is mapped to 8080, `Passengers` is mapped to 8081, `Orchestrators` is mapped to 8082 and `Trips` is mapped to 8083. 
 - The connected Azure resources are still in Azure. For example, Cosmos DB and the storage accounts are still pointing to Azure.
 - Issue `docker ps` command to make sure that the containers are running.
 
-Once the containers are running, use something like `Postman` to interact with the different function apps using their respective ports. For example:
+Once the containers are running, use something like `Postman` to interact with the different Function Apps using their respective ports. For example:
 
 | Fuction App | Verb | URL | Description |
 |---|---|---|---|
@@ -982,7 +982,7 @@ docker push joesmith/rideshare-trips:v1
 
 **Please note** that the above requires that you have signed in to [Docker hub](https://cloud.docker.com) account.
 
-In order to actually create an ACI , we use [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) with `YAML` files to drive the properties and setup the container environment variables. In the `yamlfiles` folder of the `.NET` source code, there is a `yaml` file for each .NET function app. Here is a sample:
+In order to actually create an ACI , we use [Azure CLI](https://docs.microsoft.com/en-us/cli/azure/) with `YAML` files to drive the properties and setup the container environment variables. In the `yamlfiles` folder of the `.NET` source code, there is a `yaml` file for each .NET Function App. Here is a sample:
 
 ```yaml
 apiVersion: 2018-06-01
@@ -1082,7 +1082,7 @@ az container delete -n rideshare-orchestrators -g serverless-microservices-dev -
 az container delete -n rideshare-trips -g serverless-microservices-dev --yes -y
 ```
 
-Once the containers are running, use something like `Postman` to interact with the different function apps using their respective urls. For example:
+Once the containers are running, use something like `Postman` to interact with the different Function Apps using their respective urls. For example:
 
 | Fuction App | Verb | URL | Description |
 |---|---|---|---|
@@ -1090,9 +1090,11 @@ Once the containers are running, use something like `Postman` to interact with t
 | Trips | GET | `GET http://rideshare-trips.eastus.azurecontainer.io/api/trips` | Retrieve all trips  | 
 | Trips | POST | `POST http://rideshare-trips.eastus.azurecontainer.io/api/trips` | Create a new trip  | 
 
-### Running in AKS and Service Fabric
+### Running in AKS
 
-[Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) and [Service Fabric Mesh service](https://azure.microsoft.com/en-us/blog/azure-service-fabric-mesh-is-now-in-public-preview/) provide much more robust way to deploy and manage the different containers as they provide orchestration and self-healing capabilities. However, setting those up is beyond the scope of this solution.
+[Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) provides much more robust way to deploy and manage the different containers as it provides orchestration and self-healing capabilities. However, setting this up is beyond the scope of this solution. 
+
+Please refer to this [blog post](https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0) to get an idea of how Azure Functions can be deployed on Kubernetes. 
 
 
 
