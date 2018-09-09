@@ -36,7 +36,7 @@ In this document:
         - [Trip Archiver Function App](#trip-archiver-function-app)
     - [Build the solution](#build-the-solution)
         - [.NET](#net)
-        - [Node](#node)
+        - [Node.js](#nodejs)
         - [Web](#web)
     - [Deployment](#deployment)
         - [VSTS](#vsts)
@@ -801,9 +801,10 @@ In order to build .NET solution from Visual Studio, you need:
 - VS 2017 15.7 or later
 - .NET Core 2.1 SDK Installed
 
-### Node
+### Node.js
 
-//TBA - Gerardo
+In order to build Node.js Archiver Function App, you need:
+- Node.js 8.11.4 or later
 
 ### Web
 
