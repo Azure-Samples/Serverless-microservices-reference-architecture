@@ -2,28 +2,29 @@
 
 In this document:
 
-- [What are Microservices?](#what-are-microservices)
-- [What is serverless?](#what-is-serverless)
-- [Macro Architecture](#macro-architecture)
-- [Data Flow](#data-flow)
-  - [Web App](#web-app)
-  - [API Management](#api-management)
-  - [RideShare APIs](#rideshare-apis)
-  - [Durable Orchestrators](#durable-orchestrators)
-  - [Event Grid](#event-grid)
-    - [Logic App handler](#logic-app-handler)
-    - [SignalR Handler](#signalr-handler)
-      - [DOTNET SignalR Client](#dotnet-signalr-client)
-      - [JavaScript SignalR Client](#javascript-signalr-client)
-    - [PowerBI Handler](#powerbi-handler)
-    - [Trip Archiver Handler](#trip-archiver-handler)
-- [DataStorage](#data-storage)
-- [Source Code Structure](#source-code-structure)
-  - [DOTNET](#dotnet)
-  - [Node](#node)
-  - [Web](#web)
-- [Integration Testing](#integration-testing)
-- [Monitoring](#monitoring)
+- [Introduction to serverless microservices](#introduction-to-serverless-microservices)
+    - [What are microservices?](#what-are-microservices)
+    - [What is serverless?](#what-is-serverless)
+    - [Macro Architecture](#macro-architecture)
+    - [Data Flow](#data-flow)
+        - [Web App](#web-app)
+        - [API Management](#api-management)
+        - [RideShare APIs](#rideshare-apis)
+        - [Durable Orchestrators](#durable-orchestrators)
+        - [Event Grid](#event-grid)
+                - [Logic App Handler](#logic-app-handler)
+                - [SignalR Handler](#signalr-handler)
+                    - [DOTNET SignalR Client](#dotnet-signalr-client)
+                    - [JavaScript SignalR Client](#javascript-signalr-client)
+                - [PowerBI Handler](#powerbi-handler)
+                - [Trip Archiver Handler](#trip-archiver-handler)
+    - [Data storage](#data-storage)
+    - [Source Code Structure](#source-code-structure)
+        - [DOTNET](#dotnet)
+        - [Node.js](#nodejs)
+        - [Web](#web)
+    - [Integration Testing](#integration-testing)
+    - [Monitoring](#monitoring)
 
 ## What are microservices?
 
@@ -74,7 +75,7 @@ The following are the Event Grid Subscribers:
 | Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.|
 | SignalR | C# Azure Function | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.|
 | PowerBI | C# Azure Function | A trip processor to insert the trip into an SQL Database and possibly into a PowerBI dataset (via APIs).|
-| Archiver     | Node Azure Function  | A trip processor to archive the trip into Cosmos|
+| Archiver     | Node.js Azure Function  | A trip processor to archive the trip into Cosmos|
 
 Relecloud decided to use the following criteria to determine when a certain piece of functionality is to be considered a Microservice:
 
@@ -93,7 +94,7 @@ Given the above principles, the following are identified as Microservices:
 | Event Grid Notification Handler | Logic App  | The `Logic App` handler adds value to the overall solution but work independently.|
 | Event Grid SignalR Handler | C# | The `SignalR` handler adds value to the overall solution but work independently.|
 | Event Grid PowerBI Handler | C# | The `PowerBI` handler adds value to the overall solution but work independently.|
-| Event Grid Archiver | NodeJS | The NodeJS `Archiver` handler adds value to the overall solution but work independently.|
+| Event Grid Archiver | Node.js | The Node.js `Archiver` handler adds value to the overall solution but work independently.|
 
 **Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Function App.
 
@@ -925,9 +926,11 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 - The `CosmosPersistenceService` assigns Cosmos ids ma![](media/2018-09-03-14-34-52.png)nually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
 - The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicte with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
 
-### Node
+### Node.js
 
-//TBA - Gerardo
+The [nodejs](../nodejs) folder contains the Archiver Function App with the following folder structure:
+
+
 
 ### Web
 
