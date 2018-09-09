@@ -1102,9 +1102,9 @@ Once the containers are running, use something like `Postman` to interact with t
 
 [Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) provides much more robust way to deploy and manage the different containers as it provides orchestration and self-healing capabilities. 
 
-Since we already have the rideshare docker images pushed to [DockerHub](https://cloud.docker.com), all we really need to do is to create an AKS cluster and deploy the rideshare app. 
+Since we already have the rideshare Docker images pushed to [DockerHub](https://cloud.docker.com), all we really need to do is to create an AKS cluster and deploy the rideshare app. 
 
-Here is a PowerShell script that can be used to provisoion a 1-node AKS cluster:
+Here is a PowerShell script that can be used to provision a 1-node AKS cluster:
 
 ```powershell
 # Login to Azure - the client-id, the client-password and the tenant password are the same as setup in the Cake provision section
