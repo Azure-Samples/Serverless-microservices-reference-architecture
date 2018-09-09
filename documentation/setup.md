@@ -1134,7 +1134,7 @@ kubectl get nodes
 # Deploy the rideshare app
 kubectl apply -f rideshare-app.yaml
 
-# Wait untul the services expose drivers, passengers and trips to the Internet 
+# Wait until the services expose drivers, passengers and trips to the Internet 
 kubectl get service rideshare-drivers --watch
 kubectl get service rideshare-passengers --watch
 kubectl get service rideshare-trips --watch
@@ -1405,7 +1405,7 @@ spec:
 
 **Please note** that the `rideshare-orchestrators` deployment does not have an associated service. This is because the  `orchestrators` does not need to be exposed to the Internet.
 
-The fpllowing is a good post on how you run Functions in Kubernetes with AKS: 
+The following is a good post on how you run Functions in Kubernetes with AKS: 
 [https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0](https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0)  
 
 

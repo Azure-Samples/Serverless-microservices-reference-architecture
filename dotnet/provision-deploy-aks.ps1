@@ -25,7 +25,7 @@ kubectl get nodes
 # Deploy the rideshare app
 kubectl apply -f rideshare-app.yaml
 
-# Wait untul the services expose drivers, passengers and trips to the Internet 
+# Wait until the services expose drivers, passengers and trips to the Internet 
 kubectl get service rideshare-drivers --watch
 kubectl get service rideshare-passengers --watch
 kubectl get service rideshare-trips --watch
