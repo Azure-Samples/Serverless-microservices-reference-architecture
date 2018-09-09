@@ -47,7 +47,7 @@ In this document:
         - [Docker Images](#docker-images)
         - [Running Locally](#running-locally)
         - [Running in ACI](#running-in-aci)
-        - [Running in AKS and Service Fabric](#running-in-aks-and-service-fabric)
+        - [Running in AKS](#running-in-aks)
 
 ## Resources
 
@@ -878,7 +878,7 @@ This is made easier in Function Apps v2 since they run on `.NET Core` and hence 
 
 ### Docker Files
 
-It turned out that Microsoft produces a Docker image for Azure Functions .NET Core V2 and is available via `DockerHub`:
+It turned out that Microsoft produces a Docker image for Azure Functions .NET Core V2 and is available via [DockerHub](https://cloud.docker.com):
 ```
 microsoft/azure-functions-dotnet-core2.0
 ```
@@ -1098,11 +1098,315 @@ Once the containers are running, use something like `Postman` to interact with t
 | Trips | GET | `GET http://rideshare-trips.eastus.azurecontainer.io/api/trips` | Retrieve all trips  | 
 | Trips | POST | `POST http://rideshare-trips.eastus.azurecontainer.io/api/trips` | Create a new trip  | 
 
-### Running in AKS and Service Fabric
+### Running in AKS
 
-[Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) and [Service Fabric Mesh service](https://azure.microsoft.com/en-us/blog/azure-service-fabric-mesh-is-now-in-public-preview/) provide much more robust way to deploy and manage the different containers as they provide orchestration and self-healing capabilities. However, setting those up is beyond the scope of this solution.
+[Azure AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/) provides much more robust way to deploy and manage the different containers as it provides orchestration and self-healing capabilities. 
 
+Since we already have the rideshare docker images pushed to [DockerHub](https://cloud.docker.com), all we really need to do is to create an AKS cluster and deploy the rideshare app. 
 
+Here is a PowerShell script that can be used to provisoion a 1-node AKS cluster:
+
+```powershell
+# Login to Azure - the client-id, the client-password and the tenant password are the same as setup in the Cake provision section
+az login --service-principal -u <your-client-id> -p <your-client-password> --tenant <your-tenant-id>
+
+# Display all accounts
+az account list --output table
+
+# Make sur eyou are using the proper subs
+az account set --subscription "your-subs"
+
+# Create a resource group
+az group create --name serverless-microservices-k8s --location eastus
+
+# Create a 1-node AKS cluster 
+az aks create --resource-group serverless-microservices-k8s --name rideshareAKSCluster --service-principal <your-client-id> --client-secret <your-password>  --node-count 1 --enable-addons monitoring --generate-ssh-keys
+
+# Make sure Kubectl is installed
+az aks install-cli
+
+# Allow Kubectrl use the cluster by getting the cluster credentials
+az aks get-credentials --resource-group serverless-microservices-k8s --name rideshareAKSCluster 
+
+# Check the cluster nodes
+kubectl get nodes
+
+# Deploy the rideshare app
+kubectl apply -f rideshare-app.yaml
+
+# Wait untul the services expose drivers, passengers and trips to the Internet 
+kubectl get service rideshare-drivers --watch
+kubectl get service rideshare-passengers --watch
+kubectl get service rideshare-trips --watch
+```
+
+The `rideshare-app-yaml` can be defined this way:
+
+```yaml
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: rideshare-drivers
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rideshare-drivers
+    spec:
+      containers:
+      - name: rideshare-drivers
+        image: khaledhikmat/rideshare-drivers:v1
+        ports:
+        - containerPort: 80
+        env:
+        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
+          "value": "<your-own>"
+        - "name": "FUNCTIONS_EXTENSION_VERSION"
+          "value": "2.0.11961-alpha"
+        - "name": "AzureWebJobsDashboard"
+          "value": "<your-own>"
+        - "name": "AzureWebJobsStorage"
+          "value": "<your-own>"
+        - "name": "DocDbApiKey"
+          "value": "<your-own>"
+        - "name": "DocDbEndpointUri"
+          "value": "<your-own>"
+        - "name": "DocDbRideShareDatabaseName"
+          "value": "RideShare"
+        - "name": "DocDbRideShareMainCollectionName"
+          "value": "Main"
+        - "name": "DocDbThroughput"
+          "value": "400"
+        - "name": "InsightsInstrumentationKey"
+          "value": "<your-own>"
+        - "name": "IsRunningInContainer"
+          "value": "true"
+        - "name": "IsPersistDirectly"
+          "value": "true"
+        - "name": "AuthorityUrl"
+          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
+        - "name": "ApiApplicationId"
+          "value": "<your-own>"
+        - "name": "ApiScopeName"
+          "value": "rideshare"
+        - "name": "EnableAuth"
+          "value": "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rideshare-drivers
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: rideshare-drivers
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: rideshare-passengers
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rideshare-passengers
+    spec:
+      containers:
+      - name: rideshare-passengers
+        image: khaledhikmat/rideshare-passengers:v1
+        ports:
+        - containerPort: 80
+        env:
+        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
+          "value": "<your-own>"
+        - "name": "FUNCTIONS_EXTENSION_VERSION"
+          "value": "2.0.11961-alpha"
+        - "name": "AzureWebJobsDashboard"
+          "value": "<your-own>"
+        - "name": "AzureWebJobsStorage"
+          "value": "<your-own>"
+        - "name": "DocDbApiKey"
+          "value": "<your-own>"
+        - "name": "DocDbEndpointUri"
+          "value": "<your-own>"
+        - "name": "DocDbRideShareDatabaseName"
+          "value": "RideShare"
+        - "name": "DocDbRideShareMainCollectionName"
+          "value": "Main"
+        - "name": "DocDbThroughput"
+          "value": "400"
+        - "name": "InsightsInstrumentationKey"
+          "value": "<your-own>"
+        - "name": "IsRunningInContainer"
+          "value": "true"
+        - "name": "IsPersistDirectly"
+          "value": "true"
+        - "name": "GraphTenantId"
+          "value": "<your-own>"
+        - "name": "GraphClientSecret"
+          "value": "<your-own>"
+        - "name": "AuthorityUrl"
+          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
+        - "name": "ApiApplicationId"
+          "value": "<your-own>"
+        - "name": "ApiScopeName"
+          "value": "rideshare"
+        - "name": "EnableAuth"
+          "value": "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rideshare-passengers
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: rideshare-passengers
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: rideshare-orchestrators
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rideshare-orchestrators
+    spec:
+      containers:
+      - name: rideshare-orchestrators
+        image: khaledhikmat/rideshare-orchestrators:v1
+        ports:
+        - containerPort: 80
+        env:
+        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
+          "value": "<your-own>"
+        - "name": "FUNCTIONS_EXTENSION_VERSION"
+          "value": "2.0.11961-alpha"
+        - "name": "AzureWebJobsDashboard"
+          "value": "<your-own>"
+        - "name": "AzureWebJobsStorage"
+          "value": "<your-own>"
+        - "name": "DocDbApiKey"
+          "value": "<your-own>"
+        - "name": "DocDbEndpointUri"
+          "value": "<your-own>"
+        - "name": "DocDbRideShareDatabaseName"
+          "value": "RideShare"
+        - "name": "DocDbRideShareMainCollectionName"
+          "value": "Main"
+        - "name": "DocDbThroughput"
+          "value": "400"
+        - "name": "DriversAcknowledgeMaxWaitPeriodInSeconds"
+          "value": "120"
+        - "name": "DriversLocationRadiusInMiles"
+          "value": "15"
+        - "name": "TripMonitorIntervalInSeconds"
+          "value": "10"
+        - "name": "TripMonitorMaxIterations"
+          "value": "20"
+        - "name": "InsightsInstrumentationKey"
+          "value": "<your-own>"
+        - "name": "IsRunningInContainer"
+          "value": "true"
+        - "name": "IsPersistDirectly"
+          "value": "true"
+        - "name": "TripManagersQueue"
+          "value": "trip-managers"
+        - "name": "TripMonitorsQueue"
+          "value": "trip-monitors"
+        - "name": "TripDemosQueue"
+          "value": "trip-demos"
+        - "name": "TripExternalizationsEventGridTopicUrl"
+          "value": "<your-own>"
+        - "name": "TripExternalizationsEventGridTopicApiKey"
+          "value": "<your-own>"
+---
+apiVersion: apps/v1beta1
+kind: Deployment
+metadata:
+  name: rideshare-trips
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: rideshare-trips
+    spec:
+      containers:
+      - name: rideshare-trips
+        image: khaledhikmat/rideshare-trips:v1
+        ports:
+        - containerPort: 80
+        env:
+        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
+          "value": "<your-own>"
+        - "name": "FUNCTIONS_EXTENSION_VERSION"
+          "value": "2.0.11961-alpha"
+        - "name": "AzureWebJobsDashboard"
+          "value": "<your-own>"
+        - "name": "AzureWebJobsStorage"
+          "value": "<your-own>"
+        - "name": "DocDbApiKey"
+          "value": "<your-own>"
+        - "name": "DocDbEndpointUri"
+          "value": "<your-own>"
+        - "name": "DocDbRideShareDatabaseName"
+          "value": "RideShare"
+        - "name": "DocDbRideShareMainCollectionName"
+          "value": "Main"
+        - "name": "DocDbThroughput"
+          "value": "400"
+        - "name": "SqlConnectionString"
+          "value": "<your-own>"
+        - "name": "AzureSignalRConnectionString"
+          "value": "<your-own>"
+        - "name": "InsightsInstrumentationKey"
+          "value": "<your-own>"
+        - "name": "IsRunningInContainer"
+          "value": "true"
+        - "name": "IsEnqueueToOrchestrators"
+          "value": "true"
+        - "name": "IsPersistDirectly"
+          "value": "true"
+        - "name": "TripManagersQueue"
+          "value": "trip-managers"
+        - "name": "TripMonitorsQueue"
+          "value": "trip-monitors"
+        - "name": "TripDemosQueue"
+          "value": "trip-demos"
+        - "name": "AuthorityUrl"
+          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
+        - "name": "ApiApplicationId"
+          "value": "<your-own>"
+        - "name": "ApiScopeName"
+          "value": "rideshare"
+        - "name": "EnableAuth"
+          "value": "false"
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: rideshare-trips
+spec:
+  type: LoadBalancer
+  ports:
+  - port: 80
+  selector:
+    app: rideshare-trips
+```
+
+**Please note** that the `rideshare-orchestrators` deployment does not have an associated service. This is because the  `orchestrators` does not need to be exposed to the Internet.
+
+The fpllowing is a good post on how you run Functions in Kubernetes with AKS: 
+[https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0](https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0)  
 
 
 
