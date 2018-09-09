@@ -11,7 +11,7 @@
       "databaseName": "RideShare",
       "collectionName": "Archive",
       "createIfNotExists": false,
-      "connection": "rideshare_DOCUMENTDB",
+      "connection": "DocDbConnectionStringKey",
       "direction": "out"
     }
   ],
