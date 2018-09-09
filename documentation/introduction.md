@@ -2,28 +2,29 @@
 
 In this document:
 
-- [What are Microservices?](#what-are-microservices)
-- [What is serverless?](#what-is-serverless)
-- [Macro Architecture](#macro-architecture)
-- [Data Flow](#data-flow)
-  - [Web App](#web-app)
-  - [API Management](#api-management)
-  - [RideShare APIs](#rideshare-apis)
-  - [Durable Orchestrators](#durable-orchestrators)
-  - [Event Grid](#event-grid)
-    - [Logic App handler](#logic-app-handler)
-    - [SignalR Handler](#signalr-handler)
-      - [DOTNET SignalR Client](#dotnet-signalr-client)
-      - [JavaScript SignalR Client](#javascript-signalr-client)
-    - [PowerBI Handler](#powerbi-handler)
-    - [Trip Archiver Handler](#trip-archiver-handler)
-- [DataStorage](#data-storage)
-- [Source Code Structure](#source-code-structure)
-  - [DOTNET](#dotnet)
-  - [Node](#node)
-  - [Web](#web)
-- [Integration Testing](#integration-testing)
-- [Monitoring](#monitoring)
+- [Introduction to serverless microservices](#introduction-to-serverless-microservices)
+    - [What are microservices?](#what-are-microservices)
+    - [What is serverless?](#what-is-serverless)
+    - [Macro Architecture](#macro-architecture)
+    - [Data Flow](#data-flow)
+        - [Web App](#web-app)
+        - [API Management](#api-management)
+        - [RideShare APIs](#rideshare-apis)
+        - [Durable Orchestrators](#durable-orchestrators)
+        - [Event Grid](#event-grid)
+                - [Logic App Handler](#logic-app-handler)
+                - [SignalR Handler](#signalr-handler)
+                    - [DOTNET SignalR Client](#dotnet-signalr-client)
+                    - [JavaScript SignalR Client](#javascript-signalr-client)
+                - [PowerBI Handler](#powerbi-handler)
+                - [Trip Archiver Handler](#trip-archiver-handler)
+    - [Data storage](#data-storage)
+    - [Source Code Structure](#source-code-structure)
+        - [DOTNET](#dotnet)
+        - [Node.js](#nodejs)
+        - [Web](#web)
+    - [Integration Testing](#integration-testing)
+    - [Monitoring](#monitoring)
 
 ## What are microservices?
 
@@ -74,7 +75,7 @@ The following are the Event Grid Subscribers:
 | Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.|
 | SignalR | C# Azure Function | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.|
 | PowerBI | C# Azure Function | A trip processor to insert the trip into an SQL Database and possibly into a PowerBI dataset (via APIs).|
-| Archiver     | Node Azure Function  | A trip processor to archive the trip into Cosmos|
+| Archiver     | Node.js Azure Function  | A trip processor to archive the trip into Cosmos|
 
 Relecloud decided to use the following criteria to determine when a certain piece of functionality is to be considered a Microservice:
 
@@ -93,7 +94,7 @@ Given the above principles, the following are identified as Microservices:
 | Event Grid Notification Handler | Logic App  | The `Logic App` handler adds value to the overall solution but work independently.|
 | Event Grid SignalR Handler | C# | The `SignalR` handler adds value to the overall solution but work independently.|
 | Event Grid PowerBI Handler | C# | The `PowerBI` handler adds value to the overall solution but work independently.|
-| Event Grid Archiver | NodeJS | The NodeJS `Archiver` handler adds value to the overall solution but work independently.|
+| Event Grid Archiver | Node.js | The Node.js `Archiver` handler adds value to the overall solution but work independently.|
 
 **Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Function App.
 
@@ -105,7 +106,7 @@ The following is a detailed diagram showing how the different architecture compo
 
 The sample uses a front-end SPA Web App to allow passengers to login in, manage trips and see previous trips. The SPA uses an API manager to access the solution front-end APIs.
 
-When a passenger decides to request a trip, a request containing the passenger information and the trip source and destination locations is posted to the `Trips` Microsorvice via is exposed front-end API:
+When a passenger decides to request a trip, a request containing the passenger information and the trip source and destination locations is posted to the `Trips` Microservice via is exposed front-end API:
 
 ```json
 {
@@ -149,8 +150,8 @@ When the `Trip Monitor` queue is triggered, the `Orchestrators` Microservice ins
 When events are sent to the `Event Grid Topic`, they trigger the different handler Microservices to further process the trip:
 
 - Notification Microservice
-- SignalR Handler Microsevice
-- PowerBI Hanlder Microservice
+- SignalR Handler Microservice
+- PowerBI Handler Microservice
 - Archiver Handler Microservice
 
 **Below** is a detailed description of the components that make up the architecture.
@@ -836,7 +837,7 @@ In addition to archiving trip summaries, persisting to an Azure SQL Database pro
 - Total Trips
 - Average Trip Duration
 - Top Drivers
-- Top Pasengers
+- Top Passengers
 - Average Available Drivers
 - Etc
 
@@ -855,9 +856,9 @@ Sending trips to a streaming PowerBI dataset provides a way to display real-time
 Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) as the main data storage for the solution entities. Since Relecloud targets a world-wide audience accessing its services from different parts of the world, Cosmos provides key advantages:
 
 - A global distribution capability replicates data in different Azure Data centers around the world making the data closer to  consumers thereby reducing the response time.
-- Indepenent storage and throughput scale capability allows for great granularity and flexibility that can be used to adjust for unpredictable usage patterns.     
+- Independent storage and throughput scale capability allows for great granularity and flexibility that can be used to adjust for unpredictable usage patterns.     
 - Being the main centric entities in the solution, `Trip` entities capture the trip state such as the associated driver, the associated passenger, the available drivers and many other metrics. It is more convenient to query and store `Trip` entities as a whole without requiring transformation or complex object to relational mapping layers. 
-- Trip schema can change wihout having to go through database schema changes. Only the application code will have to adjust to the schema changes.        
+- Trip schema can change without having to go through database schema changes. Only the application code will have to adjust to the schema changes.        
 
 **Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. This will have to be addressed in a real solution.
 
@@ -923,11 +924,22 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
 
 - `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.
 - The `CosmosPersistenceService` assigns Cosmos ids ma![](media/2018-09-03-14-34-52.png)nually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
-- The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicte with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
+- The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicate with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
 
-### Node
+### Node.js
 
-//TBA - Gerardo
+The [nodejs](../nodejs) folder contains the Archiver Function App with the following folder structure:
+
+![Node.js folder structure](media/archiver-01-folder-structure.png)
+
+- The **serverless-microservices-functionapp-triparchiver** folder contains the Archiver Function App.
+- The **EVGH_TripExternalizations2CosmosDB** folder contains the function to send data to the Archiver Collection in CosmosDB:
+  - **function.json**: Defines the function's in (eventGridTrigger) and out (documentDB) bindings.
+  - **index.js**: The function code that defines the data to be sent.
+- **.gitignore**: Local Git ignore file.
+- **extensions.csproj**
+- **host.json**: This file can include global configuration settings that affect all functions for this function app.
+- **local.settings.json**: This file can include configuration settings needed when running the functions locally.
 
 ### Web
 
@@ -1085,7 +1097,7 @@ Test is completed. Press any key to exit...
 
 ## Monitoring
 
-[Application Insights](https://azure.microsoft.com/services/application-insights/) and [Azure Dashboard](https://azure.microsoft.com/updates/upload-download-azure-dashboards/) are great resources to monitor a solution in production. One can pin response time, requests and failure requests from the solution Applicaion Insights resource right into the Azure Dashboard:
+[Application Insights](https://azure.microsoft.com/services/application-insights/) and [Azure Dashboard](https://azure.microsoft.com/updates/upload-download-azure-dashboards/) are great resources to monitor a solution in production. One can pin response time, requests and failure requests from the solution Application Insights resource right into the Azure Dashboard:
 
 ![Server Telemetry](media/app-insights-normal.png)
 
