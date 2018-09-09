@@ -133,13 +133,22 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 await Utilities.ValidateToken(req);
 
-                // Send over to the trip manager 
-                var baseUrl = ServiceFactory.GetSettingService().GetStartTripManagerOrchestratorBaseUrl();
-                var key = ServiceFactory.GetSettingService().GetStartTripManagerOrchestratorApiKey();
-                if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
-                    throw new Exception("Trip manager orchestrator base URL and key must be both provided");
+                var settingService = ServiceFactory.GetSettingService();
+                if (!settingService.IsEnqueueToOrchestrators())
+                {
+                    // Send over to the trip manager 
+                    var baseUrl = settingService.GetStartTripManagerOrchestratorBaseUrl();
+                    var key = settingService.GetStartTripManagerOrchestratorApiKey();
+                    if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
+                        throw new Exception("Trip manager orchestrator base URL and key must be both provided");
 
-                await Utilities.Post<dynamic, dynamic>(null, null, $"{baseUrl}/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code={key}", new Dictionary<string, string>());
+                    await Utilities.Post<dynamic, dynamic>(null, null, $"{baseUrl}/tripmanagers/{code}/acknowledge/drivers/{drivercode}?code={key}", new Dictionary<string, string>());
+                }
+                else
+                {
+                    await ServiceFactory.GetStorageService().Enqueue(code, drivercode);
+                }
+
                 return (ActionResult)new OkObjectResult("Ok");
             }
             catch (Exception e)

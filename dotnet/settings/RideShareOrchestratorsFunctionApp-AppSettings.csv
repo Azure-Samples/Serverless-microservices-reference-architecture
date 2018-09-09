@@ -17,6 +17,7 @@ IsPersistDirectly|true
 TripManagersQueue|trip-managers
 TripMonitorsQueue|trip-monitors
 TripDemosQueue|trip-demos
+TripDriversQueue|trip-drivers
 TripExternalizationsEventGridTopicUrl|https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events
 TripExternalizationsEventGridTopicApiKey|sv8+AGGpgZ765M1/jZsmHm5NSvLTWdqxr+I5pGhS3N0=
 

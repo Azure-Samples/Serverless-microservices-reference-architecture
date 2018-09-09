@@ -126,7 +126,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         [FunctionName("T_AcknowledgeTripViaQueueTrigger")]
         public static async Task AcknowledgeTripViaQueueTrigger(
             [OrchestrationClient] DurableOrchestrationClient context,
-            [QueueTrigger("trip-drivers", Connection = "AzureWebJobsStorage")] TripDriver info,
+            [QueueTrigger("%TripDriversQueue%", Connection = "AzureWebJobsStorage")] TripDriver info,
             ILogger log)
         {
             try
@@ -178,11 +178,5 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
                 throw ex;
             }
         }
-    }
-
-    public class TripDriver
-    {
-        public string TripCode { get; set; } = "";
-        public string DriverCode { get; set; } = "";
     }
 }

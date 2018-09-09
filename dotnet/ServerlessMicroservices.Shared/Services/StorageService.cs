@@ -19,6 +19,7 @@ namespace ServerlessMicroservices.Shared.Services
         private CloudQueue _tripManagersQueue;
         private CloudQueue _tripMonitorsQueue;
         private CloudQueue _tripDemosQueue;
+        private CloudQueue _tripDriversQueue;
 
         public StorageService(ISettingService setting, ILoggerService logger)
         {
@@ -47,6 +48,23 @@ namespace ServerlessMicroservices.Shared.Services
                 await _tripDemosQueue.AddMessageAsync(queueMessage);
             }
         }
+
+        public async Task Enqueue(string tripCode, string driverCode)
+        {
+            await InitializeStorage();
+
+            if (_tripDriversQueue != null)
+            {
+                var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(new TripDriver
+                {
+                    TripCode = tripCode,
+                    DriverCode = driverCode
+                }));
+                await _tripDriversQueue.AddMessageAsync(queueMessage);
+            }
+        }
+
+        // PRIVATE//
 
         private async Task InitializeStorage()
         {
@@ -91,6 +109,15 @@ namespace ServerlessMicroservices.Shared.Services
                     }
                     else
                         _loggerService.Log("tripDemosQueueName is empty");
+
+                    var tripDriversQueueName = _settingService.GetTripDriversQueueName();
+                    if (!string.IsNullOrEmpty(tripDriversQueueName))
+                    {
+                        _tripDriversQueue = queueClient.GetQueueReference(tripDriversQueueName);
+                        await _tripDemosQueue.CreateIfNotExistsAsync();
+                    }
+                    else
+                        _loggerService.Log("tripDriversQueueName is empty");
 
                     _isStorageInitialized = true;
                 }

@@ -16,6 +16,7 @@ namespace ServerlessMicroservices.Shared.Services
         private const string TripManagersQueueKey = "TripManagersQueue";
         private const string TripMonitorsQueueKey = "TripMonitorsQueue";
         private const string TripDemosQueueKey = "TripDemosQueue";
+        private const string TripDriversQueueKey = "TripDriversQueue";
 
         // Management
         private const string IsRunningInContainerKey = "IsRunningInContainer";
@@ -104,6 +105,11 @@ namespace ServerlessMicroservices.Shared.Services
         public string GetTripDemosQueueName()
         {
             return GetEnvironmentVariable(TripDemosQueueKey);
+        }
+
+        public string GetTripDriversQueueName()
+        {
+            return GetEnvironmentVariable(TripDriversQueueKey);
         }
 
         // Management

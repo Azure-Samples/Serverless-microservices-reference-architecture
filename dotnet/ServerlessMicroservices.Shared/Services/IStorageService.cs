@@ -7,5 +7,6 @@ namespace ServerlessMicroservices.Shared.Services
     {
         Task Enqueue(TripItem trip);
         Task Enqueue(TripDemoState tripDemoState);
+        Task Enqueue(string tripCode, string driverCode);
     }
 }

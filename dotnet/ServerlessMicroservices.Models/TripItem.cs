@@ -85,4 +85,10 @@ namespace ServerlessMicroservices.Models
         [JsonProperty(PropertyName = "currentRouteIndex")]
         public int CurrentRouteIndex { get; set; } = 0;
     }
+
+    public class TripDriver
+    {
+        public string TripCode { get; set; } = "";
+        public string DriverCode { get; set; } = "";
+    }
 }

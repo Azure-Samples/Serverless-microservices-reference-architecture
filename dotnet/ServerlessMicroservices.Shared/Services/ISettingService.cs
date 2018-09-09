@@ -12,6 +12,7 @@
         string GetTripManagersQueueName();
         string GetTripMonitorsQueueName();
         string GetTripDemosQueueName();
+        string GetTripDriversQueueName();
 
         // Management    
         bool IsRunningInContainer();
