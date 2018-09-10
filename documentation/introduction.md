@@ -985,7 +985,6 @@ The [nodejs](../nodejs) folder contains the Archiver Function App with the follo
   - **function.json**: Defines the function's in (eventGridTrigger) and out (documentDB) bindings.
   - **index.js**: The function code that defines the data to be sent.
 - **.gitignore**: Local Git ignore file.
-- **extensions.csproj**
 - **host.json**: This file can include global configuration settings that affect all functions for this function app.
 - **local.settings.json**: This file can include configuration settings needed when running the functions locally.
 
