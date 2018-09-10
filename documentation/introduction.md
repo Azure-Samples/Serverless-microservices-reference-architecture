@@ -784,7 +784,7 @@ document.getElementById("start").addEventListener("click", async e => {
 
 ##### PowerBI Handler
 
-Similar to the [SignalR](#signalr-handler) handler above, the PowerBI Event Grid handler uses the special binding rigger `EventGridEvent` to process the event:
+Similar to the [SignalR](#signalr-handler) handler above, the PowerBI Event Grid handler uses the special binding trigger `EventGridEvent` to process the event:
 
 ```csharp
 [FunctionName("EVGH_TripExternalizations2PowerBI")]
@@ -849,7 +849,55 @@ Sending trips to a streaming PowerBI dataset provides a way to display real-time
 
 ##### Trip Archiver Handler
 
-//TBA - Gerardo
+Similar to the [PowerBI](#powerbi-handler) handler above, the Trip Archiver Event Grid handler uses the special binding trigger `EventGridEvent` to process the event, however as shown below, this function was written using Node.js instead of C#:
+
+index.js
+
+```javascript
+{
+    "bindings": [
+      {
+        "type": "eventGridTrigger",
+        "name": "eventGridEvent",
+        "direction": "in"
+      },
+      {
+        "type": "documentDB",
+        "name": "document",
+        "databaseName": "RideShare",
+        "collectionName": "Archive",
+        "createIfNotExists": false,
+        "connection": "DocDbConnectionStringKey",
+        "direction": "out"
+      }
+    ],
+    "disabled": false
+  }
+```
+
+function.json
+
+```javascript
+module.exports = function (context, eventGridEvent) {
+    context.log(typeof eventGridEvent);
+    context.log(eventGridEvent);
+
+    context.log("JavaScript Event Grid function processed a request.");
+    context.log("Subject: " + eventGridEvent.subject);
+    context.log("Time: " + eventGridEvent.eventTime);
+    context.log("Data: " + JSON.stringify(eventGridEvent.data));
+
+    context.bindings.document = JSON.stringify(eventGridEvent.data);
+
+    context.done();
+};
+```
+
+**Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2CosmosDB`.
+
+When an Event Grid Topic event arrives at the Trip Archiver processor, it extracts the `TripItem` from the event data and it:
+
+- Persists the trip in CosmosDB Archiver Collection. 
 
 ## Data storage
 
