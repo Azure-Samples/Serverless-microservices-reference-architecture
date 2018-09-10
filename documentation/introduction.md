@@ -67,7 +67,8 @@ The architecture major building blocks are:
 | RideShare APIs | C# [Azure Functions](https://azure.microsoft.com/services/functions/) | Three Function Apps are deployed to serve RideShare's APIs: Drivers, Trips and Passengers. These APIs are exposed to the Web App applications via the API manager and provide CRUD operations for each of RideShare entities|
 | Durable Orchestrators | C# [Durable Functions](https://docs.microsoft.com/azure/azure-functions/durable-functions-overview) | Trip Manager, Monitor and Demo orchestrators are deployed to manage the trip and provide real-time status updates. The orchestrators are launched for the duration of the trip and they perform management and monitoring functions as will be explained in more [details](#durable-orchestrators) later. In essence, these orchestrators make up the heart of the solution. |
 | Event Emitter | [Event Grid Topic](https://docs.microsoft.com/azure/event-grid/overview) | A custom topic used to externalize trips as they go through the different stages. |
-| Event Subscribers     | Functions & Logic Apps  | Several Event Grid topic subscribers listen to the Event Grid topic events to provide multi-process capability of an externalized trip                                                                                                                                                                                                                                                     |
+| Event Subscribers  | Functions & Logic Apps  | Several Event Grid topic subscribers listen to the Event Grid topic events to provide multi-process capability of an externalized trip |
+
 The following are the Event Grid Subscribers:
 
 | Subscriber   | Technology  | Description |
@@ -545,7 +546,7 @@ In the reference implementation, the Logic App is triggered by the Event Grid To
 
 ![Logic App Listener](media/logic-app-listener.png)
 
-**Please note** that the [Logic Apps](https://azure.microsoft.com/services/logic-apps/) Event Grid trigger seems to only expose the event's meta data ...not its data.
+**Please note** that the [Logic Apps](https://azure.microsoft.com/services/logic-apps/) Event Grid trigger exposes the event's meta data as dynamic content. To access the event data, you must switch to `Code view` i.e. `@{triggerBody()?['data']}`. 
 
 ##### SignalR Handler
 

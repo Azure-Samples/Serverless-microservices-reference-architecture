@@ -620,9 +620,7 @@ For each API, please add a new operation as defined below. Once completed, pleas
 
     ![Screenshot of the Logic App sender](media/logic-app-creation5.png)
 
-    4. **Body**: If you select this field, you can either type whatever you want the body or pick from one the dynamic fields shown.
-
-**As noted before**, the Logic App Event Grid Connector does not make the event body (or data) readily available.
+    4. **Body**: If you select this field, you can either type whatever you want the body or pick from one the dynamic fields shown. The Event data does not appear automatically in the list of available dynamic content. You must switch to `Code view` to access the event data i.e. `@{triggerBody()?['data']}`. 
 
 ### Create TripFact Table 
 
