@@ -4,7 +4,7 @@ az login --service-principal -u <your-client-id> -p <your-client-password> --ten
 # Display all accounts
 az account list --output table
 
-# Make sur eyou are using the proper subs
+# Make sure you are using the proper subs
 az account set --subscription "your-subs"
 
 # Create a resource group

@@ -865,7 +865,6 @@ This is made easier in Function Apps v2 since they run on `.NET Core` and hence 
 - Docker on a VM or development machine with [Docker installed](https://docs.docker.com/docker-for-windows/)
 - [Azure Container Instances ACI](https://azure.microsoft.com/en-us/services/container-instances/)
 - [Azure Kubernetes Service AKS](https://azure.microsoft.com/en-us/services/kubernetes-service/)  
-- [Azure Service Fabric Mesh Service](https://azure.microsoft.com/en-us/blog/azure-service-fabric-mesh-is-now-in-public-preview/)   
 - Other Cloud providers
 - On-Premises
 
@@ -1111,7 +1110,7 @@ az login --service-principal -u <your-client-id> -p <your-client-password> --ten
 # Display all accounts
 az account list --output table
 
-# Make sur eyou are using the proper subs
+# Make sure you are using the proper subs
 az account set --subscription "your-subs"
 
 # Create a resource group
@@ -1401,9 +1400,9 @@ spec:
     app: rideshare-trips
 ```
 
-**Please note** that the `rideshare-orchestrators` deployment does not have an associated service. This is because the  `orchestrators` does not need to be exposed to the Internet.
+**Please note** that the `rideshare-orchestrators` deployment does not have an associated service. This is because the `orchestrators` does not need to be exposed to the Internet.
 
-The following is a good post on how you run Functions in Kubernetes with AKS: 
+Alternatively, please refer to the following post to see how to run Functions in Kubernetes with AKS: 
 [https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0](https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0)  
 
 
