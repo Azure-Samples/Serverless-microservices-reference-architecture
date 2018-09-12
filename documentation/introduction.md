@@ -481,6 +481,17 @@ public const string EVG_SUBJECT_TRIP_COMPLETED = "Trip completed :-)";
 public const string EVG_SUBJECT_TRIP_ABORTED = "Trip aborted :-(";
 ```
 
+The `TripManager` and the `TripMonitor` orchestrators have a common routine used by activities to externalize the trip state changes: 
+
+```csharp
+private static async Task Externalize(TripItem trip, string subject)
+{
+    await Utilities.TriggerEventGridTopic<TripItem>(null, trip, Constants.EVG_EVENT_TYPE_MONITOR_TRIP, subject, ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicUrl(), ServiceFactory.GetSettingService().GetTripExternalizationsEventGridTopicApiKey());
+}
+```
+
+**Please note** that the code uses a `Utility` method to post the `TripItem` to an Event Grid Topic using the Topic's Endpoint and API Key as identified by the setting service.
+
 A `TripItem` is defined this way:
 
 ```csharp
