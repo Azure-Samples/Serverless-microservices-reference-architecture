@@ -401,7 +401,7 @@ graphURL=https\://graph.windows.net/
 
 If your `dev` and `prod` environments are hosted on the same Azure subscription, then the two auth files will be identical.
 
-:eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names.
 
 Once the above is completed, from a PowerShell command, use the following commands to provision the `Dev` and `Prod` environments:
 
@@ -419,7 +419,7 @@ Unfortunately, the Cake script cannot provision the following resources because 
 - [SignalR Service](#create-the-signalr-service)
 - [B2C Tenant](#create-the-b2c-tenant)
 
-Once completed, please jump to the [setup](#setup) section to continue. 
+Once completed, please jump to the [setup](#setup) section to continue.
 
 ## Setup
 
@@ -622,7 +622,7 @@ For each API, please add a new operation as defined below. Once completed, pleas
 
     4. **Body**: If you select this field, you can either type whatever you want the body or pick from one the dynamic fields shown. The Event data does not appear automatically in the list of available dynamic content. You must switch to `Code view` to access the event data i.e. `@{triggerBody()?['data']}`. 
 
-### Create TripFact Table 
+### Create TripFact Table
 
 Connect to the SQL database and run the following script to create the `TripFact` table and its indices:  
 
@@ -814,13 +814,13 @@ Function App deployments can happen from [Visual Studio]() IDE, [Azure DevOps](h
 
 Relecloud decided to use [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
 
-### Azure DevOps 
+### Azure DevOps
 
 //TBA - Joel
 
 ### Cake Deployment
 
-The `Cake` script responsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake-provision) provision section to know how to do this. 
+The `Cake` script responsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake-provision) provision section to know how to do this.
 
 **Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
