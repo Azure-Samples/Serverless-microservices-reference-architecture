@@ -39,7 +39,7 @@ In this document:
         - [Node.js](#nodejs)
         - [Web](#web)
     - [Deployment](#deployment)
-        - [VSTS](#vsts)
+        - [Azure DevOps](#azure-devops)
         - [Cake Deployment](#cake-deployment)
     - [Seeding](#seeding)
     - [Containers](#containers)
@@ -810,11 +810,11 @@ In order to build Node.js Archiver Function App, you need:
 
 ## Deployment
 
-Function App deployments can happen from [Visual Studio]() IDE, [Visual Studio Team Services](https://visualstudio.microsoft.com/vso/) by defining a build pipeline that can be triggered upon push to the code repository, for example, or a build script such as [Cake](https://cakebuild.net/) or [Psake](https://github.com/psake/psake).
+Function App deployments can happen from [Visual Studio]() IDE, [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/) by defining a build pipeline that can be triggered upon push to the code repository, for example, or a build script such as [Cake](https://cakebuild.net/) or [Psake](https://github.com/psake/psake).
 
-Relecloud decided to use [Visual Studio team Services](https://visualstudio.microsoft.com/vso/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
+Relecloud decided to use [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/) for production build and deployment and [Cake](https://cakebuild.net/) for development build and deployment.
 
-### VSTS 
+### Azure DevOps 
 
 //TBA - Joel
 
