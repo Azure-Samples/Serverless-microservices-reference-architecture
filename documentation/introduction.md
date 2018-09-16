@@ -5,26 +5,28 @@ In this document:
 - [Introduction to serverless microservices](#introduction-to-serverless-microservices)
   - [What are microservices?](#what-are-microservices)
   - [What is serverless?](#what-is-serverless)
-  - [Macro Architecture](#macro-architecture)
-  - [Data Flow](#data-flow)
+  - [Macro architecture](#macro-architecture)
+  - [Data flow](#data-flow)
     - [Web App](#web-app)
     - [API Management](#api-management)
     - [RideShare APIs](#rideshare-apis)
     - [Durable Orchestrators](#durable-orchestrators)
     - [Event Grid](#event-grid)
-      - [Logic App Handler](#logic-app-handler)
-      - [SignalR Handler](#signalr-handler)
-        - [DOTNET SignalR Client](#dotnet-signalr-client)
-        - [JavaScript SignalR Client](#javascript-signalr-client)
-      - [Power BI Handler](#power-bi-handler)
-      - [Trip Archiver Handler](#trip-archiver-handler)
+      - [Logic App handler](#logic-app-handler)
+      - [SignalR handler](#signalr-handler)
+        - [DOTNET SignalR client](#dotnet-signalr-client)
+        - [JavaScript SignalR client](#javascript-signalr-client)
+      - [Power BI handler](#power-bi-handler)
+      - [Trip Archiver handler](#trip-archiver-handler)
   - [Data storage](#data-storage)
-  - [Source Code Structure](#source-code-structure)
+  - [Source code structure](#source-code-structure)
     - [DOTNET](#dotnet)
     - [Node.js](#nodejs)
     - [Web](#web)
-  - [Integration Testing](#integration-testing)
+  - [Integration testing](#integration-testing)
   - [Monitoring](#monitoring)
+    - [Telemetry correlation](#telemetry-correlation)
+    - [Monitoring for different audiences](#monitoring-for-different-audiences)
 
 ## What are microservices?
 
@@ -52,7 +54,7 @@ Relecloud recognized great value in combining the flexibility and service isolat
 
 The following sections detail Relecloud's architectural decisions, based on these goals. You can also [read more about serverless on Azure](https://aka.ms/serverless-azure), for more information on the serverless components used in this solution, and more.
 
-## Macro Architecture
+## Macro architecture
 
 Relecloud decided to use the following macro architecture in their RideShare solution:
 
@@ -62,7 +64,7 @@ The architecture major building blocks are:
 
 | Component             | Technology                                                                                          | Description                                                                                                                                                                                                                                                                                                                                                                                |
 | --------------------- | --------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
-| RideShare Web App     | Vue JS SPA                                                                                          | A multi-purpose, single-page application web app that allows users to sign up and sign in against a B2C Active Directory instance. Users have different levels and permissions. For example, passenger users can request rides and receive real-time notifications of ride status. Executive users, on the other hand, can view top-level reports that reveal rides and system performance |
+| RideShare Web App     | Vue.js SPA                                                                                          | A multi-purpose, single-page application web app that allows users to sign up and sign in against a B2C Active Directory instance. Users have different levels and permissions. For example, passenger users can request rides and receive real-time notifications of ride status. Executive users, on the other hand, can view top-level reports that reveal rides and system performance |
 | API Manager           | [Azure API Manager](https://docs.microsoft.com/azure/api-management/)                               | An API gateway that acts as a front-end to the solution APIs. Among many other benefits, the API management service provides RideShare APIs with security verification, usage telemetry, documentation and rate limiting.                                                                                                                                                                  |
 | RideShare APIs        | C# [Azure Functions](https://azure.microsoft.com/services/functions/)                               | Three Function Apps are deployed to serve RideShare's APIs: Drivers, Trips and Passengers. These APIs are exposed to the Web App applications via the API manager and provide CRUD operations for each of RideShare entities                                                                                                                                                               |
 | Durable Orchestrators | C# [Durable Functions](https://docs.microsoft.com/azure/azure-functions/durable-functions-overview) | Trip Manager, Monitor and Demo orchestrators are deployed to manage the trip and provide real-time status updates. The orchestrators are launched for the duration of the trip and they perform management and monitoring functions as will be explained in more [details](#durable-orchestrators) later. In essence, these orchestrators make up the heart of the solution.               |
@@ -76,7 +78,7 @@ The following are the Event Grid Subscribers:
 | Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.     |
 | SignalR      | C# Azure Function                                             | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.       |
 | Power BI     | C# Azure Function                                             | A trip processor to insert the trip into an SQL Database and possibly into a Power BI dataset (via APIs). |
-| Archiver     | Node.js Azure Function                                        | A trip processor to archive the trip into Cosmos                                                          |
+| Archiver     | Node.js Azure Function                                        | A trip processor to archive the trip into Azure Cosmos DB                                                 |
 
 Relecloud decided to use the following criteria to determine when a certain piece of functionality is to be considered a Microservice:
 
@@ -99,7 +101,7 @@ Given the above principles, the following are identified as Microservices:
 
 **Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid Power BI Handler` Microservices. They are both part of the `Trips` Function App.
 
-## Data Flow
+## Data flow
 
 The following is a detailed diagram showing how the different architecture components communicate and the Azure services they use:
 
@@ -130,7 +132,7 @@ When a passenger decides to request a trip, a request containing the passenger i
 }
 ```
 
-The `Trips` Microservice stores the trip in Cosmos, enqueues the `Trip` item to the `Orchestrators` Microservice and returns the newly created `Trip` information such as code and other properties. Optionally the `Orchestrators` Microservice can also be triggered via its internally-exposed API.
+The `Trips` Microservice stores the trip in Azure Cosmos DB, enqueues the `Trip` item to the `Orchestrators` Microservice and returns the newly created `Trip` information such as code and other properties. Optionally the `Orchestrators` Microservice can also be triggered via its internally-exposed API.
 
 **For more information** on the operation of the durable orchestrators, please refer to the [Durable Orchestrators](#durable-orchestrators) section below.
 
@@ -282,8 +284,8 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 The sample contains front-end APIs that are used to manage Drivers, Passengers and Trips:
 
 - They are built on Azure Functions using RESTful design principles.
-- They use [Cosmos]() collection to store their respective data. **Please note**, however, that, due to cost constraints, the sample APIs share the same Cosmos collection.
-- They use [Application Insights]() to send traces, metrics and telemetry to.
+- They use an [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) collection to store their respective data. **Please note**, however, that, due to cost constraints, the sample APIs share the same Cosmos DB collection.
+- They use [Application Insights](https://docs.microsoft.com/en-us/azure/application-insights/app-insights-overview) to send traces, metrics and telemetry to.
 
 As the macro architecture depicts, the APIs are implemented using C# Azure Functions. They have a simple architecture that can be illustrated as follows:
 
@@ -550,7 +552,7 @@ As shown in the macro architecture section, the solution implements several list
 
 ![Event Grid Listeners](media/event-grid-listeners.png)
 
-##### Logic App Handler
+##### Logic App handler
 
 [Logic Apps](https://azure.microsoft.com/services/logic-apps/) provide a special trigger for Event Grids. When selected, the connector handles all the things needed to provide the web hook required to subscribe to the Event Grid topic. Please refer to the [setup](./setup.md#connect-event-grid-to-logic-app) to see how to set this up.
 
@@ -560,7 +562,7 @@ In the reference implementation, the Logic App is triggered by the Event Grid To
 
 **Please note** that the [Logic Apps](https://azure.microsoft.com/services/logic-apps/) Event Grid trigger exposes the event's meta data as dynamic content. To access the event data, you must switch to `Code view` i.e. `@{triggerBody()?['data']}`.
 
-##### SignalR Handler
+##### SignalR handler
 
 Azure Functions provide a special binding trigger `EventGridEvent` to handle the Event Grid event. In addition, there is a new [special binding](https://github.com/anthonychu/AzureAdvocates.WebJobs.Extensions.SignalRService) for [SignalR Service](https://azure.microsoft.com/en-us/services/signalr-service/) which makes broadcasting SignalR messages super flexible.
 
@@ -624,7 +626,7 @@ In this reference implementation, the SignalR client is the Web App SPA. But a X
 
 **Below we provide two sample SignalR client implementations: .NET SignalR client and JavaScript SignalR client.**
 
-###### DOTNET SignalR Client
+###### DOTNET SignalR client
 
 The following is sample .NET SignalR client written to receive the `SignalR` messages emitted by the `SignalR` handler:
 
@@ -715,7 +717,7 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 }
 ```
 
-###### JavaScript SignalR Client
+###### JavaScript SignalR client
 
 The following is sample JavaScript SignalR client written to receive the `SignalR` messages emitted by the `SignalR` handler:
 
@@ -795,7 +797,7 @@ document.getElementById("start").addEventListener("click", async e => {
 });
 ```
 
-##### Power BI Handler
+##### Power BI handler
 
 Similar to the [SignalR](#signalr-handler) handler above, the [Power BI](https://powerbi.microsoft.com/) Event Grid handler uses the special binding trigger `EventGridEvent` to process the event:
 
@@ -860,7 +862,7 @@ This is a sample Power BI report against test trip data:
 
 Sending trips to a streaming Power BI dataset provides a way to display real-time trip information on a Power BI dashboard. This is great for product launches but it is outside the scope of this reference implementation.
 
-##### Trip Archiver Handler
+##### Trip Archiver handler
 
 Similar to the [Power BI](#power-bi-handler) handler above, the Trip Archiver Event Grid handler uses the special binding trigger `EventGridEvent` to process the event, however as shown below, this function was written using Node.js instead of C#:
 
@@ -910,11 +912,11 @@ module.exports = function(context, eventGridEvent) {
 
 When an Event Grid Topic event arrives at the Trip Archiver processor, it extracts the `TripItem` from the event data and it:
 
-- Persists the trip in CosmosDB Archiver Collection.
+- Persists the trip in the Cosmos DB Archiver Collection.
 
 ## Data storage
 
-Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) as the main data storage for the solution entities. Since Relecloud targets a world-wide audience accessing its services from different parts of the world, Cosmos provides key advantages:
+Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) as the main data storage for the solution entities. Since Relecloud targets a world-wide audience accessing its services from different parts of the world, Cosmos DB provides key advantages:
 
 - A global distribution capability replicates data in different Azure Data centers around the world making the data closer to consumers thereby reducing the response time.
 - Independent storage and throughput scale capability allows for great granularity and flexibility that can be used to adjust for unpredictable usage patterns.
@@ -923,9 +925,9 @@ Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azur
 
 **Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. This will have to be addressed in a real solution.
 
-In addition to Cosmos, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in Power BI, for example. Please refer to [Power BI Handler](#power-bi-handler) section for details on this.
+In addition to Azure Cosmos DB, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in Power BI, for example. Please refer to [Power BI Handler](#power-bi-handler) section for details on this.
 
-## Source Code Structure
+## Source code structure
 
 ### DOTNET
 
@@ -983,8 +985,8 @@ var maxIterations = _settingService..GetTripMonitorMaxIterations();
     _loggerService.Log("Active trips", activeTrips);
 ```
 
-- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Cosmos implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.
-- The `CosmosPersistenceService` assigns Cosmos ids ma![](media/2018-09-03-14-34-52.png)nually which is a combination of the `collection type` and some identifier. Cosmos's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
+- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Azure Cosmos DB implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.
+- The `CosmosPersistenceService` assigns Cosmos DB IDs manually, which is a combination of the `collection type` and some identifier. Cosmos DB's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
 - The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicate with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
 
 ### Node.js
@@ -994,7 +996,7 @@ The [nodejs](../nodejs) folder contains the Archiver Function App with the follo
 ![Node.js folder structure](media/archiver-01-folder-structure.png)
 
 - The **serverless-microservices-functionapp-triparchiver** folder contains the Archiver Function App.
-- The **EVGH_TripExternalizations2CosmosDB** folder contains the function to send data to the Archiver Collection in CosmosDB:
+- The **EVGH_TripExternalizations2CosmosDB** folder contains the function to send data to the Archiver Collection in Azure Cosmos DB:
   - **function.json**: Defines the function's in (eventGridTrigger) and out (documentDB) bindings.
   - **index.js**: The function code that defines the data to be sent.
 - **.gitignore**: Local Git ignore file.
@@ -1020,7 +1022,7 @@ The following are some notes about the source code:
 
 //TBA
 
-## Integration Testing
+## Integration testing
 
 The .NET `ServerlessMicroservices.Seeder` project contains a multi-thread tester that can be used to submit `demo` trip requests against the `Trips` API. The test will simulate load on the deployed solution and test end-to-end.
 
