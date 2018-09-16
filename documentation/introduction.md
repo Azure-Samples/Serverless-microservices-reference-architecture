@@ -52,7 +52,7 @@ Relecloud recognized great value in combining the flexibility and service isolat
 - Consumption-based billing that saves them money during off-peak hours
 - The ability to deploy updates to portions of the solution without affecting the application as a whole
 
-The following sections detail Relecloud's architectural decisions, based on these goals. You can also [read more about serverless on Azure](https://aka.ms/serverless-azure), for more information on the serverless components used in this solution, and more.
+The following sections detail Relecloud's architectural decisions, based on these goals. You can also [read more about serverless on Azure](https://aka.ms/serverless-azure), for more information on the serverless components used in this solution.
 
 ## Macro architecture
 
