@@ -16,7 +16,7 @@ In this document:
       - [SignalR Handler](#signalr-handler)
         - [DOTNET SignalR Client](#dotnet-signalr-client)
         - [JavaScript SignalR Client](#javascript-signalr-client)
-      - [PowerBI Handler](#powerbi-handler)
+      - [Power BI Handler](#power-bi-handler)
       - [Trip Archiver Handler](#trip-archiver-handler)
   - [Data storage](#data-storage)
   - [Source Code Structure](#source-code-structure)
@@ -71,12 +71,12 @@ The architecture major building blocks are:
 
 The following are the Event Grid Subscribers:
 
-| Subscriber   | Technology                                                    | Description                                                                                              |
-| ------------ | ------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
-| Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.    |
-| SignalR      | C# Azure Function                                             | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.      |
-| PowerBI      | C# Azure Function                                             | A trip processor to insert the trip into an SQL Database and possibly into a PowerBI dataset (via APIs). |
-| Archiver     | Node.js Azure Function                                        | A trip processor to archive the trip into Cosmos                                                         |
+| Subscriber   | Technology                                                    | Description                                                                                               |
+| ------------ | ------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------- |
+| Notification | [Logic App](https://azure.microsoft.com/services/logic-apps/) | A trip processor to notify admins i.e. emails or SMS as the trip passes through the different stages.     |
+| SignalR      | C# Azure Function                                             | A trip processor to update passengers (via browsers or mobile apps) in real-time about trip status.       |
+| Power BI     | C# Azure Function                                             | A trip processor to insert the trip into an SQL Database and possibly into a Power BI dataset (via APIs). |
+| Archiver     | Node.js Azure Function                                        | A trip processor to archive the trip into Cosmos                                                          |
 
 Relecloud decided to use the following criteria to determine when a certain piece of functionality is to be considered a Microservice:
 
@@ -92,12 +92,12 @@ Given the above principles, the following are identified as Microservices:
 | Trips APIs                      | C#         | The `Trips` API is code and deployment independent isolated in a Function App.                                                                                      |
 | Passengers APIs                 | C#         | The `Passengers` API is code and deployment independent isolated in a Function App.                                                                                 |
 | Durable Orchestrators           | C#         | The Trip `Manager`, `Monitor` and `Demo` i.e. Orchestrators are independent as they provide the heart of the solution. They need to scale and deploy independently. |
-| Event Grid Notification Handler | Logic App  | The `Logic App` handler adds value to the overall solution but work independently.                                                                                  |
-| Event Grid SignalR Handler      | C#         | The `SignalR` handler adds value to the overall solution but work independently.                                                                                    |
-| Event Grid PowerBI Handler      | C#         | The `PowerBI` handler adds value to the overall solution but work independently.                                                                                    |
-| Event Grid Archiver             | Node.js    | The Node.js `Archiver` handler adds value to the overall solution but work independently.                                                                           |
+| Event Grid Notification Handler | Logic App  | The `Logic App` handler adds value to the overall solution but works independently.                                                                                 |
+| Event Grid SignalR Handler      | C#         | The `SignalR` handler adds value to the overall solution but works independently.                                                                                   |
+| Event Grid Power BI Handler     | C#         | The `Power BI` handler adds value to the overall solution but works independently.                                                                                  |
+| Event Grid Archiver             | Node.js    | The Node.js `Archiver` handler adds value to the overall solution but works independently.                                                                          |
 
-**Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid PowerBI Handler` Microservices. They are both part of the `Trips` Function App.
+**Please note** that, due to code layout, some Microservices might be a Function within a Function App. Examples of this are the `Event Grid SignalR Handler` and `Event Grid Power BI Handler` Microservices. They are both part of the `Trips` Function App.
 
 ## Data Flow
 
@@ -152,7 +152,7 @@ When events are sent to the `Event Grid Topic`, they trigger the different handl
 
 - Notification Microservice
 - SignalR Handler Microservice
-- PowerBI Handler Microservice
+- Power BI Handler Microservice
 - Archiver Handler Microservice
 
 **Below** is a detailed description of the components that make up the architecture.
@@ -468,7 +468,7 @@ it is still probably a good idea to store the instance ids and their status in a
 
 - The emitter fires and forgets. No need to wait until a response arrives.
 - Events can be delivered to multiple listeners that can process the event data.
-- Events have data and meta data such as subject that can be used to determine processing. For example, the `PowerBI Trip Processor filters out events based on subject.
+- Events have data and meta data such as subject that can be used to determine processing. For example, the `Power BI Trip Processor filters out events based on subject.
 
 Being an event source, the [Durable Orchestrators](#durable-orchestrators) externalize `Trip` state changes to an Event Grid Topic upon the following events:
 
@@ -795,9 +795,9 @@ document.getElementById("start").addEventListener("click", async e => {
 });
 ```
 
-##### PowerBI Handler
+##### Power BI Handler
 
-Similar to the [SignalR](#signalr-handler) handler above, the PowerBI Event Grid handler uses the special binding trigger `EventGridEvent` to process the event:
+Similar to the [SignalR](#signalr-handler) handler above, the [Power BI](https://powerbi.microsoft.com/) Event Grid handler uses the special binding trigger `EventGridEvent` to process the event:
 
 ```csharp
 [FunctionName("EVGH_TripExternalizations2PowerBI")]
@@ -840,29 +840,29 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 **Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
 
-When an Event Grid Topic event arrives at the PowerBI processor, it extracts the `TripItem` from the event data and, if the event subject is either `completed` or `aborted`, it:
+When an Event Grid Topic event arrives at the Power BI processor, it extracts the `TripItem` from the event data and, if the event subject is either `completed` or `aborted`, it:
 
-- Persists the trip in Azure SQL Database.
-- Optionally, sends the trip to a streaming dataset in PowerBI.
+- Persists the trip in [Azure SQL Database](https://docs.microsoft.com/azure/sql-database/sql-database-technical-overview).
+- Optionally, sends the trip to a streaming dataset in [Power BI](https://powerbi.microsoft.com/).
 
-In addition to archiving trip summaries, persisting to an Azure SQL Database provides a way to report on trips using PowerBI for example. A PowerBI report can provide RideShare management with several performance indicators such:
+In addition to archiving trip summaries, persisting to an Azure SQL Database provides a way to report on trips using Power BI for example. A Power BI report can provide RideShare management with several performance indicators such:
 
 - Total Trips
 - Average Trip Duration
 - Top Drivers
 - Top Passengers
 - Average Available Drivers
-- Etc
+- Etc.
 
-This is a sample PowerBI report against test trip data:
+This is a sample Power BI report against test trip data:
 
-![Sample PowerBI Trip Report](media/sample-trip-powerbi-report.png)
+![Sample Power BI Trip Report](media/sample-trip-powerbi-report.png)
 
-Sending trips to a streaming PowerBI dataset provides a way to display real-time trip information on a PowerBI dashboard. This is great for product launches but it is outside the scope of this reference implementation.
+Sending trips to a streaming Power BI dataset provides a way to display real-time trip information on a Power BI dashboard. This is great for product launches but it is outside the scope of this reference implementation.
 
 ##### Trip Archiver Handler
 
-Similar to the [PowerBI](#powerbi-handler) handler above, the Trip Archiver Event Grid handler uses the special binding trigger `EventGridEvent` to process the event, however as shown below, this function was written using Node.js instead of C#:
+Similar to the [Power BI](#power-bi-handler) handler above, the Trip Archiver Event Grid handler uses the special binding trigger `EventGridEvent` to process the event, however as shown below, this function was written using Node.js instead of C#:
 
 index.js
 
@@ -923,7 +923,7 @@ Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azur
 
 **Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. This will have to be addressed in a real solution.
 
-In addition to Cosmos, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in PowerBI, for example. Please refer to [PowerBI Handler](#powerbi-handler) section for details on this.
+In addition to Cosmos, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in Power BI, for example. Please refer to [Power BI Handler](#power-bi-handler) section for details on this.
 
 ## Source Code Structure
 
@@ -1026,7 +1026,7 @@ The .NET `ServerlessMicroservices.Seeder` project contains a multi-thread tester
 
 **Please note** that the test will usually run against a deployment environment where the `AuthEnabled` setting is set to false.
 
-The `testTrips` command takes 1 mandatory arguments and 2 optional arguments i.e. `ServerlessMicroservices.Seeder testTrips testUrl testiterations testseconds`
+The `testTrips` command takes 1 mandatory argument and 2 optional arguments i.e. `ServerlessMicroservices.Seeder testTrips testUrl testiterations testseconds`
 
 - Test Parameters URL to read the test data from.
 - Optional: # of iterations. Default to 1.
@@ -1170,7 +1170,7 @@ customEvents
 | render piechart
 ```
 
-The result shows the distribution of trip different stages:
+The result shows the distribution of a trip during different stages:
 
 ![Trip Stages](media/app-insights-custom-events.png)
 
@@ -1189,3 +1189,15 @@ customMetrics
 The result shows the distribution of the above 2 custom metrics:
 
 ![Custom Metrics](media/app-insights-custom-metrics.png)
+
+### Telemetry correlation
+
+The Rideshare Azure Function Apps have been configured to use Application Insights automatically by supplying the Application Insights instrumentation key to the `APPINSIGHTS_INSTRUMENTATIONKEY` app setting. This makes it trivial to integrate App Insights, because the functions within your Function App will transparently send log messages, exceptions, and telemetry data to App Insights for you. While this makes integrating the two services a simple task, there are some benefits that can be gained from manually using Application Insights using the [available SDKs](https://docs.microsoft.com/azure/application-insights/app-insights-platforms). Chief among these benefits is [telemetry correlation](https://docs.microsoft.com/azure/application-insights/application-insights-correlation). Every operation, or request, within a microservices architecture such as this can generate telemetry data in Application Insights. When this activity is logged, it is associated with a unique field called the `operation_id`. This `id` is associated with all telemetry (traces, exceptions, etc.) that is part of a request. However, there are usually several services involved in a request pipeline. In the case of the Rideshare architecture, a request pipeline can involve an Azure function with an HTTP trigger that handles a new ride request from a customer, which then uses several other functions to [orchestrate the trip activity](#durable-orchestrators). These microservices will be assigned their own `operation_id` in App Insights. However, it is easy to lose track of how these various service activities relate over a period of time from the start of the trip request transaction to the end. Especially when there is a lot of trip activity due to high customer demand (hopefully!). One way to resolve this is to correlate all of these activities together for a given request pipeline (such as a trip request). You can do this by passing the initial `operation_id` to each service so it can be stored as the `operation_parentId`. This information, along with [request telemetry](https://docs.microsoft.com/en-us/azure/application-insights/application-insights-data-model-request-telemetry) and [dependency telemetry](https://docs.microsoft.com/en-us/azure/application-insights/application-insights-data-model-dependency-telemetry) can help you relate, or correlate, all of the related activities from your microservices together in a way that helps you trace activity throughout your architecture and have a better understanding of how your request pipelines are behaving.
+
+Read more about using Application Insights to [monitor Azure Functions and track custom telemetry](https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring?toc=%2fazure%2fapplication-insights%2ftoc.json#custom-telemetry-in-c-functions).
+
+### Monitoring for different audiences
+
+Using Application Insights is a great way for developers and operations to monitor raw telemetry and overall service health, especially when using a combination of real-time views like [Live Metrics Stream](https://docs.microsoft.com/azure/application-insights/app-insights-live-stream) and [built-in dashboards](https://docs.microsoft.com/en-us/azure/azure-functions/functions-monitoring?toc=%2fazure%2fapplication-insights%2ftoc.json#view-telemetry-in-app-insights). These are views that provide crucial information about technical aspects of the application, but generally do not clearly show the overall state of _the data_ and _business metrics_, such as how many trips were completed vs. how many aborted, top drivers by number of trips, geographic areas with the most trips, etc.
+
+The [Power BI](#power-bi-handler) within our solution is configured to save this data to Azure SQL database for simple consumption from [Power BI](https://powerbi.microsoft.com/) for analyzing snapshots of business metrics. Alternatively, you can use this handler to send trips to a [streaming Power BI dataset](https://docs.microsoft.com/en-us/power-bi/service-real-time-streaming) to display the data in real-time. In this way, you will have real-time monitoring that is tuned for developers/operations, and for business users.
