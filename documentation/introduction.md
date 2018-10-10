@@ -1639,8 +1639,6 @@ The [web](../web) folder contains the Vue.js-based SPA website with the followin
   - **utils**: utilities for authentication (wraps the [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-js)) and HTTP (wraps the [Axios](https://github.com/axios/axios) library)
   - **views**: Vue.js files for each of the SPA "pages".
 
-The following are some notes about the source code:
-
 ## Integration testing
 
 The .NET `ServerlessMicroservices.Seeder` project contains a multi-thread tester that can be used to submit `demo` trip requests against the `Trips` API. The test will simulate load on the deployed solution and test end-to-end.
