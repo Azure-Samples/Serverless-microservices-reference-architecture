@@ -916,6 +916,19 @@ The Relecloud Rideshare website is a single page application (SPA) written in Vu
 
 This page displays passenger information that is stored within Azure Active Directory B2C, using the [Microsoft Graph](https://developer.microsoft.com/en-us/graph/) API. When the `passengers` GET request is made to API Management, that request is routed to the `GetPassengers` function within the **Passengers** Function App.
 
+```javascript
+// Excerpt from the api/passengers.js file within the SPA website:
+
+import { checkResponse, get } from '@/utils/http';
+const baseUrl = window.apiPassengersBaseUrl;
+const apiKey = window.apiKey;
+
+// GET methods
+export function getPassengers() {
+  return get(`${baseUrl}/passengers`, {}, apiKey).then(checkResponse);
+}
+```
+
 ```csharp
 // GetPassengers function within the Passengers Function App:
 
@@ -1002,6 +1015,103 @@ The Microsoft Graph data is deserialized to a `UsersResult` object containing a 
 When you select a user, additional information about the user is displayed in a modal window.
 
 ![Screenshot of the passenger information modal window](media/passengers-page-information.png 'Passengers page: passenger information')
+
+#### Drivers page
+
+The Drivers page displays driver information that is stored in Cosmos DB. The information includes the unique driver code, driver location, and whether they are currently accepting rides. If they are currently linked to an active trip, the accepting rides status is set to `false`. If no drivers within proximity to a passenger are accepting rides at the time of a trip request, the trip request will ultimately fail with a warning that no drivers are available if one does not accept before the configured time out period.
+
+When the `drivers` GET request is made to API Management, that request is routed to the `GetDrivers` function within the **Drivers** Function App.
+
+```javascript
+// Excerpt from the api/passengers.js file within the SPA website:
+
+import { checkResponse, post, get, put } from '@/utils/http';
+const baseUrl = window.apiDriversBaseUrl;
+const apiKey = window.apiKey;
+
+// GET methods
+export function getDrivers() {
+  return get(`${baseUrl}/drivers`, {}, apiKey).then(checkResponse);
+}
+```
+
+```csharp
+// GetDrivers function within the Drivers Function App:
+
+[FunctionName("GetDrivers")]
+public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Anonymous, "get",
+        Route = "drivers")] HttpRequest req,
+    ILogger log)
+{
+    log.LogInformation("GetDrivers triggered....");
+
+    try
+    {
+        await Utilities.ValidateToken(req);
+        var persistenceService = ServiceFactory.GetPersistenceService();
+        return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers());
+    }
+    catch (Exception e)
+    {
+        var error = $"GetDrivers failed: {e.Message}";
+        log.LogError(error);
+        if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+            return new StatusCodeResult(401);
+        else
+            return new BadRequestObjectResult(error);
+    }
+}
+```
+
+The `GetDrivers` function calls the `RetrieveDrivers` method from the `IPersistenceService` implementation. In this case we using the `CosmosPersistenceService` to handle the request and pull the data from Cosmos DB:
+
+```csharp
+public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETRIEVE_DOCS)
+{
+    var error = "";
+    double cost = 0;
+
+    try
+    {
+        if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
+            throw new Exception("No Digital Main collection defined!");
+
+        FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+
+        var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
+                        UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                        .Where(e => e.CollectionType == ItemCollectionTypes.Driver)
+                        .OrderByDescending(e => e.UpsertDate)
+                        .Take(max)
+                        .AsDocumentQuery();
+
+        List<DriverItem> allDocuments = new List<DriverItem>();
+        while (query.HasMoreResults)
+        {
+            var queryResult = await query.ExecuteNextAsync<DriverItem>();
+            cost += queryResult.RequestCharge;
+            allDocuments.AddRange(queryResult.ToList());
+        }
+
+        return allDocuments;
+    }
+    catch (Exception ex)
+    {
+        error = ex.Message;
+        throw new Exception(error);
+    }
+    finally
+    {
+        _loggerService.Log($"{LOG_TAG} - RetrieveDrivers - Error: {error}");
+    }
+}
+```
+
+![Screensot of the Drivers page, displaying a list of drivers pulled from Cosmos DB](media/drivers-page.png 'Drivers page')
+
+When you select a driver, their information will appear within a modal window, including their car information that is displayed to a passenger when the driver has accepted their trip request.
+
+![Screenshot of the Drivers page with the driver information modal window displayed](media/drivers-page-information.png 'Drivers page: driver information')
 
 #### Authentication
 
