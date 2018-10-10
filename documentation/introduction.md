@@ -1009,7 +1009,7 @@ The [web](../web) folder contains the Vue.js-based SPA website with the followin
 
 ![Website folder structure](media/website-folder-structure.png)
 
-- The **public** folder contains the `index.html` page, as well as `js` folder that contains important settings for the SPA. The `settings.sample.js` file is included and shows the expected settings for reference. The `settings.js` file is excluded to prevent sensitive data from leaking. This file is added via Azure Cloud Shell after deploying the website.
+- The **public** folder contains the `index.html` page, as well as `js` folder that contains important settings for the SPA. The `settings.sample.js` file is included and shows the expected settings for reference. The `settings.js` file is excluded to prevent sensitive data from leaking. This file is added via the Web App's debug console (Kudu) after deploying the website.
 - The **src** folder contains the bulk of the files:
   - **api**: these files use the http helper (`utils/http.js`) to execute REST calls against the API Management endpoints.
   - **assets**: site images.
@@ -1020,7 +1020,423 @@ The [web](../web) folder contains the Vue.js-based SPA website with the followin
 
 The following are some notes about the source code:
 
-//TBA
+#### Authentication
+
+Azure Active Directory B2C is used for user authentication and profile management. With it, users can self-service their accounts, which means they are able to register for a new account, manage their profile information (mailing address, phone number, etc.), and initiate a password reset if needed.
+
+![Screenshot displaying the Azure Active Directory B2C login form](media/azure-active-directory-b2c-login.png 'Azure Active Directory B2C Login form')
+
+The screenshot above shows the home page of the website with the login form displayed in a popup window after selecting the Login link on the page menu. The features are as follows:
+
+1. User selects Login on the page menu.
+1. The `msal` library requests the login form popup from Azure Active Directory B2C via the following command: `this._userAgentApplication.loginPopup(this._scopes)`
+1. A user may register for a new account by selecting the **Sign up now** link.
+1. If a user forgets their password, they can reset it with the **Forgot your password?** link.
+
+The `utils` folder contains a file named `Authentication.js`, which wraps the [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-js), enabling the client to easily log in and out of their Azure Active Directory B2C account:
+
+```javascript
+import { UserAgentApplication, Logger } from 'msal';
+```
+
+User settings are supplied by the `public/js/settings.js` file, which are used when instantiating a new `UserAgentApplication` class:
+
+```javascript
+export class Authentication {
+  constructor() {
+    // The window values below should by set by public/js/settings.js
+    this._scopes = window.authScopes;
+    this._clientId = window.authClientId;
+    this._authority = window.authAuthority;
+
+    var cb = this._tokenCallback.bind(this);
+    var opts = {
+      //logger: logger
+    };
+    this._userAgentApplication = new UserAgentApplication(
+      this._clientId,
+      this._authority,
+      cb,
+      opts
+    );
+  }
+
+  _tokenCallback(errorDesc, token, error, tokenType) {
+    this._error = error;
+    if (tokenType === 'access_token') {
+      this._token = token;
+    }
+  }
+```
+
+Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it to easily authenticate the user and perform other tasks against Azure Active Directory B2C:
+
+```javascript
+  getUser() {
+    return this._userAgentApplication.getUser();
+  }
+
+  getAccessToken() {
+    return this._userAgentApplication.acquireTokenSilent(this._scopes).then(
+      accessToken => {
+        return accessToken;
+      },
+      error => {
+        return this._userAgentApplication.acquireTokenPopup(this._scopes).then(
+          accessToken => {
+            return accessToken;
+          },
+          err => {
+            console.error(err);
+          }
+        );
+      }
+    );
+  }
+
+  login() {
+    return this._userAgentApplication.loginPopup(this._scopes).then(
+      idToken => {
+        const user = this._userAgentApplication.getUser();
+        if (user) {
+          return user;
+        } else {
+          return null;
+        }
+      },
+      () => {
+        return null;
+      }
+    );
+  }
+```
+
+#### Wrapping HTTP calls with authentication token
+
+Also in the `utils` folder is an HTTP helper (`http.js`) that standardizes HTTP calls to Azure. The `getHeaders` method applies default headers, including the authorization header if a token is present:
+
+```javascript
+function getHeaders(token, apiKey) {
+  let defaultHeaders = '';
+  let authHeaders = '';
+
+  if (apiKey) {
+    defaultHeaders = {
+      'Cache-Control': 'no-cache',
+      'Ocp-Apim-Trace': true,
+      'Ocp-Apim-Subscription-Key': apiKey
+    };
+  }
+
+  if (token) {
+    authHeaders = {
+      Authorization: `Bearer ${token}`
+    };
+    if (apiKey) {
+      defaultHeaders = { ...defaultHeaders, ...authHeaders };
+    } else {
+      defaultHeaders = authHeaders;
+    }
+  }
+
+  return defaultHeaders;
+}
+```
+
+Each HTTP method ensures these headers are added to each request:
+
+```javascript
+export function post(uri, data, apiKey) {
+  return auth.getAccessToken().then(token => {
+    return axios.post(uri, data, {
+      headers: getHeaders(token, apiKey),
+      withCredentials: false
+    });
+  });
+}
+
+export function put(uri, data, apiKey) {
+  return auth.getAccessToken().then(token => {
+    return axios.put(uri, data, {
+      headers: getHeaders(token, apiKey),
+      withCredentials: false
+    });
+  });
+}
+
+export function remove(uri, apiKey) {
+  return auth.getAccessToken().then(token => {
+    return axios.delete(uri, {
+      headers: getHeaders(token, apiKey),
+      withCredentials: false
+    });
+  });
+}
+
+export function get(uri, data = {}, apiKey) {
+  if (Object.keys(data).length > 0) {
+    uri = `${uri}?${qs(data)}`;
+  }
+  return auth.getAccessToken().then(token => {
+    return axios.get(uri, {
+      headers: getHeaders(token, apiKey),
+      withCredentials: false
+    });
+  });
+```
+
+The HTTP helper helps simplify API calls and ensure standardization across calls to the microservices endpoints. The `api` folder contains files for each of these services (Drivers, Passengers, Trips) that are accessed by the website.
+
+Here is a sample from the `drivers.js` API file, which uses the HTTP helper:
+
+```javascript
+import { checkResponse, post, get, put } from '@/utils/http';
+const baseUrl = window.apiDriversBaseUrl;
+const apiKey = window.apiKey;
+
+// GET methods
+export function getDrivers() {
+  return get(`${baseUrl}/drivers`, {}, apiKey).then(checkResponse);
+}
+
+export function getDriver(driverCode) {
+  return get(`${baseUrl}/drivers/${driverCode}`, {}, apiKey).then(
+    checkResponse
+  );
+}
+
+export function getActiveDrivers() {
+  return get(`${baseUrl}/activedrivers`, {}, apiKey).then(checkResponse);
+}
+
+export function getDriversWithinLocation(latitude, longitude, miles) {
+  return get(
+    `${baseUrl}/drivers/${latitude}/${longitude}/${miles}`,
+    {},
+    apiKey
+  ).then(checkResponse);
+}
+
+export function getDriverLocationChanges(driverCode) {
+  return get(`${baseUrl}/driverlocations/${driverCode}`, {}, apiKey).then(
+    checkResponse
+  );
+}
+
+// POST methods
+export function createDriver(driver) {
+  return post(`${baseUrl}/drivers`, driver, apiKey).then(checkResponse);
+}
+
+// PUT methods
+export function updateDriver(driver) {
+  return put(`${baseUrl}/drivers`, driver, apiKey).then(checkResponse);
+}
+
+export function updateDriverLocation(driver) {
+  return put(`${baseUrl}/driverlocations`, driver, apiKey).then(checkResponse);
+}
+```
+
+#### SignalR Service message handling and trip request flow
+
+As [covered earlier](#signalr-handler) in this document, the [SignalR Service](https://azure.microsoft.com/en-us/services/signalr-service/) makes it very easy to push real-time messages through a websocket connection between the website and the Azure Function that serves as the SignalR Service handler microservice.
+
+As an example, the customer visits the "My Trip" page on the website to request a new trip. They start out by selecting the pickup location and their destination. When they select **Request Driver**, the following steps take place:
+
+1.  The `requestDriver` method is called within the `Trip.vue` view. The passenger information is retrieved, using the signed in user's token, and this information along with the trip parameters are sent to the `createTrip` method within the `store/trips.js` file, which in turn updates the trip state and calls the `createTrip` method in the `api/trips.js` file:
+
+    ```javascript
+    // Trip.vue file excerpt:
+
+    methods: {
+    ...commonActions(['setUser']),
+    ...tripActions(['setTrip', 'setCurrentStep', 'createTrip']),
+    createTripRequest(trip) {
+      this.createTrip(trip)
+        .then(response => {
+          this.setCurrentStep(1);
+          this.$toast.success(
+            `Request Code: <b>${response.code}`,
+            'Driver Requested Successfully',
+            this.notificationSystem.options.success
+          );
+        })
+        .catch(err => {
+          this.$toast.error(
+            err.response ? err.response : err.message ? err.message : err,
+            'Error',
+            this.notificationSystem.options.error
+          );
+        });
+    },
+    requestDriver() {
+      if (this.user) {
+        getPassenger(this.user.idToken.oid)
+          .then(response => {
+            this.passengerInfo = response.data;
+
+            var trip = {
+              passenger: {
+                code: this.passengerInfo.email,
+                firstName: this.passengerInfo.givenName,
+                surname: this.passengerInfo.surname,
+                //"mobileNumber": this.passengerInfo.mobileNumber,
+                email: this.passengerInfo.givenName
+              },
+              source: {
+                latitude: this.selectedPickUpLocation.latitude,
+                longitude: this.selectedPickUpLocation.longitude
+              },
+              destination: {
+                latitude: this.selectedDestinationLocation.latitude,
+                longitude: this.selectedDestinationLocation.longitude
+              },
+              type: 1 //0 = Normal, 1 = Demo
+            };
+            this.createTripRequest(trip);
+          })
+          .catch(err => {
+            this.$toast.error(
+              err.response,
+              'Error',
+              this.notificationSystem.options.error
+            );
+          });
+      } else {
+        this.$toast.error(
+          'You must be logged in to start a new trip!',
+          'Error',
+          this.notificationSystem.options.error
+        );
+      }
+    }
+    ```
+
+    ```javascript
+    // store/trips.js excerpt:
+
+    async createTrip({ commit }, value) {
+      try {
+        commit('contentLoading', true);
+        let trip = await createTrip(value);
+        commit('trip', trip.data);
+        return trip.data;
+      } catch (e) {
+        throw e;
+      } finally {
+        commit('contentLoading', false);
+      }
+    }
+    ```
+
+    ```javascript
+    // api/trips.js file:
+    import { checkResponse, post } from '@/utils/http';
+    const baseUrl = window.apiTripsBaseUrl;
+    const apiKey = window.apiKey;
+
+    // POST methods
+    export function createTrip(trip) {
+      return post(`${baseUrl}/trips`, trip, apiKey).then(checkResponse);
+    }
+    ```
+
+1.  On this page, a **Driver Requested Successfully** toast message is displayed to the user, the **Trip requested** step is highlighted, and the user is told that Rideshare is searching for a nearby driver.
+
+    ![Screenshot showing the My Trip page after the user submits a new trip request](media/trip-request-submitted.png 'Trip request submitted')
+
+1.  The API Management **/trips** endpoint routes the request to the `CreateTrip` function within the **Trips** Function App. This function validates the authentication token, validates the passenger information, and finally calls the `UpsertTrip` method within the [Persistence Layer](#rideshare-apis):
+
+    ```csharp
+    [FunctionName("CreateTrip")]
+    public static async Task<IActionResult> CreateTrip([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "trips")] HttpRequest req,
+        ILogger log)
+    {
+        log.LogInformation("CreateTrip triggered....");
+
+        try
+        {
+            await Utilities.ValidateToken(req);
+            string requestBody = new StreamReader(req.Body).ReadToEnd();
+            TripItem trip = JsonConvert.DeserializeObject<TripItem>(requestBody);
+
+            // validate
+            if (trip.Passenger == null || string.IsNullOrEmpty(trip.Passenger.Code))
+                throw new Exception("A passenger with a valid code must be attached to the trip!!");
+
+            trip.EndDate = null;
+            var persistenceService = ServiceFactory.GetPersistenceService();
+            return (ActionResult)new OkObjectResult(await persistenceService.UpsertTrip(trip));
+        }
+        catch (Exception e)
+        {
+            var error = $"CreateTrip failed: {e.Message}";
+            log.LogError(error);
+            if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                return new StatusCodeResult(401);
+            else
+                return new BadRequestObjectResult(error);
+        }
+    }
+    ```
+
+1.  The `UpsertTrip` method within the `Persistence Layer` saves the trip information to Cosmos DB and calls the `TripCreated` method of the `ChangeNotifierService` to initiate the **Trip Manager** Durable Orchestrator, as outlined in the [Durable Orchestrators](#durable-orchestrators) section:
+
+    ```csharp
+    // Excerpt from the CosmosPersistenceService.UpsertTrip method:
+
+    var response = await (await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), trip);
+
+    if (!isIgnoreChangeFeed && blInsert)
+    {
+        await _changeNotifierService.TripCreated(trip, await RetrieveActiveTripsCount());
+    }
+    ```
+
+    ```csharp
+    // Excerpt from the ChangeNotifierService.TripCreated method:
+
+    // Start a trip manager
+    if (!_settingService.IsEnqueueToOrchestrators())
+    {
+        var baseUrl = _settingService.GetStartTripManagerOrchestratorBaseUrl();
+        var key = _settingService.GetStartTripManagerOrchestratorApiKey();
+        if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
+            throw new Exception("Trip manager orchestrator base URL and key must be both provided");
+
+        await Utilities.Post<dynamic, dynamic>(null, trip, $"{baseUrl}/tripmanagers?code={key}", new Dictionary<string, string>());
+    }
+    else
+    {
+        await _storageService.Enqueue(trip);
+    }
+    ```
+
+1.  From here, the **Trip Manager** Durable Orchestrator is triggered, which in turn triggers the **Trip Monitor** Durable Orchestrator. As the trip progresses, new Event Grid events are fired to trigger actions by [multiple listeners](#event-grid), including the [SignalR Azure Functions handler](#signalr-handler). The `/components/SignalRTrips.vue` file contains the [JavaScript SignalR client code](#javascript-signalr-client) that connects to the SignalR Service and receives and processes each message. In the code excerpt below, we are handling the `tripDriverPicked` SignalR message, updating the current trip step, setting the local trip state to display to the user, and firing the toast notification:
+
+    ```javascript
+    hubConnection.on('tripDriverPicked', trip => {
+      console.log(`tripDriverPicked Trip code: ${trip.code}`);
+      this.setCurrentStep(2);
+      this.setTrip(trip);
+      this.$toast.info(
+        `Trip Code: ${trip.code}. Message: tripDriverPicked.`,
+        'Driver Picked',
+        this.notificationSystem.options.info
+      );
+    });
+    ```
+
+The following is a screenshot of the My Trip page that is updated in real-time as a result of the SignalR messages flowing to the SPA website:
+
+![Screenshot of the My Trip page that has been updated as a result of SignalR messages](media/my-trip-page-completed-trip.png 'My Trip page')
+
+These are the following features of this page:
+
+1. Toast message showing the trip status, appropriate to the current step of the trip. In this case, the `tripCompleted` SignalR message was received.
+1. Visual trip progress indicator highlights the current stage of the trip as it progresses (`this.setCurrentStep(n)`).
+1. The driver information is displayed after a driver is selected. This happens when the `tripDriverPicked` SignalR message is received by updating the local trip state with the `this.setTrip(trip)` command.
 
 ## Integration testing
 
