@@ -912,6 +912,97 @@ When an Event Grid Topic event arrives at the Trip Archiver processor, it extrac
 
 The Relecloud Rideshare website is a single page application (SPA) written in Vue.js. It is here that users sign in with an Azure Active Directory B2C account, access passenger and driver information, and request new trips. Each HTTP request flows through the API Management endpoints to each of the underlying Azure Functions that serve those requests.
 
+#### Passengers page
+
+This page displays passenger information that is stored within Azure Active Directory B2C, using the [Microsoft Graph](https://developer.microsoft.com/en-us/graph/) API. When the `passengers` GET request is made to API Management, that request is routed to the `GetPassengers` function within the **Passengers** Function App.
+
+```csharp
+// GetPassengers function within the Passengers Function App:
+
+[FunctionName("GetPassengers")]
+public static async Task<IActionResult> GetPassengers([HttpTrigger(AuthorizationLevel.Anonymous, "get",
+        Route = "passengers")] HttpRequest req,
+    ILogger log)
+{
+    log.LogInformation("GetPassengers triggered....");
+
+    try
+    {
+        await Utilities.ValidateToken(req);
+        var passengers = ServiceFactory.GetUserService();
+        var (users, error) = await passengers.GetUsers();
+        if (!string.IsNullOrWhiteSpace(error))
+            throw new Exception(error);
+
+        return (ActionResult)new OkObjectResult(users.ToList());
+    }
+    catch (Exception e)
+    {
+        var error = $"GetPassengers failed: {e.Message}";
+        log.LogError(error);
+        if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+            return new StatusCodeResult(401);
+        else
+            return new BadRequestObjectResult(error);
+    }
+}
+```
+
+The `UserService.GetUsers` method makes a secure call to the Microsoft Graph API as in the following excerpt:
+
+```csharp
+const string GraphBaseUrl = "https://graph.windows.net/";
+const string GraphVersionQueryString = "?" + GraphVersion;
+const string GraphVersion = "api-version=1.6";
+
+private readonly AuthenticationContext _authContext;
+private readonly ClientCredential _clientCreds;
+private readonly string _graphUrl;
+
+public UserService(string tenantId, string clientId, string clientSecret)
+{
+    _graphUrl = GraphBaseUrl + tenantId;
+
+    var authority = "https://login.microsoftonline.com/" + tenantId;
+    _authContext = new AuthenticationContext(authority);
+    _clientCreds = new ClientCredential(clientId, clientSecret);
+}
+
+// Code removed for brevity...
+
+public async Task<(IEnumerable<User>, string error)> GetUsers()
+{
+    var url = _graphUrl + "/users" + GraphVersionQueryString;
+
+    // Call with HttpClient:
+    var response = await client.GetAsync(url);
+    if (response.IsSuccessStatusCode)
+    {
+        var json = await response.Content.ReadAsStringAsync();
+        var result = JsonConvert.DeserializeObject<UsersResult>(json);
+        return (result.Value, null);
+    }
+    else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
+    {
+        var json = await response.Content.ReadAsStringAsync();
+        var badRequest = JsonConvert.DeserializeObject<BadRequestResponse>(json);
+        return (null, badRequest.ErrorMessage);
+    }
+    else
+    {
+        return (null, "Error Getting Users. HTTP Status Code: " + (int)response.StatusCode);
+    }
+}
+```
+
+The Microsoft Graph data is deserialized to a `UsersResult` object containing a collection of `User` strongly-typed class objects that store the user profile data that is ultimately returned to the client in JSON format.
+
+![Screenshot of the Passengers page, displaying a list of passengers pulled from the Graph API](media/passengers-page.png 'Passengers page')
+
+When you select a user, additional information about the user is displayed in a modal window.
+
+![Screenshot of the passenger information modal window](media/passengers-page-information.png 'Passengers page: passenger information')
+
 #### Authentication
 
 Azure Active Directory B2C is used for user authentication and profile management. With it, users can self-service their accounts, which means they are able to register for a new account, manage their profile information (mailing address, phone number, etc.), and initiate a password reset if needed.
@@ -924,6 +1015,10 @@ The screenshot above shows the home page of the website with the login form disp
 1. The `msal` library requests the login form popup from Azure Active Directory B2C via the following command: `this._userAgentApplication.loginPopup(this._scopes)`
 1. A user may register for a new account by selecting the **Sign up now** link.
 1. If a user forgets their password, they can reset it with the **Forgot your password?** link.
+
+If you attempt to access a protected page, such as My Trip, Passengers, or Drivers, you will be prompted to log in before continuing:
+
+![No Access page displayed when attempting to access a protected page before signing in](media/no-access.png 'No access')
 
 The `utils` folder contains a file named `Authentication.js`, which wraps the [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-js), enabling the client to easily log in and out of their Azure Active Directory B2C account:
 
