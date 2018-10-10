@@ -7,7 +7,6 @@ In this document:
   - [What is serverless?](#what-is-serverless)
   - [Macro architecture](#macro-architecture)
   - [Data flow](#data-flow)
-    - [Web App](#web-app)
     - [API Management](#api-management)
     - [RideShare APIs](#rideshare-apis)
     - [Durable Orchestrators](#durable-orchestrators)
@@ -18,6 +17,7 @@ In this document:
         - [JavaScript SignalR client](#javascript-signalr-client)
       - [Power BI handler](#power-bi-handler)
       - [Trip Archiver handler](#trip-archiver-handler)
+    - [SPA website](#spa-website)
   - [Data storage](#data-storage)
   - [Source code structure](#source-code-structure)
     - [DOTNET](#dotnet)
@@ -158,12 +158,6 @@ When events are sent to the `Event Grid Topic`, they trigger the different handl
 - Archiver Handler Microservice
 
 **Below** is a detailed description of the components that make up the architecture.
-
-### Web App
-
-//TBA - Joel
-
-Describe how the SPA communicates with the B2C AD to provide different levels of permissions.
 
 ### API Management
 
@@ -914,111 +908,9 @@ When an Event Grid Topic event arrives at the Trip Archiver processor, it extrac
 
 - Persists the trip in the Cosmos DB Archiver Collection.
 
-## Data storage
+### SPA website
 
-Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) as the main data storage for the solution entities. Since Relecloud targets a world-wide audience accessing its services from different parts of the world, Cosmos DB provides key advantages:
-
-- A global distribution capability replicates data in different Azure Data centers around the world making the data closer to consumers thereby reducing the response time.
-- Independent storage and throughput scale capability allows for great granularity and flexibility that can be used to adjust for unpredictable usage patterns.
-- Being the main centric entities in the solution, `Trip` entities capture the trip state such as the associated driver, the associated passenger, the available drivers and many other metrics. It is more convenient to query and store `Trip` entities as a whole without requiring transformation or complex object to relational mapping layers.
-- Trip schema can change without having to go through database schema changes. Only the application code will have to adjust to the schema changes.
-
-**Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. This will have to be addressed in a real solution.
-
-In addition to Azure Cosmos DB, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in Power BI, for example. Please refer to [Power BI Handler](#power-bi-handler) section for details on this.
-
-## Source code structure
-
-### DOTNET
-
-The .NET solution consists of 7 projects:
-
-![.NET Source](media/dotnet-source-structure.png)
-
-- The `Models` project defines all the model classes required by RideShare
-- The `Shared` project contains all the services which are used by the functions to provide different functionality
-- The `Seeder` project contains some integration tests to pump trips through the solution
-- The `Drivers` Function App project contains the `Drivers` APIs
-- The `Trips` Function App project contains the `Trips` APIs
-- The `Passengers` Function App project contains the `Passengers` APIs
-- The `Orchestrators` Function App project contains the `Orchestrators`
-
-The following are some notes about the source code:
-
-- The `Factory` pattern is used to create static singleton instances via the `ServiceFactory`:
-
-```csharp
-private static ISettingService _settingService = null;
-
-public static ISettingService GetSettingService()
-{
-    if (_settingService == null)
-    _settingService = new SettingService();
-
-    return _settingService;
-}
-```
-
-- The `ISettingService` service implementation is used to read settings from environment variables:
-
-```csharp
-var seconds = _settingService.GetTripMonitorIntervalInSeconds();
-var maxIterations = _settingService..GetTripMonitorMaxIterations();
-```
-
-- The `ILoggerService` service implementation sends traces, exceptions, custom events and metrics to the `Application Insights` resource associated with the Function App:
-
-```csharp
-    // Send a trace
-    _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
-
-    // Send an event telemetry
-    _loggerService.Log("Trip created", new Dictionary<string, string>
-    {
-        {"Code", trip.Code },
-        {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
-        {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
-        {"Mode", $"{trip.Type}" }
-    });
-
-    // Send a metric telemetry
-    _loggerService.Log("Active trips", activeTrips);
-```
-
-- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Azure Cosmos DB implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.
-- The `CosmosPersistenceService` assigns Cosmos DB IDs manually, which is a combination of the `collection type` and some identifier. Cosmos DB's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
-- The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicate with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
-
-### Node.js
-
-The [nodejs](../nodejs) folder contains the Archiver Function App with the following folder structure:
-
-![Node.js folder structure](media/archiver-01-folder-structure.png)
-
-- The **serverless-microservices-functionapp-triparchiver** folder contains the Archiver Function App.
-- The **EVGH_TripExternalizations2CosmosDB** folder contains the function to send data to the Archiver Collection in Azure Cosmos DB:
-  - **function.json**: Defines the function's in (eventGridTrigger) and out (documentDB) bindings.
-  - **index.js**: The function code that defines the data to be sent.
-- **.gitignore**: Local Git ignore file.
-- **host.json**: This file can include global configuration settings that affect all functions for this function app.
-- **local.settings.json**: This file can include configuration settings needed when running the functions locally.
-
-### Web
-
-The [web](../web) folder contains the Vue.js-based SPA website with the following folder structure:
-
-![Website folder structure](media/website-folder-structure.png)
-
-- The **public** folder contains the `index.html` page, as well as `js` folder that contains important settings for the SPA. The `settings.sample.js` file is included and shows the expected settings for reference. The `settings.js` file is excluded to prevent sensitive data from leaking. This file is added via the Web App's debug console (Kudu) after deploying the website.
-- The **src** folder contains the bulk of the files:
-  - **api**: these files use the http helper (`utils/http.js`) to execute REST calls against the API Management endpoints.
-  - **assets**: site images.
-  - **components**: Vue.js components, including a SignalR component that contains the [client-side functions](#javascript-signalr-client) called by the SignalR Service.
-  - **store**: [Vuex store](https://vuex.vuejs.org/), which represents the state management components for the SPA site.
-  - **utils**: utilities for authentication (wraps the [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-js)) and HTTP (wraps the [Axios](https://github.com/axios/axios) library)
-  - **views**: Vue.js files for each of the SPA "pages".
-
-The following are some notes about the source code:
+The Relecloud Rideshare website is a single page application (SPA) written in Vue.js. It is here that users sign in with an Azure Active Directory B2C account, access passenger and driver information, and request new trips. Each HTTP request flows through the API Management endpoints to each of the underlying Azure Functions that serve those requests.
 
 #### Authentication
 
@@ -1437,6 +1329,112 @@ These are the following features of this page:
 1. Toast message showing the trip status, appropriate to the current step of the trip. In this case, the `tripCompleted` SignalR message was received.
 1. Visual trip progress indicator highlights the current stage of the trip as it progresses (`this.setCurrentStep(n)`).
 1. The driver information is displayed after a driver is selected. This happens when the `tripDriverPicked` SignalR message is received by updating the local trip state with the `this.setTrip(trip)` command.
+
+## Data storage
+
+Relecloud decided to use [Azure Cosmos DB](https://docs.microsoft.com/en-us/azure/cosmos-db/introduction) as the main data storage for the solution entities. Since Relecloud targets a world-wide audience accessing its services from different parts of the world, Cosmos DB provides key advantages:
+
+- A global distribution capability replicates data in different Azure Data centers around the world making the data closer to consumers thereby reducing the response time.
+- Independent storage and throughput scale capability allows for great granularity and flexibility that can be used to adjust for unpredictable usage patterns.
+- Being the main centric entities in the solution, `Trip` entities capture the trip state such as the associated driver, the associated passenger, the available drivers and many other metrics. It is more convenient to query and store `Trip` entities as a whole without requiring transformation or complex object to relational mapping layers.
+- Trip schema can change without having to go through database schema changes. Only the application code will have to adjust to the schema changes.
+
+**Please note** that the Cosmos DB `Main` and `Archive` collections used in the reference implementation use fixed data size and the minimum 400 RUs without a partition key. This will have to be addressed in a real solution.
+
+In addition to Azure Cosmos DB, Relecloud decided to use [Azure SQL Database](https://azure.microsoft.com/en-us/services/sql-database/) to persist trip summaries so they can be reported on in Power BI, for example. Please refer to [Power BI Handler](#power-bi-handler) section for details on this.
+
+## Source code structure
+
+### DOTNET
+
+The .NET solution consists of 7 projects:
+
+![.NET Source](media/dotnet-source-structure.png)
+
+- The `Models` project defines all the model classes required by RideShare
+- The `Shared` project contains all the services which are used by the functions to provide different functionality
+- The `Seeder` project contains some integration tests to pump trips through the solution
+- The `Drivers` Function App project contains the `Drivers` APIs
+- The `Trips` Function App project contains the `Trips` APIs
+- The `Passengers` Function App project contains the `Passengers` APIs
+- The `Orchestrators` Function App project contains the `Orchestrators`
+
+The following are some notes about the source code:
+
+- The `Factory` pattern is used to create static singleton instances via the `ServiceFactory`:
+
+```csharp
+private static ISettingService _settingService = null;
+
+public static ISettingService GetSettingService()
+{
+    if (_settingService == null)
+    _settingService = new SettingService();
+
+    return _settingService;
+}
+```
+
+- The `ISettingService` service implementation is used to read settings from environment variables:
+
+```csharp
+var seconds = _settingService.GetTripMonitorIntervalInSeconds();
+var maxIterations = _settingService..GetTripMonitorMaxIterations();
+```
+
+- The `ILoggerService` service implementation sends traces, exceptions, custom events and metrics to the `Application Insights` resource associated with the Function App:
+
+```csharp
+    // Send a trace
+    _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
+
+    // Send an event telemetry
+    _loggerService.Log("Trip created", new Dictionary<string, string>
+    {
+        {"Code", trip.Code },
+        {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
+        {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
+        {"Mode", $"{trip.Type}" }
+    });
+
+    // Send a metric telemetry
+    _loggerService.Log("Active trips", activeTrips);
+```
+
+- `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Azure Cosmos DB implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.
+- The `CosmosPersistenceService` assigns Cosmos DB IDs manually, which is a combination of the `collection type` and some identifier. Cosmos DB's `ReadDocumentAsync` retrieves really fast if an `id` is provided.
+- The `IsPersistDirectly` setting is used mainly by the orchestrators to determine whether to communicate with the storage directly (via the persistence layer) or whether to use the exposed APIs to retrieve and update. In the reference implementation, the `IsPersistDirectly` setting is set to true.
+
+### Node.js
+
+The [nodejs](../nodejs) folder contains the Archiver Function App with the following folder structure:
+
+![Node.js folder structure](media/archiver-01-folder-structure.png)
+
+- The **serverless-microservices-functionapp-triparchiver** folder contains the Archiver Function App.
+- The **EVGH_TripExternalizations2CosmosDB** folder contains the function to send data to the Archiver Collection in Azure Cosmos DB:
+  - **function.json**: Defines the function's in (eventGridTrigger) and out (documentDB) bindings.
+  - **index.js**: The function code that defines the data to be sent.
+- **.gitignore**: Local Git ignore file.
+- **host.json**: This file can include global configuration settings that affect all functions for this function app.
+- **local.settings.json**: This file can include configuration settings needed when running the functions locally.
+
+### Web
+
+The [web](../web) folder contains the Vue.js-based SPA website with the following folder structure:
+
+![Website folder structure](media/website-folder-structure.png)
+
+- The **public** folder contains the `index.html` page, as well as `js` folder that contains important settings for the SPA. The `settings.sample.js` file is included and shows the expected settings for reference. The `settings.js` file is excluded to prevent sensitive data from leaking. This file is added via the Web App's debug console (Kudu) after deploying the website.
+- The **src** folder contains the bulk of the files:
+  - **api**: these files use the http helper (`utils/http.js`) to execute REST calls against the API Management endpoints.
+  - **assets**: site images.
+  - **components**: Vue.js components, including a SignalR component that contains the [client-side functions](#javascript-signalr-client) called by the SignalR Service.
+  - **store**: [Vuex store](https://vuex.vuejs.org/), which represents the state management components for the SPA site.
+  - **utils**: utilities for authentication (wraps the [Microsoft Authentication Library (MSAL)](https://github.com/AzureAD/microsoft-authentication-library-for-js)) and HTTP (wraps the [Axios](https://github.com/axios/axios) library)
+  - **views**: Vue.js files for each of the SPA "pages".
+
+The following are some notes about the source code:
 
 ## Integration testing
 
