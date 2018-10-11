@@ -1148,7 +1148,7 @@ export class Authentication {
 
     var cb = this._tokenCallback.bind(this);
     var opts = {
-      //logger: logger
+      validateAuthority: false
     };
     this._userAgentApplication = new UserAgentApplication(
       this._clientId,
