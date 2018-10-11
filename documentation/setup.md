@@ -17,7 +17,7 @@ In this document:
             - [Create the Application Insights Resource](#create-the-application-insights-resource)
             - [Create the API Management Service](#create-the-api-management-service)
             - [Create the SignalR Service](#create-the-signalr-service)
-            - [Create the B2C Tenant](#create-the-b2c-tenant)
+            - [Create the B2C Tenant](#create-the-azure-ad-b2c-tenant)
         - [Cake Provision](#cake-provision)
     - [Setup](#setup)
         - [Add APIM Products and APIs](#add-apim-products-and-apis)
