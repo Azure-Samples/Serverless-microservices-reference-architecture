@@ -18,7 +18,6 @@ In this document:
             - [Create the API Management Service](#create-the-api-management-service)
             - [Create the SignalR Service](#create-the-signalr-service)
             - [Create the B2C Tenant](#create-the-b2c-tenant)
-        - [ARM Template](#arm-template)
         - [Cake Provision](#cake-provision)
     - [Setup](#setup)
         - [Add APIM Products and APIs](#add-apim-products-and-apis)
@@ -348,17 +347,161 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the SignalR service connection string](media/signalr-creation1.png)
 
-#### Create the B2C Tenant 
+#### Create the Azure AD B2C Tenant
 
-//TBA - Joel
+The Azure Active Directory B2C tenant is used to store customer/passenger accounts and information, such as their full name, address, etc.
 
-Once completed, please jump to the [setup](#setup) section to continue. 
+1.  Sign in to the [Azure portal](https://portal.azure.com/).
 
-### ARM Template
+1.  Make sure that you are using the directory that contains your subscription by clicking the **Directory and subscription filter** in the top menu and choosing the directory that contains it. This is a different directory than the one that will contain your Azure AD B2C tenant.
 
-//TBA - ???
+    ![Switch to subscription directory](media/switch-directory-subscription.png)
 
-Once completed, please jump to the [setup](#setup) section to continue. 
+3.  Choose **Create a resource** in the top-left corner of the Azure portal.
+
+4.  Search for and select **Active Directory B2C**, and then click **Create**.
+
+5.  Choose **Create a new Azure AD B2C Tenant**, enter an organization name and initial domain name, which is used in the tenant name, select the country (it can't be changed later), and then click **Create**.
+
+    ![Create a tenant](media/create-tenant.png)
+
+    In this example the tenant name is contoso0926Tenant.onmicrosoft.com
+
+6.  On the **Create new B2C Tenant or Link to an exiting Tenant** page, choose **Link an existing Azure AD B2C Tenant to my Azure subscription**, select the tenant that you created, select your subscription, click **Create new** and enter a name for the resource group that will contain the tenant, select the location, and then click **Create**.
+
+7.  To start using your new tenant, make sure you are using the directory that contains your Azure AD B2C tenant by clicking the **Directory and subscription filter** in the top menu and choosing the directory that contains it.
+
+    ![Switch to tenant directory](media/switch-directories.png)
+
+8.  Once you have switched to your new tenant directory, select **Azure Active Directory** from the left-hand menu.
+
+    ![Select Azure Active Directory from the left-hand menu](media/select-azure-active-directory.png)
+
+9.  Select **Users** from the Azure AD blade.
+
+10. Select **Password reset**, then select **Properties**.
+
+11. Select **All** underneath the "Self service password reset enabled" setting. Select **Save**.
+
+12. Close the **Password reset** blade to go back to the **Users** blade.
+
+13. Select **User settings**. Select **Yes** underneath "App registrations", and **No** underneath "Administration  Portal". Select **Save**.
+
+    ![User settings blade](media/aad-b2c-user-settings.png)
+
+#### Add Azure AD Graph API
+
+Adding the Azure AD Graph API to the new Azure AD B2C tenant will allow you to query user data from the Passengers Azure Function App.
+
+1.  Make sure you are still switched to your new Azure AD B2C tenant directory. Select **Azure Active Directory** on the left-hand menu, if not already selected.
+
+2.  In the left-hand navigation pane, select **App registrations**, and select **New application registration**.
+
+3.  Follow the prompts and create a new application.
+
+    1.  Enter a **Name**, such as "Relecloud Rideshare Graph API".
+
+    2.  Select **Web App / API** as the Application Type.
+
+    3.  Provide **any Sign-on URL** (e.g. https://foo) as it's not relevant for this example.
+
+4.  The application will now show up in the list of applications, click on it to obtain the **Application ID** (also known as Client ID). **Copy it as you'll need it in a later section**. This will be the value for the `GraphClientId` App Setting for your Passengers Function App.
+
+5.  In the Settings menu, click **Keys**.
+
+6.  In the **Passwords** section, enter the key description and select a duration, and then click **Save**. Copy the key value (also known as Client Secret) **for use in a later section**. This will be the value for the `GraphClientSecret` App Setting for your Passengers Function App.
+
+7.  In the Settings menu, click on **Required permissions**.
+
+8.  In the Required permissions menu, click on **Windows Azure Active Directory**.
+
+9.  In the Enable Access  menu, select the **Read and write directory data** permission from **Application Permissions** and click **Save**.
+
+10. Finally, back in the Required permissions menu, click on the **Grant Permissions** button.
+
+    ![Microsoft Graph API required permissions](media/graph-api-required-permissions.png)
+
+#### Configure Azure AD B2C Tenant
+
+Your new Azure AD B2C tenant must be configured before it can be used from the website. The Reply URLs you add will allow the website to successfully route the users to the login/logout forms.
+
+1.  Switch back to your Azure subscription tenant that contains the resources you have created.
+
+2.  Navigate to your `serverless-microservices` Resource Group, or the one you created at the beginning of this document.
+
+3.  Find and select the B2C Tenant you created.
+
+    ![Select the Azure AD B2C tenant you created in the resource group](media/select-azure-ad-b2c-tenant.png)
+
+4.  Copy the **Tenant ID** value located within the Essentials section of the Overview blade. **Save the value for later**. This will be the value for the `GraphTenantId` App Setting for your Passengers Function App.
+
+    ![Copy the Tenant ID from the Essentials section of the B2C Tenant Overview blade](media/azure-ad-b2c-tenant-id.png)
+
+5.  Select the **Azure AD B2C Settings** tile.
+
+6.  Select **Applications** in the left-hand navigation menu, then select **Add**.
+
+7.  In the New application form, provide the following:
+
+    1.  **Name**: rideshare-site
+
+    2.  **Web App / Web API**: select Yes
+
+    3.  **Allow implicit flow**: select Yes
+
+    3.  **Native client**: select No
+
+    4.  **App ID URI**: api
+
+    5.  Enter the following **Reply URL** values (replace YOUR-WEB-APP with the name of the web app [you created](#create-the-web-app)):
+
+    | Reply URL |
+    | --- |
+    | http://localhost:8080/no-auth |
+    | http://localhost:8080/drivers |
+    | http://localhost:8080/passengers |
+    | http://localhost:8080/trips |
+    | http://localhost:8080/login |
+    | http://localhost:8080 |
+    | http://YOUR-WEB-APP.azurewebsites.net/no-auth |
+    | http://YOUR-WEB-APP.azurewebsites.net/drivers |
+    | http://YOUR-WEB-APP.azurewebsites.net/passengers |
+    | http://YOUR-WEB-APP.azurewebsites.net/trips |
+    | http://YOUR-WEB-APP.azurewebsites.net/login |
+    | http://YOUR-WEB-APP.azurewebsites.net |
+
+    ![Add all required Reply URLs and the App ID URI values](media/azure-ad-b2c-reply-urls.png)
+
+8.  Select **Create**.
+
+9.  After the new application is created, open it and copy the **Application ID**. **Save the value for later**. This will be the value for the `ApiApplicationId` App Setting for your Passengers Function App.
+
+10. With the application still open, select **Published scopes** on the left-hand navigation menu.
+
+11. Add two new scopes as defined below:
+
+    | Scope | Description |
+    | --- | --- |
+    | rideshare | Rideshare API |
+    | user_impersonation | Access this app on behalf of the signed-in user |
+
+12. Select **Save**. After saving is complete, you will see a Full Scope Value next to each scope you added.
+
+    ![Add two new published scopes as defined in the table above](media/azure-ad-b2c-published-scopes.png)
+
+13. Select **API access** from the left-hand navigation menu. You should have, at minimum, the published rideshare-site scope listed here. If not, perform the following:
+
+14. Select **Add**.
+
+15. Under **Select API**, select rideshare-site.
+
+16. Under **Select Scopes**, select all.
+
+17. Select **OK**.
+
+18. Close the rideshare-site API access blade to navigate back to the **Azure AD B2C - Applications** blade.
+
+Once completed, please jump to the [setup](#setup) section to continue.
 
 ### Cake Provision
 
@@ -783,12 +926,12 @@ The reference implementation solution requires several settings for each functio
 
 | KEY | DESCRIPTION |
 |---|---|
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `~1` since this Function App uses 1.0.11959.0 | 
-| AzureWebJobsDashboard | The Storage Account Connection String | 
-| AzureWebJobsStorage | The Storage Account Connection String | 
-| DocDbConnectionStringKey | The Cosmos DB Connection String | 
-| WEBSITE_CONTENTAZUREFILECONNECTIONSTRING | Storage account Connection String where function app code and configuration are stored | 
-| WEBSITE_CONTENTSHARE | Storage account File Path where function app code and configuration are stored | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~1` since this Function App uses 1.0.11959.0 |
+| AzureWebJobsDashboard | The Storage Account Connection String |
+| AzureWebJobsStorage | The Storage Account Connection String |
+| DocDbConnectionStringKey | The Cosmos DB Connection String |
+| WEBSITE_CONTENTAZUREFILECONNECTIONSTRING | Storage account Connection String where function app code and configuration are stored |
+| WEBSITE_CONTENTSHARE | Storage account File Path where function app code and configuration are stored |
 
 ## Build the solution
 
