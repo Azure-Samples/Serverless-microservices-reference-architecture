@@ -489,17 +489,19 @@ Your new Azure AD B2C tenant must be configured before it can be used from the w
 
     ![Add two new published scopes as defined in the table above](media/azure-ad-b2c-published-scopes.png)
 
-13. Select **API access** from the left-hand navigation menu. You should have, at minimum, the published rideshare-site scope listed here. If not, perform the following:
+13. Copy the **Full Scope Value** for the new **rideshare** scope you created. **Save the value for later**. This will be the value for the `window.authScopes` setting in the `settings.js` file within the website project.
 
-14. Select **Add**.
+14. Select **API access** from the left-hand navigation menu. You should have, at minimum, the published rideshare-site scope listed here. If not, perform the following:
 
-15. Under **Select API**, select rideshare-site.
+15. Select **Add**.
 
-16. Under **Select Scopes**, select all.
+16. Under **Select API**, select rideshare-site.
 
-17. Select **OK**.
+17. Under **Select Scopes**, select all.
 
-18. Close the rideshare-site API access blade to navigate back to the **Azure AD B2C - Applications** blade.
+18. Select **OK**.
+
+19. Close the rideshare-site API access blade to navigate back to the **Azure AD B2C - Applications** blade.
 
 #### Create a sign-up or sign-in policy
 
