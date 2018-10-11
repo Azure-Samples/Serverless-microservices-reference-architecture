@@ -501,6 +501,25 @@ Your new Azure AD B2C tenant must be configured before it can be used from the w
 
 18. Close the rideshare-site API access blade to navigate back to the **Azure AD B2C - Applications** blade.
 
+#### Create a sign-up or sign-in policy
+
+You must create a policy for the sign-up/in user workflow. Without this, users will not be able to sign up for an account or sign in.
+
+1.  While still within the **Azure AD B2C** portal page, select **Sign-up or sign-in policies** and click **Add**.
+
+    To configure your policy, use the following settings:
+
+    ![Add a sign-up or sign-in policy](media/azure-ad-b2c-add-susi-policy.png)
+
+    | Setting      | Suggested value  | Description                                        |
+    | ------------ | ------- | -------------------------------------------------- |
+    | **Name** | default-signin | Enter a **Name** for the policy. The policy name is prefixed with **b2c_1_**. You use the full policy name **b2c_1_default-signin** in the application code. **Record this name for later**. |
+    | **Identity provider** | Email signup | The identity provider used to uniquely identify the user. |
+    | **Sign up attributes** | City, Country/Region, Display Name, Email Address, Given Name, Postal Code, State/Province, Street Address, and Surname | Select attributes to be collected from the user during signup. |
+    | **Application claims** | City, Country/Region, Display Name, Email Address, Given Name, Postal Code, State/Province, Street Address, Surname, User is new, and User's Object ID | Select [claims](https://docs.microsoft.com/en-us/azure/active-directory/develop/developer-glossary#claim) you want to be included in the [access token](https://docs.microsoft.com/en-us/azure/active-directory/develop/developer-glossary#access-token). |
+
+2. Click **Create** to create your policy.
+
 Once completed, please jump to the [setup](#setup) section to continue.
 
 ### Cake Provision
