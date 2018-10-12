@@ -1036,6 +1036,26 @@ Creating the `settings.js` file locally in your web project directory is optiona
 | window.apiPassengersBaseUrl | ``${window.apiBaseUrl}/p`` |
 | window.signalrInfoUrl | The URL to your `signalrinfo` function within the Trips Function App, i.e. https://ridesharetripsfunctionapp.azurewebsites.net/api/signalrinfo |
 
+#### Compile and minify for production
+
+Because the SPA website runs on static files with no server-side rendering, you must compile and minify the files to make them production-ready. Your build configuration for the website that you create in the [next section within Azure DevOps] will handle this for you in preparation for releasing the build to Azure. However, if you wish to run the command locally and manually copy the files yourself, perform the following:
+
+1.  Open a command prompt or terminal window and navigate to the web directory (/web/serverless-microservices-web). Execute the following command:
+
+```shell
+npm run build
+```
+
+2.  Copy the files within the `/dist/` directory to your chosen deployment location. To manually upload these files to your Azure Web App, perform the following steps:
+
+    1.  Open a web browser and go to: `https://{sitename}.scm.azurewebsites.net/DebugConsole` (Kudu).
+    
+    2.  Navigate to: `site/wwwroot`.
+
+    3.  Drag and drop the files from your newly created `/dist/` directory to `site/wwwroot` in Kudu.
+
+    ![Screenshot of Kudu with the static website files uploaded](media/kudu-manual-site-deployment.png)
+
 ## Deployment
 
 Function App deployments can happen from [Visual Studio]() IDE, [Azure DevOps](https://azure.microsoft.com/en-us/services/devops/) by defining a build pipeline that can be triggered upon push to the code repository, for example, or a build script such as [Cake](https://cakebuild.net/) or [Psake](https://github.com/psake/psake).
