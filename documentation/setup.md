@@ -991,11 +991,50 @@ In order to build .NET solution from Visual Studio, you need:
 ### Node.js
 
 In order to build Node.js Archiver Function App, you need:
-- Node.js 8.11.4 or later
+
+- [Node.js](https://nodejs.org/) 8.11.4 or later
 
 ### Web
 
-//TBA - Joel
+It is not required to build the website on your local machine. It is ready to deploy as-is. However, if you wish to build and run the website locally, you need:
+
+- [Node.js](https://nodejs.org/) 8.9 or later
+- Install Vue.js with NPM:
+
+```shell
+npm install vue
+```
+
+You may run the website in developer mode by opening a command prompt or terminal window, navigating to the web directory (/web/serverless-microservices-web), running `npm install` to download the NPM packages, then running the following command:
+
+```shell
+npm run serve
+```
+
+#### Create and populate settings.js
+
+The website uses a `settings.js` file to store site-wide settings that are specific to your environment, such as URLs and keys. Due to the sensitive nature of these settings, the `settings.js` file is excluded from the source code by way of the `.gitignore` file located in the web project directory.
+
+Creating the `settings.js` file locally in your web project directory is optional and only used if you decide to run the website locally. You will be adding this file to the deployed website that is hosted in your Azure Web App that was [created earlier](#create-the-web-app). However, it might be easier to create it locally first, then copy the contents of the file to its deployed location later.
+
+1.  Open the **/web/serverless-microservices-web** directory in your favorite IDE, such as [Visual Studio Code](https://code.visualstudio.com/). Optionally, open a file explorer and navigate to this directory.
+
+2.  Expand the **/public/js** folder. Copy `settings.sample.js` and save it as `settings.js` in this folder.
+
+3.  Update the values within as follows:
+
+| KEY | DESCRIPTION |
+|---|---|
+| window.authClientId | The B2C Client ID you [recorded earlier](#configure-azure-ad-b2c-tenant) |
+| window.authAuthority | The B2C Authority URL you [recorded earlier](#create-a-sign-up-or-sign-in-policy) i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 |
+| window.authScopes | The B2C full Scope name (including URL) you [recorded earlier](#configure-azure-ad-b2c-tenant) i.e. https://relecloudrideshare.onmicrosoft.com/api/rideshare |
+| window.authEnabled | true |
+| window.apiKey | The APIM API key you [saved earlier](#retrieve-the-apim-api-key) |
+| window.apiBaseUrl | The APIM Gateway URL, found on the Overview blade of your APIM service, i.e. https://rideshare.azure-api.net |
+| window.apiDriversBaseUrl | ``${window.apiBaseUrl}/d`` |
+| window.apiTripsBaseUrl | ``${window.apiBaseUrl}/t`` |
+| window.apiPassengersBaseUrl | ``${window.apiBaseUrl}/p`` |
+| window.signalrInfoUrl | The URL to your `signalrinfo` function within the Trips Function App, i.e. https://ridesharetripsfunctionapp.azurewebsites.net/api/signalrinfo |
 
 ## Deployment
 
