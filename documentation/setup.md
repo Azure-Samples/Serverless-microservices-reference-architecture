@@ -474,7 +474,7 @@ Your new Azure AD B2C tenant must be configured before it can be used from the w
 
 8.  Select **Create**.
 
-9.  After the new application is created, open it and copy the **Application ID**. **Save the value for later**. This will be the value for the `ApiApplicationId` App Setting for your Passengers Function App.
+9.  After the new application is created, open it and copy the **Application ID**. **Save the value for later**. This will be the value for the `ApiApplicationId` App Setting for several of your Function Apps. This value will also be used as the value for the `window.authClientId` setting in the `settings.js` file within the website project.
 
 10. With the application still open, select **Published scopes** on the left-hand navigation menu.
 
@@ -520,7 +520,13 @@ You must create a policy for the sign-up/in user workflow. Without this, users w
     | **Sign up attributes** | City, Country/Region, Display Name, Email Address, Given Name, Postal Code, State/Province, Street Address, and Surname | Select attributes to be collected from the user during signup. |
     | **Application claims** | City, Country/Region, Display Name, Email Address, Given Name, Postal Code, State/Province, Street Address, Surname, User is new, and User's Object ID | Select [claims](https://docs.microsoft.com/en-us/azure/active-directory/develop/developer-glossary#claim) you want to be included in the [access token](https://docs.microsoft.com/en-us/azure/active-directory/develop/developer-glossary#access-token). |
 
-2. Click **Create** to create your policy.
+2.  Click **Create** to create your policy.
+
+3.  After your policy has been created, select **Overview** on the left-hand navigation menu for Azure AD B2C.
+
+4.  Make note of the **Domain name** value. Use this to construct the B2C Authority URL. The URL is structured as follows: `https://DOMAIN-NAME.b2clogin.com/tfp/DOMAIN-NAME.onmicrosoft.com/b2c_1_POLICY-NAME/v2.0`. For example, in the screenshot below, you see that the domain name is `relecloudshare.onmicrosoft.com`. In addition, the policy name we used is `default-signin`, as shown in Step 1 above. Therefore, the B2C Authority URL in our example is: `https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0`. **Record this URL for later**. You will use it as the value for the `AuthorityUrl` setting in the App Setting for several of your Function Apps. In addition, it will be used as the value for the `window.authAuthority` setting in the `settings.js` file within your website project.
+
+    ![Azure AD B2C overview blade](media/azure-ad-b2c-overview-blade.png)
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
@@ -858,7 +864,7 @@ The reference implementation solution requires several settings for each functio
 | DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
 | DocDbThroughput | The provisioned collection RUs i.e. 400  | 
 | InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
-| AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
+| AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 | 
 | ApiApplicationId | The B2C Client ID | 
 | ApiScopeName | The Scope Name i.e. rideshare | 
 | EnableAuth | if set to true, the JWT token validation will be enforced | 
@@ -877,7 +883,7 @@ The reference implementation solution requires several settings for each functio
 | DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
 | DocDbThroughput | The provisioned collection RUs i.e. 400  | 
 | InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
-| AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
+| AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 | 
 | ApiApplicationId | The B2C Client ID | 
 | ApiScopeName | The Scope Name i.e. rideshare | 
 | EnableAuth | if set to true, the JWT token validation will be enforced | 
@@ -928,7 +934,7 @@ The reference implementation solution requires several settings for each functio
 | TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
 | TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
 | TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
-| AuthorityUrl | The B2C Authority URL i.e. https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0| 
+| AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 | 
 | ApiApplicationId | The B2C Client ID | 
 | ApiScopeName | The Scope Name i.e. rideshare | 
 | EnableAuth | if set to true, the JWT token validation will be enforced | 
@@ -1346,7 +1352,7 @@ spec:
         - "name": "IsPersistDirectly"
           "value": "true"
         - "name": "AuthorityUrl"
-          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
+          "value": "https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
         - "name": "ApiApplicationId"
           "value": "<your-own>"
         - "name": "ApiScopeName"
@@ -1411,7 +1417,7 @@ spec:
         - "name": "GraphClientSecret"
           "value": "<your-own>"
         - "name": "AuthorityUrl"
-          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
+          "value": "https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
         - "name": "ApiApplicationId"
           "value": "<your-own>"
         - "name": "ApiScopeName"
@@ -1544,7 +1550,7 @@ spec:
         - "name": "TripDemosQueue"
           "value": "trip-demos"
         - "name": "AuthorityUrl"
-          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
+          "value": "https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
         - "name": "ApiApplicationId"
           "value": "<your-own>"
         - "name": "ApiScopeName"
