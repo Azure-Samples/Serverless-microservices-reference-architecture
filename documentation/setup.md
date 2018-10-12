@@ -1005,7 +1005,7 @@ It is not required to build the website on your local machine. It is ready to de
 npm install vue
 ```
 
-You may run the website in developer mode by opening a command prompt or terminal window, navigating to the web directory (/web/serverless-microservices-web), running `npm install` to download the NPM packages, then running the following command:
+You may run the website in developer mode by opening a command prompt or terminal window, navigating to the web directory (`/web/serverless-microservices-web`), running `npm install` to download the NPM packages, then running the following command:
 
 ```shell
 npm run serve
@@ -1038,7 +1038,7 @@ Creating the `settings.js` file locally in your web project directory is optiona
 
 #### Compile and minify for production
 
-Because the SPA website runs on static files with no server-side rendering, you must compile and minify the files to make them production-ready. Your build configuration for the website that you create in the [next section within Azure DevOps] will handle this for you in preparation for releasing the build to Azure. However, if you wish to run the command locally and manually copy the files yourself, perform the following:
+Because the SPA website runs on static files with no server-side rendering, you must compile and minify the files to make them production-ready. Your build configuration for the website that you create in the [next section within Azure DevOps](#azure-devops) will handle this for you in preparation for releasing the build to Azure. However, if you wish to run the command locally and manually copy the files yourself, perform the following:
 
 1.  Open a command prompt or terminal window and navigate to the web directory (/web/serverless-microservices-web). Execute the following command:
 
@@ -1055,6 +1055,36 @@ npm run build
     3.  Drag and drop the files from your newly created `/dist/` directory to `site/wwwroot` in Kudu.
 
     ![Screenshot of Kudu with the static website files uploaded](media/kudu-manual-site-deployment.png)
+
+#### Create settings.js in Azure
+
+You must upload or create the `settings.js` file for your website in Azure before it can function properly.
+
+**Perform these steps after deploying your website to Azure**. You may continue on to the [Azure DevOps section below](#azure-devops) to initially deploy your site before coming back to this section to add the settings.js file. Otherwise, if you have followed the steps above to manually deploy the website, continue with the steps below:
+
+1.  Open a web browser and go to: `https://{sitename}.scm.azurewebsites.net/DebugConsole` (Kudu).
+    
+2.  Navigate to: `site/wwwroot/js`.
+
+3.  Click the **+** button next to **/ js** on the upper-left above the file list, then select **New file**.
+
+    ![Screenshot showing the New File button in Kudu](media/kudu-new-file-button.png)
+
+4.  Type the file name **settings.js**, then hit Enter on the keyboard.
+
+    ![Enter settings.js for the file name, then hit enter](media/kudu-new-file-settings.png)
+
+5.  Select the Edit icon (looks like a pencil) located to the left of the new settings.js file.
+
+    ![Select the Edit icon next to the new settings.js file](media/kudu-file-edit-link.png)
+
+6.  Paste the contents of the local `settings.js` file you [created earlier](#create-and-populate-settingsjs), then click **Save**.
+
+    ![Paste settings.js file contents in the file editor, then click Save](media/kudu-settings-in-editor.png)
+
+Alternatively, you can drag and drop your local settings.js file to the `site/wwwroot/js` directory in Kudu.
+
+At this point, your website is all set. Your settings.js file will not get overwritten in subsequent deployments from Azure DevOps.
 
 ## Deployment
 
