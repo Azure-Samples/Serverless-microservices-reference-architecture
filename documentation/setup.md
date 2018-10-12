@@ -714,7 +714,25 @@ For each API, please add a new operation as defined below. Once completed, pleas
 | Display Name | Name | URL | Template | Query |
 |---|---|---|---|---|
 | Get Passengers | get-passengers | `GET`/passengers | None | `GetPassengers` Auth Code | 
-| Get Passenger | get-passenger | `GET`/passengers/{code} | code = passenger code = string | `GetPassenger` Auth Code | 
+| Get Passenger | get-passenger | `GET`/passengers/{code} | code = passenger code = string | `GetPassenger` Auth Code |
+
+### Retrieve the APIM API key
+
+**Please note** that you should have created the [Create the API Management Service](#create-the-api-management-service) as well as [added the RideShare APIM Product](#add-apim-products-and-apis) before you can proceed with this step.
+
+When accessing APIs hosted by APIM, you are required to pass an `Ocp-Apim-Subscription-Key` HTTP header value that contains an API Key from a valid subscription to the RideShare Product you created. Perform the following steps to retrieve this key:
+
+1.  Type **API Management** into the Search box at the top of the `All Services` page, then select **API Management Service**  section.
+
+2.  Select the **resource** you created earlier i.e. `rideshare`.
+
+3.  Select the **Users** link in the left-hand navigation menu. At this point, you should have one user named "Administrator". Select this account.
+
+    ![Select Users within your API Management service, then select the Administrator user](media/apim-users.png)
+
+4.  Select the ellipses (...) next to the **RideShare** product that you created, then select **Show/hide keys**. Finally, copy the **Primary Key** value. **Save this value for later**. This value will be used for the `window.apiKey` setting in the `settings.js` file within the website project.
+
+    ![Copy the primary key for the RideShare APIM product you created](media/apim-copy-primary-key.png)
 
 ### Connect Event Grid to Function Apps
 
