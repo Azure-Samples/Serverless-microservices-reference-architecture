@@ -24,6 +24,7 @@ In this document:
             - [Drivers API](#drivers-api)
             - [Trips API](#trips-api)
             - [Passengers API](#passengers-api)
+        - [Retrieve the APIM API key](#retrieve-the-apim-api-key)
         - [Connect Event Grid to Function Apps](#connect-event-grid-to-function-apps)
         - [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
         - [Create TripFact Table](#create-tripfact-table)
