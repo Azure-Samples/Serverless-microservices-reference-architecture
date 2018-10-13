@@ -1,0 +1,12 @@
+{
+  "name": "serverless-microservices-functionapp-triparchiver",
+  "version": "1.0.0",
+  "description": "Serverless microservices reference architecture sample ride share TripArchiver node.js Function App",
+  "author": "joelhulen <joelhulen@gmail.com>",
+  "scripts": {
+    "pack": "funcpack pack ."
+  },
+  "devDependencies": {
+    "azure-functions-pack": "^0.3.1"
+  }
+}
