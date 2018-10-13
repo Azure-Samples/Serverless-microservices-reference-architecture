@@ -1,0 +1,42 @@
+resources:
+  - repo: self
+queue:
+  name: Hosted Linux Preview
+  demands: npm
+
+steps:
+  - task: Npm@1
+    displayName: 'npm install'
+    inputs:
+      command: custom
+
+      workingDir: 'web/serverless-microservices-web'
+
+      verbose: false
+
+      customCommand: 'install -f'
+
+  - task: Npm@1
+    displayName: 'npm run build'
+    inputs:
+      command: custom
+
+      workingDir: 'web/serverless-microservices-web'
+
+      verbose: false
+
+      customCommand: 'run build'
+
+  - task: CopyFiles@2
+    displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)'
+    inputs:
+      SourceFolder: 'web/serverless-microservices-web'
+
+      Contents: 'dist/**'
+
+      TargetFolder: '$(Build.ArtifactStagingDirectory)'
+
+      CleanTargetFolder: true
+
+  - task: PublishBuildArtifacts@1
+    displayName: 'Publish Artifact: drop'

@@ -1,0 +1,72 @@
+resources:
+- repo: self
+queue:
+  name: Hosted Linux Preview
+  demands: npm
+
+steps:
+- task: Npm@1
+  displayName: 'npm install'
+  inputs:
+    workingDir: 'nodejs/serverless-microservices-functionapp-triparchiver'
+
+    verbose: false
+
+
+- task: Npm@1
+  displayName: 'Install Azure Functions Pack'
+  inputs:
+    command: custom
+
+    workingDir: 'nodejs/serverless-microservices-functionapp-triparchiver'
+
+    verbose: false
+
+    customCommand: 'install -g azure-functions-pack'
+
+
+- task: Npm@1
+  displayName: 'azure funcpack'
+  inputs:
+    command: custom
+
+    workingDir: 'nodejs/serverless-microservices-functionapp-triparchiver'
+
+    verbose: false
+
+    customCommand: 'run pack'
+
+
+- task: DeleteFiles@1
+  displayName: 'Delete node_modules'
+  inputs:
+    SourceFolder: 'nodejs/serverless-microservices-functionapp-triparchiver'
+
+    Contents: 'node_modules'
+
+
+- task: CopyFiles@2
+  displayName: 'Copy Files to: $(Build.ArtifactStagingDirectory)/NodeFunctionApp'
+  inputs:
+    SourceFolder: 'nodejs/serverless-microservices-functionapp-triparchiver'
+
+    TargetFolder: '$(Build.ArtifactStagingDirectory)/NodeFunctionApp'
+
+
+- task: ArchiveFiles@1
+  displayName: 'FunctionApp Archive'
+  inputs:
+    rootFolder: '$(Build.ArtifactStagingDirectory)/NodeFunctionApp'
+
+    includeRootFolder: false
+
+    archiveFile: '$(Build.ArtifactStagingDirectory)/NodeFunctionApp.zip'
+
+
+- task: PublishBuildArtifacts@1
+  displayName: 'Publish Artifact: drop'
+  inputs:
+    PathtoPublish: '$(Build.ArtifactStagingDirectory)/NodeFunctionApp.zip'
+
+
+
