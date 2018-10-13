@@ -10,5 +10,5 @@ View the [documentation](./documentation)
 - [pipelines](./pipelines): Azure DevOps build and release pipeline definition files for running CI/CD operations on the static web app and all Azure Function Apps
 - [Setup guide](./documentation/setup.md): Step-by-step instructions for provisioning Azure resources and deploying the solution
 - [dotnet](./dotnet): Visual Studio 2017 solution and related projects (Function Apps, seeder, common libraries, etc.)
-- [triparchiver](./nodejs/serverless-microservices-functionapp-triparchiver): Node.js-based Function App
+- [nodejs](./nodejs/serverless-microservices-functionapp-triparchiver): Node.js-based Function App for archiving trip data
 - [web](./web/serverless-microservices-web): Static web app written in Vue.js
