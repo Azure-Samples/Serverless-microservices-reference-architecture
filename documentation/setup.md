@@ -78,9 +78,9 @@ The following is a summary of all Azure resources required to deploy the solutio
 | rideshare | rideshare-dev | SignalR Service | Manual |
 | relecloudrideshare.onmicrosoft.com | N/A | B2C Tenant | Manual |
 
-:eight_spoked_asterisk: **Please note** that, in some cases, the resource names must be unique globally. We suggest you append an identifier to the above reosurce names so they become unique i.e. `ridesharefunctionstore-xyzw`, `rideshare-xyzw`, etc.   
+:eight_spoked_asterisk: **Please note** that, in some cases, the resource names must be unique globally. We suggest you append an identifier to the above resource names so they become unique i.e. `ridesharefunctionstore-xyzw`, `rideshare-xyzw`, etc.
 
-:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to [provision](#cake-provision) or [deploy](#cake-deployment), you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that, if you are planning to use `Cake` to [provision](#cake-provision) or [deploy](#cake-deployment), you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names.
 
 ## Provision
 
@@ -328,7 +328,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the API Management form](media/apim-creation.png)
 
-#### Create the SignalR Service 
+#### Create the SignalR Service
 
 1.  Click **Create a resource** and type **SignalR** into the Search box, then select **SignalR Service**  section.
 
@@ -1683,9 +1683,3 @@ spec:
 
 Alternatively, please refer to the following post to see how to run Functions in Kubernetes with AKS: 
 [https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0](https://medium.com/@asavaritayal/azure-functions-on-kubernetes-75486225dac0)  
-
-
-
-
-
-
