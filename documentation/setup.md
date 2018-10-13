@@ -932,6 +932,7 @@ The reference implementation solution requires several settings for each functio
 | TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
 | TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
 | TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
+| TripDriversQueue | The `TripDrivers` queue name i.e. `trip-drivers` |
 | TripExternalizationsEventGridTopicUrl| The URL of the event grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
 | TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
 
