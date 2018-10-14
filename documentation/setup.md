@@ -1095,7 +1095,74 @@ Relecloud decided to use [Azure DevOps](https://azure.microsoft.com/en-us/servic
 
 ### Azure DevOps
 
-//TBA - Joel
+[Azure DevOps](https://docs.microsoft.com/en-us/azure/devops/index?view=vsts) provides development collaboration tools, source code repositories, and DevOps-specific services, such as [DevOps Pipelines](https://docs.microsoft.com/en-us/azure/devops/pipelines/?view=vsts), that help you easily set up continuous integration and continuous delivery (CI/CD) for your applications.
+
+When configuring build pipelines, Azure Pipelines enables you to configure and automate your build and delivery tools and environments in YAML (as Infrastructure-as-Code) or through the visual designer in your Azure DevOps web portal at <https://dev.azure.com>. The preferred method is to use YAML files, as build configurations can be managed in code and included as part of the CI/CD process. The visual designer is good when you are new to creating CI/CD pipelines or are unsure of the available options.
+
+While it is possible to define your release pipeline to Azure from within the YAML file, it is best practice to create a separate [release pipeline](https://docs.microsoft.com/en-us/azure/devops/pipelines/release/what-is-release-management?view=vsts&WT.mc_id=azurepipelines-blog-dabrady). This gives you the flexibility to build once and release to several places, including deployment slots.
+
+This section will walk you through creating YAML-based build pipelines and separate release pipelines.
+
+#### Prerequisites
+
+- You need an Azure DevOps organization. If you don't have one, you can [create one for free](https://go.microsoft.com/fwlink/?LinkId=307137). If your team already has one, then make sure you're an administrator of the Azure DevOps project that you want to use.
+
+- You need a GitHub account, where you can fork the serverless-microservices repository.
+
+#### Create build pipelines
+
+1.  Sign in to <https://dev.azure.com>.
+
+2.  Go to your Azure DevOps project. If you don't have one, [create one](https://docs.microsoft.com/en-us/azure/devops/organizations/projects/create-project?view=vsts&tabs=new-nav).
+
+3.  Select **Pipelines** from the menu, then **Builds**. Click the **New pipeline** button.
+
+    ![Select Pipelines, Builds, then click New pipeline button](media/azure-devops-build-pipelines.png)
+
+4.  Select **GitHub** as your source, then click the **Authorize using OAuth** button to create a secure connection with your GitHub account.
+
+    ![Select GitHub, then Authorize using OAuth button](media/azure-devops-select-repository.png)
+
+5.  Select the ellipses button (...) next to **Repository** to browse and select your forked repository. Make sure **master** is selected as the **default branch**, then select **Continue**.
+
+    ![Browse repositories by selecting the ellipsis button, select master as the default branch, then select continue](media/azure-devops-select-repository-authorized.png)
+
+6.  Click the **Apply** button next to the **YAML** template.
+
+    ![Choose the YAML template](media/azure-devops-choose-yaml-template.png)
+
+7.  In the YAML build template form, enter **Rideshare-StaticWebsite-CI** into the Name field. Select **Hosted Linux Preview** under Agent pool, then select the ellipses button (...) next to the **YAML file path** textbox.
+
+    ![Screenshot of the YAML build template form](media/azure-devops-yaml-form1.png)
+
+8.  In the Select path modal dialog box, expand the root repository folder, then expand `pipelines`, and expand `build`. Select **Rideshare-StaticWebsite-CI.yaml**, then select **OK**.
+
+    ![Screenshot of the Select path modal dialog box](media/azure-devops-yaml-select-path.png)
+
+9.  Select the **Save & queue** menu item, then select **Save**.
+
+    ![Select Save & queue, then Save](media/azure-devops-yaml-form2.png)
+
+10. Select **Builds** under Pipelines, then select the **+ New** dropdown above the list of build pipelines on the left, then select **New build pipeline**.
+
+    ![Select New, New build pipeline](media/azure-devops-new-build-pipeline.png)
+
+11. Repeat steps **5 through 9** to create the following additional build pipelines:
+
+| Name | Agent pool | YAML file path |
+| --- | --- | --- |
+| Rideshare-DotnetFunctionApps-CI | Hosted Linux Preview | pipelines/build/Rideshare-DotnetFunctionApps-CI.yaml |
+| Rideshare-NodeFunctionApps-CI | Hosted Linux Preview | pipelines/build/Rideshare-NodeFunctionApps-CI.yaml |
+
+When you are finished creating the three build pipelines, your Builds page should look similar to the following screenshot:
+
+![Screenshot of the Builds page](media/azure-devops-builds-page.png)
+
+Notice that there are both manual builds and CI builds listed in the history. "CI build" represents the build agent that performed a continuous integration (CI) build, triggered by changes made to the master branch. Try committing new changes to automatically trigger a build.
+
+To manually trigger a build, select **Queue**, then click the **Queue** button in the modal dialog box that appears:
+
+![Screenshot of the manual build queue dialog box](media/azure-devops-queue-build.png)
 
 ### Cake Deployment
 
@@ -1103,9 +1170,9 @@ The `Cake` script responsible to `deploy` and `provision` is included in the `do
 
 **Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
-Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps. 
+Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps.
 
-:eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names. 
+:eight_spoked_asterisk: **Please note** that you must adjust the `cake/paths.cake` file to match your resource names. The `public static class Resources` class defines the resource names.
 
 From a PowerShell command, use the following commands for the `Dev` environment:
 
@@ -1130,10 +1197,10 @@ The .NET `ServerlessMicroservices.Seeder` project contains a seeding command tha
 The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed https://ridesharetripsfunctionapp.azurewebsites.net getdriversfunctioncode postdriversfunctioncode getpassengersfunctioncode postpassengersfunctioncode`
 
 - Deployment Base URL  
-- GetDrivers Function Code 
-- PostDrivers Function Code 
-- GetPassengers Function Code 
-- PostPassengers Function Code 
+- GetDrivers Function Code
+- PostDrivers Function Code
+- GetPassengers Function Code
+- PostPassengers Function Code
 
 ## Containers
 
@@ -1222,7 +1289,7 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 ```
 - Changed the `DocumentDB` client not to use `TCP Direct Mode`! It turned out it is not supported in `Linux` which caused `Upserts` against Cosmos to cause `Service Unavailable` error. There is an issue in `GitHub` on [this](https://github.com/Azure/azure-cosmosdb-dotnet/issues/194).  
 
-### Running Locally 
+### Running Locally
 
 Now that the `Docker` images are produced, we can use `docker` commands to start the containers locally. Because the containers require the environment variables to be fed into the container at `run` time, we point to a file that contains the settings in the format required by `Docker`:
 
