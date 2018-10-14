@@ -1164,6 +1164,78 @@ To manually trigger a build, select **Queue**, then click the **Queue** button i
 
 ![Screenshot of the manual build queue dialog box](media/azure-devops-queue-build.png)
 
+> Be sure to manually queue each of the three builds before continuing to the next section. **This is an important step**, as it will allow you to select the build artifacts when you configure the release pipeline for each.
+
+#### Create release pipeline
+
+We will begin by creating a new release pipeline for the static website, using the web interface. The section that follows will have you import the remaining two release pipelines to speed up the process.
+
+1.  Select **Pipelines** from the menu, then **Releases**. Click the **New pipeline** button.
+
+    ![Select Pipelines, Releases, then click the New pipeline button](media/azure-devops-release-pipelines.png)
+
+2.  Select **Azure App Service deployment** within the list of templates.
+
+    ![Select the Azure App Service deployment template](media/azure-devops-new-release-pipeline-templates.png)
+
+3.  Change the **Stage name** to "Web app".
+
+    ![Screenshot of the Stage configuration for the new release pipeline](media/azure-devops-release-pipeline-set-stage-name.png)
+
+4.  Close the Stage dialog box, then select **+ Add an artifact** within the Artifacts box on the left-hand side of the pipeline.
+
+5.  Select the **Build** source type. Select **Rideshare-StaticWebsite-CI** in the **Source** dropdown. Set **Default version** to **Latest**. Keep the default source alias, then select **Add**.
+
+    ![Screenshot of the Add an artifact form](media/azure-devops-add-artifact.png)
+
+6.  Select the **1 job, 1 task** link under the Web app stage you created.
+
+    ![Select 1 job, 1 task under the Web app stage](media/azure-devops-stage-tasks-link.png)
+
+7.  Under the Web app stage configuration, select your Azure subscription from the dropdown list, then select **Authorize**. This creates a secure connection the release pipeline can use to deploy your website to Azure.
+
+    ![Select your Azure subscription, then select Authorize](media/azure-devops-azure-sub.png)
+
+8.  Set the App type to **Web App**, then select your Web App you provisioned earlier, within the **App service name** dropdown list.
+
+    ![Select Web App as the app type, and then select your Azure app service](media/azure-devops-web-app-stage.png)
+
+9.  Select the **Deploy Azure App Service** task on the left-hand side. Scroll down and select the ellipses button (...) next to the **Package or folder** textbox to browse the artifacts directory.
+
+    ![Screenshot of the Deploy Azure App Service task](media/azure-devops-deploy-app-service-task-1.png)
+
+10. In the modal dialog box that appears, expand the Linked artifacts folder, then the _Rideshare-StaticWebsite-CI folder, and finally, the drop folder. Select **dist**, then click the **OK** button.
+
+    ![Select a file or folder modal dialog box](media/azure-devops-select-artifacts-dialog.png)
+
+11. The **Package or folder** textbox should now be populated with `$(System.DefaultWorkingDirectory)/_Rideshare-StaticWebsite-CI/drop/dist`.
+
+12. Select the "New release pipeline" title, and change it to **Static website release pipeline**. Next, select the **Save** button to the right. When the save dialog appears, click **OK**.
+
+    ![Change the title to Static website release pipeline, then click save](media/azure-devops-static-website-release-pipeline.png)
+
+13. After saving, select **+ Release**, then **Create a release**.
+
+    ![Select Release, then Create a release](media/azurue-devops-create-release.png)
+
+14. In the dialog that appears, select **Create**. You will see a notification afterwards that a release has been created. You can select the name of the release to view its progress.
+
+    ![Notification showing that a release has been created](media/azure-devops-release-created-notification.png)
+
+15. If all goes well, you should see that the release was successful, as indicated by the **Succeeded** status underneath the Web app stage.
+
+    ![Screenshot showing a successful release](media/azure-devops-release-succeeded.png)
+
+#### Import remaining two release pipelines
+
+Release pipelines can be exported as a `.json` file. This is especially useful for more complex pipelines, as you will see with the .NET-based Function App release pipeline. In this section, you will import the release pipelines for the Azure Function Apps.
+
+1.  Select **Pipelines** from the menu, then **Releases**.
+
+2.  Select **+ New**, then **Import a pipeline**.
+
+    ![Select New, Import a pipeline](media/azure-devops-releases-new-import.png)
+
 ### Cake Deployment
 
 The `Cake` script responsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake-provision) provision section to know how to do this.
