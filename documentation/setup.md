@@ -1170,7 +1170,7 @@ To manually trigger a build, select **Queue**, then click the **Queue** button i
 
 We will begin by creating a new release pipeline for the static website, using the web interface. The section that follows will have you import the remaining two release pipelines to speed up the process.
 
-**Make sure** the App Settings (under [Application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#settings)) for each of your Azure Function Apps are configured as shown in the [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings. Your deployed Function Apps will not work without these settings.
+:eight_spoked_asterisk: **Make sure** the App Settings (under [Application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#settings)) for each of your Azure Function Apps are configured as shown in the [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings. Your deployed Function Apps will not work without these settings.
 
 1.  Select **Pipelines** from the menu, then **Releases**. Click the **New pipeline** button.
 
