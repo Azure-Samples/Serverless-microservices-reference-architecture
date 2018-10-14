@@ -1170,6 +1170,8 @@ To manually trigger a build, select **Queue**, then click the **Queue** button i
 
 We will begin by creating a new release pipeline for the static website, using the web interface. The section that follows will have you import the remaining two release pipelines to speed up the process.
 
+**Make sure** the App Settings (under [Application settings](https://docs.microsoft.com/en-us/azure/azure-functions/functions-how-to-use-azure-function-app-settings#settings)) for each of your Azure Function Apps are configured as shown in the [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings. Your deployed Function Apps will not work without these settings.
+
 1.  Select **Pipelines** from the menu, then **Releases**. Click the **New pipeline** button.
 
     ![Select Pipelines, Releases, then click the New pipeline button](media/azure-devops-release-pipelines.png)
@@ -1236,11 +1238,77 @@ Release pipelines can be exported as a `.json` file. This is especially useful f
 
     ![Select New, Import a pipeline](media/azure-devops-releases-new-import.png)
 
+3.  Select **Browse** within the "Import release pipeline" dialog box. Browse your file system to the local directory containing this project. Select the following file: `\pipelines\release\Function-apps-release-pipeline.json`. Finally, click the **OK** button on the dialog.
+
+    ![Import release pipeline dialog](media/azure-devops-import-release-pipeline.png)
+
+4.  You should see the following release pipeline, which includes stages for the Drivers, Trips, Orchestrators, and Passengers Function Apps:
+
+    ![Screensot of the imported Function apps release pipeline](media/azure-devops-imported-function-apps-release-pipeline.png)
+
+5.  Notice that the Tasks menu items has a red circle icon with an exclamation mark inside. This means it contains tasks that need your attention. Select **Tasks**, then **Drivers Function App**. First, select your linked **Azure subscription**, then select the **App service name** for your Drivers Function App.
+
+    ![Select the Azure subscription and App service name for the Drivers Function App stage](media/azure-devops-complete-drivers-app-stage.png)
+
+6.  Select the **Run on agent** job on the left-hand side. Select **Hosted VS2017** underneath Agent pool.
+
+    ![Select the Run on agent job, then select Hosted VS2017 option underneath Agent pool](media/azure-devops-complete-drivers-app-stage2.png)
+
+7.  Repeat steps **5 and 6** for the remaining tasks: Trips Function App, Orchestrators Function App, and Passengers Function App. When you are done, there should be no more tasks that need your attention (marked with the red circle icon). When you are done, select **Save** on top of the page.
+
+    > **Note**: When you select the "Deploy Azure App Service" step on any of the tasks, make note of the following items of interest: each has a specific Zip file selected for the "Package or folder" setting. This is what allows us to deploy from several different Function App projects that are part of the Visual Studio solution. Also, the RunFromZip deployment method is selected for each. This allows us to reduce cold start times for the Function Apps by copying just the Zip file and running from it without extracting it, each time a new VM is provisioned to host the Function App. This is much faster than copying many small files or even extracting a Zip.
+
+    ![Screenshot showing the Zip file path for a Function App, and the RunFromZip option](media/azure-devops-zip.png)
+
+8.  After saving, select **+ Release**, then **Create a release**.
+
+    ![Select Release, then Create a release](media/azurue-devops-create-release.png)
+
+9.  In the dialog that appears, select **Create**. You will see a notification afterwards that a release has been created. You can select the name of the release to view its progress.
+
+10. Verify that the release to each Function App was successfully completed.
+
+    ![Screenshot showing that the release to each .NET Function App was successful](media/azure-devops-dotnet-function-app-successful-release.png)
+
+11. Select **Pipelines** from the menu, then **Releases**.
+
+12. Select **+ New**, then **Import a pipeline**.
+
+    ![Select New, Import a pipeline](media/azure-devops-releases-new-import.png)
+
+13. Select **Browse** within the "Import release pipeline" dialog box. Browse your file system to the local directory containing this project. Select the following file: `\pipelines\release\Node-function-apps-release-pipeline.json`. Finally, click the **OK** button on the dialog.
+
+    ![Import release pipeline dialog](media/azure-devops-import-release-pipeline-2.png)
+
+14. You should see the following release pipeline, which deploys the node.js-based Trip Archiver Function App:
+
+    ![Screenshot of the imported Trip Archiver Function App release pipeline](media/azure-devops-trip-archiver.png)
+
+15. Select **Tasks**, then **Trip Archiver Function App**.
+
+16. Select the **Run on agent** job on the left-hand side. Select **Hosted VS2017** underneath Agent pool.
+
+17. Select the **Azure App Service Deploy** task on the left-hand side. Select your linked **Azure subscription**, then select your Trip Archiver's Function App from the **App Service name** dropdown.
+
+    ![Select your Azure subscription and App Service name](media/azure-devops-node-function-app-aasdeploy.png)
+
+18. Select **Save** on top of the page.
+
+19. After saving, select **+ Release**, then **Create a release**.
+
+    ![Select Release, then Create a release](media/azurue-devops-create-release.png)
+
+20. In the dialog that appears, select **Create**. You will see a notification afterwards that a release has been created. You can select the name of the release to view its progress.
+
+21. Verify that the release to the Trip Archiver Function App was successfully completed.
+
+    ![Screenshot showing that the release to the Node.js Function App was successful](media/azure-devops-node-function-app-successful-release.png)
+
 ### Cake Deployment
 
 The `Cake` script responsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites. Please refer to the [Cake](#cake-provision) provision section to know how to do this.
 
-**Make sure** the `settings` are updated as shown in [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
+**Make sure** the `settings` are updated as shown in the [Setting Files](#setting-files) section to reflect your own resource app settings and connection strings.
 
 Once all of the above is in place, Cake is now able to authenticate and deploy the C# function apps.
 
