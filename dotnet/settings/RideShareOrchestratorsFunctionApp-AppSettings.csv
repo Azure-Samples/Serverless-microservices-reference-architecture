@@ -1,10 +1,10 @@
 KEY|VALUE
-APPINSIGHTS_INSTRUMENTATIONKEY|ed260747-5ffd-41e6-b1ba-2aaa743cc8c9
+APPINSIGHTS_INSTRUMENTATIONKEY|
 FUNCTIONS_EXTENSION_VERSION|2.0.11961-alpha
-AzureWebJobsDashboard|DefaultEndpointsProtocol=https;AccountName=ridesharefunctionstore;AccountKey=FYKFsQysh5cXmpv1xlhuHlQvb7fFz5/vTZfp0pS4DlVJ1fhTIqzY1aG3OAeGxTfTEJqKS4IKW4EX5vK61AxloA==
-AzureWebJobsStorage|DefaultEndpointsProtocol=https;AccountName=ridesharefunctionstore;AccountKey=FYKFsQysh5cXmpv1xlhuHlQvb7fFz5/vTZfp0pS4DlVJ1fhTIqzY1aG3OAeGxTfTEJqKS4IKW4EX5vK61AxloA==
-DocDbApiKey|es0ZhGNzMAJuM0QkdqjTKssoLqlF6BRiQc90hqOSK1ycXddRfo7JZmQhJYBVm3w58btLnTKjYv5y6WsRZJJjRw==
-DocDbEndpointUri|https://rideshare.documents.azure.com:443/
+AzureWebJobsDashboard|
+AzureWebJobsStorage|
+DocDbApiKey|
+DocDbEndpointUri|
 DocDbRideShareDatabaseName|RideShare
 DocDbRideShareMainCollectionName|Main
 DocDbThroughput|400
@@ -12,12 +12,12 @@ DriversAcknowledgeMaxWaitPeriodInSeconds|120
 DriversLocationRadiusInMiles|15
 TripMonitorIntervalInSeconds|10
 TripMonitorMaxIterations|20
-InsightsInstrumentationKey|ed260747-5ffd-41e6-b1ba-2aaa743cc8c9
+InsightsInstrumentationKey|
 IsPersistDirectly|true
 TripManagersQueue|trip-managers
 TripMonitorsQueue|trip-monitors
 TripDemosQueue|trip-demos
 TripDriversQueue|trip-drivers
-TripExternalizationsEventGridTopicUrl|https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events
-TripExternalizationsEventGridTopicApiKey|sv8+AGGpgZ765M1/jZsmHm5NSvLTWdqxr+I5pGhS3N0=
+TripExternalizationsEventGridTopicUrl|
+TripExternalizationsEventGridTopicApiKey|
 

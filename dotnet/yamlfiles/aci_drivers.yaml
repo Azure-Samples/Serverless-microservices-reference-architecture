@@ -3,48 +3,48 @@ location: eastus
 name: rideshare-drivers
 properties:
   containers:
-  - name: rideshare-drivers
-    properties:
-      environmentVariables:
-        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
-          "value": "546fbb26-8554-48fb-b370-12c8c5933541"
-        - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
-        - "name": "AzureWebJobsDashboard"
-          "value": "DefaultEndpointsProtocol=https;AccountName=ridesharefunctiondev;AccountKey=+tWw6Plk3PdDQNHFlfeZ4XiEy5OFSaJxw1lz79g/KOFUm0aMW9KS+hXePKN/gYRXrs3sZ7v3N2ngdvRACFfUZg=="
-        - "name": "AzureWebJobsStorage"
-          "value": "DefaultEndpointsProtocol=https;AccountName=ridesharefunctiondev;AccountKey=+tWw6Plk3PdDQNHFlfeZ4XiEy5OFSaJxw1lz79g/KOFUm0aMW9KS+hXePKN/gYRXrs3sZ7v3N2ngdvRACFfUZg=="
-        - "name": "DocDbApiKey"
-          "value": "QGwfwS1QQDgfmiE7PFwZoAZwtwdB3yzZT3A5LgeXe0Go4WRqYbnXurlcHbOUnpwTVrhNPF3azgd6c6GDMp6X4w=="
-        - "name": "DocDbEndpointUri"
-          "value": "https://ridesharedev.documents.azure.com:443/"
-        - "name": "DocDbRideShareDatabaseName"
-          "value": "RideShare"
-        - "name": "DocDbRideShareMainCollectionName"
-          "value": "Main"
-        - "name": "DocDbThroughput"
-          "value": 400
-        - "name": "InsightsInstrumentationKey"
-          "value": "546fbb26-8554-48fb-b370-12c8c5933541"
-        - "name": "IsRunningInContainer"
-          "value": "true"
-        - "name": "IsPersistDirectly"
-          "value": "true"
-        - "name": "AuthorityUrl"
-          "value": "https://login.microsoftonline.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0"
-        - "name": "ApiApplicationId"
-          "value": "8df6f6dc-01f9-49d0-a49e-f23e29e71af5"
-        - "name": "ApiScopeName"
-          "value": "rideshare"
-        - "name": "EnableAuth"
-          "value": "false"
-      image: khaledhikmat/rideshare-drivers:v1
-      ports: 
-      - port: 80
-      resources:
-        requests:
-          cpu: 1.0
-          memoryInGB: 1.5
+    - name: rideshare-drivers
+      properties:
+        environmentVariables:
+          - 'name': 'APPINSIGHTS_INSTRUMENTATIONKEY'
+            'value': ''
+          - 'name': 'FUNCTIONS_EXTENSION_VERSION'
+            'value': '2.0.11961-alpha'
+          - 'name': 'AzureWebJobsDashboard'
+            'value': ''
+          - 'name': 'AzureWebJobsStorage'
+            'value': ''
+          - 'name': 'DocDbApiKey'
+            'value': ''
+          - 'name': 'DocDbEndpointUri'
+            'value': ''
+          - 'name': 'DocDbRideShareDatabaseName'
+            'value': 'RideShare'
+          - 'name': 'DocDbRideShareMainCollectionName'
+            'value': 'Main'
+          - 'name': 'DocDbThroughput'
+            'value': 400
+          - 'name': 'InsightsInstrumentationKey'
+            'value': ''
+          - 'name': 'IsRunningInContainer'
+            'value': 'true'
+          - 'name': 'IsPersistDirectly'
+            'value': 'true'
+          - 'name': 'AuthorityUrl'
+            'value': ''
+          - 'name': 'ApiApplicationId'
+            'value': ''
+          - 'name': 'ApiScopeName'
+            'value': 'rideshare'
+          - 'name': 'EnableAuth'
+            'value': 'false'
+        image: YOURACCOUNT/rideshare-drivers:v1
+        ports:
+          - port: 80
+        resources:
+          requests:
+            cpu: 1.0
+            memoryInGB: 1.5
   osType: Linux
   ipAddress:
     type: Public

@@ -3,58 +3,58 @@ location: eastus
 name: rideshare-orchestrators
 properties:
   containers:
-  - name: rideshare-orchestrators
-    properties:
-      environmentVariables:
-        - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
-          "value": "546fbb26-8554-48fb-b370-12c8c5933541"
-        - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
-        - "name": "AzureWebJobsDashboard"
-          "value": "DefaultEndpointsProtocol=https;AccountName=ridesharefunctiondev;AccountKey=+tWw6Plk3PdDQNHFlfeZ4XiEy5OFSaJxw1lz79g/KOFUm0aMW9KS+hXePKN/gYRXrs3sZ7v3N2ngdvRACFfUZg=="
-        - "name": "AzureWebJobsStorage"
-          "value": "DefaultEndpointsProtocol=https;AccountName=ridesharefunctiondev;AccountKey=+tWw6Plk3PdDQNHFlfeZ4XiEy5OFSaJxw1lz79g/KOFUm0aMW9KS+hXePKN/gYRXrs3sZ7v3N2ngdvRACFfUZg=="
-        - "name": "DocDbApiKey"
-          "value": "QGwfwS1QQDgfmiE7PFwZoAZwtwdB3yzZT3A5LgeXe0Go4WRqYbnXurlcHbOUnpwTVrhNPF3azgd6c6GDMp6X4w=="
-        - "name": "DocDbEndpointUri"
-          "value": "https://ridesharedev.documents.azure.com:443/"
-        - "name": "DocDbRideShareDatabaseName"
-          "value": "RideShare"
-        - "name": "DocDbRideShareMainCollectionName"
-          "value": "Main"
-        - "name": "DocDbThroughput"
-          "value": 400
-        - "name": "DriversAcknowledgeMaxWaitPeriodInSeconds"
-          "value": 120
-        - "name": "DriversLocationRadiusInMiles"
-          "value": 15
-        - "name": "TripMonitorIntervalInSeconds"
-          "value": 10
-        - "name": "TripMonitorMaxIterations"
-          "value": 20
-        - "name": "InsightsInstrumentationKey"
-          "value": "546fbb26-8554-48fb-b370-12c8c5933541"
-        - "name": "IsRunningInContainer"
-          "value": "true"
-        - "name": "IsPersistDirectly"
-          "value": "true"
-        - "name": "TripManagersQueue"
-          "value": "trip-managers"
-        - "name": "TripMonitorsQueue"
-          "value": "trip-monitors"
-        - "name": "TripDemosQueue"
-          "value": "trip-demos"
-        - "name": "TripExternalizationsEventGridTopicUrl"
-          "value": "https://ridesharetripexternalizationsdev.eastus-1.eventgrid.azure.net/api/events"
-        - "name": "TripExternalizationsEventGridTopicApiKey"
-          "value": "8fM+W112h6rxNvLtxL/yZAGA4KgfiSjQqsct+HeKjTY="
-      image: khaledhikmat/rideshare-orchestrators:v1
-      ports: 
-      - port: 80
-      resources:
-        requests:
-          cpu: 1.0
-          memoryInGB: 1.5
+    - name: rideshare-orchestrators
+      properties:
+        environmentVariables:
+          - 'name': 'APPINSIGHTS_INSTRUMENTATIONKEY'
+            'value': ''
+          - 'name': 'FUNCTIONS_EXTENSION_VERSION'
+            'value': '2.0.11961-alpha'
+          - 'name': 'AzureWebJobsDashboard'
+            'value': ''
+          - 'name': 'AzureWebJobsStorage'
+            'value': ''
+          - 'name': 'DocDbApiKey'
+            'value': ''
+          - 'name': 'DocDbEndpointUri'
+            'value': ''
+          - 'name': 'DocDbRideShareDatabaseName'
+            'value': 'RideShare'
+          - 'name': 'DocDbRideShareMainCollectionName'
+            'value': 'Main'
+          - 'name': 'DocDbThroughput'
+            'value': 400
+          - 'name': 'DriversAcknowledgeMaxWaitPeriodInSeconds'
+            'value': 120
+          - 'name': 'DriversLocationRadiusInMiles'
+            'value': 15
+          - 'name': 'TripMonitorIntervalInSeconds'
+            'value': 10
+          - 'name': 'TripMonitorMaxIterations'
+            'value': 20
+          - 'name': 'InsightsInstrumentationKey'
+            'value': ''
+          - 'name': 'IsRunningInContainer'
+            'value': 'true'
+          - 'name': 'IsPersistDirectly'
+            'value': 'true'
+          - 'name': 'TripManagersQueue'
+            'value': 'trip-managers'
+          - 'name': 'TripMonitorsQueue'
+            'value': 'trip-monitors'
+          - 'name': 'TripDemosQueue'
+            'value': 'trip-demos'
+          - 'name': 'TripExternalizationsEventGridTopicUrl'
+            'value': ''
+          - 'name': 'TripExternalizationsEventGridTopicApiKey'
+            'value': ''
+        image: YOURACCOUNT/rideshare-orchestrators:v1
+        ports:
+          - port: 80
+        resources:
+          requests:
+            cpu: 1.0
+            memoryInGB: 1.5
   osType: Linux
   ipAddress:
     type: Public
