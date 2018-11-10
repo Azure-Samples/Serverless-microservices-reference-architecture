@@ -1,23 +1,37 @@
-# Serverless Microservices reference architecture
+# Serverless Microservices reference architecture documentation
 
-## The reference architecture
+Use the table of contents below for detailed documentation for each component of the reference architecture.
 
-This reference architecture walks you through the decision-making process involved in designing, developing, and delivering the Rideshare by Relecloud application. You will be given hands-on instructions for configuring and deploying all of the architecture's components, with helpful information about each component along the way. The goal is to provide you with practical hands-on experience in working with several integral Azure services and the technologies that effectively use them in a cohesive and unified way to build a serverless-based microservices architecture. We hope you will leave with a newfound appreciation for how serverless can be leveraged for both large-scale and small solutions, and the confidence to apply what you learned in your own projects.
-
-## Customer scenario
-
-Relecloud is a new kind of company, not unlike many cloud services-focused organizations popping up around the world today. Born of the modern digital age that is focused on capitalizing on the fast-paced growth of the booming cloud industry, Relecloud has a track record of building lean startups with little operational overhead, owing to its distributed and remote workforce. Their latest endeavor is a ride share application that seeks to carve its place in the popular industry with competitive rates and improved communication between passengers and drivers.
-
-The company's technical leadership thrives on keeping tabs on the rapidly growing technology industry and new innovations built on top of fully-managed services provided by cloud providers. They are not interested in maintaining infrastructure, as they feel as though their company's time is best spent on their core strength: rapidly developing new and innovative applications that can scale to meet global demand. Like many other technical leaders, they are keen on learning new buzzwords and leaving it up to their developers to do something useful with them. The hottest trend these days seems to be serverless. The promise of consumption-based pricing, where you only pay for what you use and nothing more, is enticing. Furthermore, they have heard many good things about how serverless platforms help you prototype and develop faster by reducing the amount of code and configuration required by more traditional web platforms. The cherry on top is the fact that serverless platforms also tend to manage scaling resources to meet demand automatically, giving them dreams of releasing a wildly popular new ride share app and enjoying near-instantaneous customer growth.
-
-During their initial research phase consisting of comparing serverless offerings and creating rapid prototypes, Relecloud's team has decided to build their ride share application on Azure's serverless components, given the breadth of options and unique capabilities for orchestrating serverless activities, such as [Durable Functions](https://docs.microsoft.com/azure/azure-functions/durable-functions-overview). They also want to investigate using the [microservices](https://aka.ms/azure-microservices) pattern in their solution design, as it seems like a good fit alongside [Azure functions](https://docs.microsoft.com/azure/azure-functions/functions-overview), [API Management](https://docs.microsoft.com/azure/api-management/api-management-key-concepts), [Event Grid](https://docs.microsoft.com/azure/event-grid/overview), and other key components and services. Being able to monitor the solution as a whole is an important capability they want to put in place from the start, especially since they are relying on so many components. Finally, they wish to simplify the lifecycle management of all these pieces of the puzzle by applying [DevOps](https://docs.microsoft.com/azure/devops/learn/what-is-devops) practices to automate continuous integration and deployment, end-to-end.
-
-## Explore Relecloud's solution using serverless and microservices
-
-[Read about Relecloud's solution](./introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservices, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
-
-## Deploy Relecloud's solution today with a hands-on lab
-
-After learning about Relecloud's [serverless microservices architecture](./introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](./setup.md), or take the shortcut and deploy with a few clicks [using our templates]().
-
-Each section of the lab will briefly explain what you are trying to accomplish and why. It will also link you to the relative portion of the [architecture document](./introduction.md).
+- [Introduction to serverless microservices](introduction.md)
+  - [What are microservices?](intro.md#what-are-microservices)
+  - [What is serverless?](intro.md#what-is-serverless)
+- [Architecture overview](architecture-overview.md)
+  - [Macro architecture](architecture-overview.md#macro-architecture)
+  - [Data flow](architecture-overview.md#data-flow)
+- [Initial setup](setup.md)
+- [API endpoints using Azure Functions](api-endpoints.md)
+  - [RideShare APIs](api-endpoints.md#rideshare-apis)
+  - [Durable Orchestrators](api-endpoints.md#durable-orchestrators)
+- [Services intercommunication using Event Grid](services-intercommunication.md)
+  - [Logic App handler](services-intercommunication.md#logic-app-handler)
+  - [SignalR handler](services-intercommunication.md#signalr-handler)
+    - [DOTNET SignalR client](services-intercommunication.md#dotnet-signalr-client)
+    - [JavaScript SignalR client](services-intercommunication.md#javascript-signalr-client)
+  - [Power BI handler](services-intercommunication.md#power-bi-handler)
+  - [Trip Archiver handler](services-intercommunication.md#trip-archiver-handler)
+- [Gateway with API Management](api-management.md)
+- [Data storage](data-storage.md)
+- [Client application](client-application.md)
+  - [Passengers page](client-application.md#passengers-page)
+  - [Drivers page](client-application.md#drivers-page)
+  - [Authentication](client-application.md#authentication)
+  - [Wrapping HTTP calls with authentication token](client-application.md#wrapping-http-calls-with-authentication-token)
+- [Monitoring and testing](monitoring-testing.md)
+  - [Integration testing](monitoring-testing.md#integration-testing)
+  - [Monitoring](monitoring-testing.md#monitoring)
+    - [Telemetry correlation](monitoring-testing.md#telemetry-correlation)
+    - [Monitoring for different audiences](monitoring-testing.md#monitoring-for-different-audiences)
+- [Source code structure](source-code-structure.md)
+  - [.NET](source-code-structure.md#net)
+  - [Node.js](source-code-structure.md#nodejs)
+  - [Web](source-code-structure.md#web)
