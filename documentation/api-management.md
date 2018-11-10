@@ -11,7 +11,15 @@ There are many benefits to using an API manager. In the case the Rideshare solut
 
 
 
+
+
+
+
     <openid-config url="<--your_own_authorization_url-->" />
+
+
+
+
 
 
 
@@ -19,7 +27,15 @@ There are many benefits to using an API manager. In the case the Rideshare solut
 
 
 
+
+
+
+
         <audience><-- your_own_app_id --></audience>
+
+
+
+
 
 
 
@@ -27,7 +43,15 @@ There are many benefits to using an API manager. In the case the Rideshare solut
 
 
 
+
+
+
+
 </validate-jwt>
+
+
+
+
 
 
 
@@ -42,7 +66,15 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -50,7 +82,15 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -58,7 +98,15 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
         if (httpRequest == null)
+
+
+
+
 
 
 
@@ -70,7 +118,19 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
+
+
+
+
         var validationService = ServiceFactory.GetTokenValidationService();
+
+
+
+
 
 
 
@@ -78,11 +138,23 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
         {
 
 
 
+
+
+
+
             //TODO: Not the best way to do this!!
+
+
+
+
 
 
 
@@ -94,7 +166,19 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
+
+
+
+
             if (user == null)
+
+
+
+
 
 
 
@@ -102,7 +186,15 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
                 //httpRequest.HttpContext.Response = new HttpResponseMessage(HttpStatusCode.Unauthorized);
+
+
+
+
 
 
 
@@ -110,11 +202,23 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
                 throw new ValidationException("Unauthorized!");
 
 
 
+
+
+
+
             }
+
+
+
+
 
 
 
@@ -126,7 +230,19 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
+
+
+
+
         return base.OnExecutingAsync(executingContext, cancellationToken);
+
+
+
+
 
 
 
@@ -134,7 +250,15 @@ public class B2cValidationAttribute : FunctionInvocationFilterAttribute
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -147,7 +271,15 @@ It can then be used to decorate a specific function like this:
 
 
 
+
+
+
+
 [FunctionName("GetTrips")]
+
+
+
+
 
 
 
@@ -155,7 +287,15 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 
 
 
+
+
+
+
     ILogger log)
+
+
+
+
 
 
 
@@ -163,11 +303,23 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 
 
 
+
+
+
+
 ...
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -182,7 +334,15 @@ public static async Task ValidateToken(HttpRequest request)
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -190,7 +350,15 @@ public static async Task ValidateToken(HttpRequest request)
 
 
 
+
+
+
+
     if (validationService.AuthEnabled)
+
+
+
+
 
 
 
@@ -198,7 +366,15 @@ public static async Task ValidateToken(HttpRequest request)
 
 
 
+
+
+
+
         var user = await validationService.AuthenticateRequest(request);
+
+
+
+
 
 
 
@@ -206,7 +382,15 @@ public static async Task ValidateToken(HttpRequest request)
 
 
 
+
+
+
+
             throw new Exception(Constants.SECURITY_VALITION_ERROR);
+
+
+
+
 
 
 
@@ -214,7 +398,15 @@ public static async Task ValidateToken(HttpRequest request)
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -227,7 +419,15 @@ This method is used in each API Function to validate tokens and it throws a `kno
 
 
 
+
+
+
+
 public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Function, "get",
+
+
+
+
 
 
 
@@ -235,11 +435,23 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
     ILogger log)
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -251,11 +463,27 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
+
+
+
+
     try
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -263,7 +491,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
         var persistenceService = ServiceFactory.GetPersistenceService();
+
+
+
+
 
 
 
@@ -271,7 +507,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -279,7 +523,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -287,7 +539,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
         log.LogError(error);
+
+
+
+
 
 
 
@@ -295,7 +555,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
             return new StatusCodeResult(401);
+
+
+
+
 
 
 
@@ -303,7 +571,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
             return new BadRequestObjectResult(error);
+
+
+
+
 
 
 
@@ -311,7 +587,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -328,6 +612,13 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 **Please note** that, in the case of Azure Functions, while the APIs are front-ended with an API manager (and hence shielded, protected, and rate limited), the APIs are still publicly available. This means that a DDOS attack or other attacks can still happen against the bare APIs if someone discovers them in the wild.
 
 ## Next steps
+
+[Create the API Management Service](setup.md#create-the-api-management-service), then configure it:
+
+- [Add APIM Products and APIs](setup.md#add-apim-products-and-apis)
+  - [Drivers API](setup.md#drivers-api)
+  - [Trips API](setup.md#trips-api)
+  - [Passengers API](setup.md#passengers-api)
 
 Read about Relecloud's chosen data storage solution:
 

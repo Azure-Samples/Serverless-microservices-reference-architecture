@@ -91,6 +91,14 @@ SELECT * FROM dbo.TripFact
 
 
 
+
+
+
+
+
+
+
+
 ```
 
 The number of entries should match the number of submitted trips. Let us say, for example, we started the test with the test parameters shown above: `Seeder.exe url 2 60`. This means that the test will run for 2 iterations submitting 4 trips in each iteration. Therefore we expect to see 8 new entries in the `TripFact` table.
@@ -106,15 +114,7 @@ Iteration 0 starting....
 
 
 
-TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
 
-
-
-
-
-
-
-TestTripRunner - Simulate a little delay....
 
 
 
@@ -130,7 +130,23 @@ TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
 
 
 
@@ -146,7 +162,23 @@ TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
 
 
 
@@ -162,7 +194,55 @@ TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
 
 
 
@@ -178,7 +258,23 @@ TestTripRunner - Passenger Code: sjones@gmail.com ....
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Passenger Code: rita_ghana@gmail.com ....
+
+
+
+
+
+
+
+
 
 
 
@@ -194,7 +290,23 @@ TestTripRunner - Passenger Code: bsam@gmail.com ....
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Passenger Code: krami@gmail.com ....
+
+
+
+
+
+
+
+
 
 
 
@@ -210,7 +322,23 @@ TestTripRunner - submitted in 15.02846 seconds.
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - submitted in 18.5976287 seconds.
+
+
+
+
+
+
+
+
 
 
 
@@ -226,7 +354,23 @@ TestTripRunner - submitted in 11.6632886 seconds.
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - submitted in 17.1535626 seconds.
+
+
+
+
+
+
+
+
 
 
 
@@ -242,7 +386,23 @@ Thread 0 => Duration: 17.1535626 - Error:
 
 
 
+
+
+
+
+
+
+
+
 Thread 1 => Duration: 11.6632886 - Error:
+
+
+
+
+
+
+
+
 
 
 
@@ -258,6 +418,14 @@ Thread 2 => Duration: 15.02846 - Error:
 
 
 
+
+
+
+
+
+
+
+
 Thread 3 => Duration: 18.5976287 - Error:
 
 
@@ -266,7 +434,23 @@ Thread 3 => Duration: 18.5976287 - Error:
 
 
 
+
+
+
+
+
+
+
+
 All tasks are finished.
+
+
+
+
+
+
+
+
 
 
 
@@ -282,7 +466,23 @@ Iteration 0 completed
 
 
 
+
+
+
+
+
+
+
+
 Delaying for 60 seconds before starting iteration 1....
+
+
+
+
+
+
+
+
 
 
 
@@ -298,15 +498,7 @@ Iteration 1 starting....
 
 
 
-TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
 
-
-
-
-
-
-
-TestTripRunner - Simulate a little delay....
 
 
 
@@ -322,7 +514,23 @@ TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
 
 
 
@@ -338,7 +546,23 @@ TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
 
 
 
@@ -354,7 +578,55 @@ TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TestTripRunner - Url https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=rtTQCEXCzUvrw0l28oCfZjhxkIMDeIyQWWj2NFuLxYbld/OwGdZ9aA== started....
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+TestTripRunner - Simulate a little delay....
+
+
+
+
+
+
+
+
 
 
 
@@ -370,7 +642,23 @@ TestTripRunner - Passenger Code: krami@gmail.com ....
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - Passenger Code: bsam@gmail.com ....
+
+
+
+
+
+
+
+
 
 
 
@@ -386,7 +674,23 @@ TestTripRunner - submitted in 1.3980593 seconds.
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - submitted in 1.2487726 seconds.
+
+
+
+
+
+
+
+
 
 
 
@@ -402,7 +706,23 @@ TestTripRunner - Passenger Code: rita_ghana@gmail.com ....
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - submitted in 1.3474113 seconds.
+
+
+
+
+
+
+
+
 
 
 
@@ -418,7 +738,23 @@ TestTripRunner - Passenger Code: sjones@gmail.com ....
 
 
 
+
+
+
+
+
+
+
+
 TestTripRunner - submitted in 1.3841847 seconds.
+
+
+
+
+
+
+
+
 
 
 
@@ -434,7 +770,23 @@ Thread 0 => Duration: 1.2487726 - Error:
 
 
 
+
+
+
+
+
+
+
+
 Thread 1 => Duration: 1.3980593 - Error:
+
+
+
+
+
+
+
+
 
 
 
@@ -450,7 +802,23 @@ Thread 2 => Duration: 1.3841847 - Error:
 
 
 
+
+
+
+
+
+
+
+
 Thread 3 => Duration: 1.3474113 - Error:
+
+
+
+
+
+
+
+
 
 
 
@@ -466,6 +834,14 @@ All tasks are finished.
 
 
 
+
+
+
+
+
+
+
+
 Iteration 1 completed
 
 
@@ -474,7 +850,23 @@ Iteration 1 completed
 
 
 
+
+
+
+
+
+
+
+
 Test is completed. Press any key to exit...
+
+
+
+
+
+
+
+
 
 
 
@@ -501,7 +893,23 @@ customEvents
 
 
 
+
+
+
+
+
+
+
+
 | where timestamp > ago(24h)
+
+
+
+
+
+
+
+
 
 
 
@@ -517,7 +925,23 @@ customEvents
 
 
 
+
+
+
+
+
+
+
+
 | render piechart
+
+
+
+
+
+
+
+
 
 
 
@@ -544,7 +968,23 @@ customMetrics
 
 
 
+
+
+
+
+
+
+
+
 | where timestamp > ago(24h)
+
+
+
+
+
+
+
+
 
 
 
@@ -560,6 +1000,14 @@ customMetrics
 
 
 
+
+
+
+
+
+
+
+
 | summarize count() by name
 
 
@@ -568,7 +1016,23 @@ customMetrics
 
 
 
+
+
+
+
+
+
+
+
 | render piechart
+
+
+
+
+
+
+
+
 
 
 
@@ -595,6 +1059,8 @@ Using Application Insights is a great way for developers and operations to monit
 The [Power BI](#power-bi-handler) within our solution is configured to save this data to Azure SQL database for simple consumption from [Power BI](https://powerbi.microsoft.com/) for analyzing snapshots of business metrics. Alternatively, you can use this handler to send trips to a [streaming Power BI dataset](https://docs.microsoft.com/en-us/power-bi/service-real-time-streaming) to display the data in real-time. In this way, you will have real-time monitoring that is tuned for developers/operations, and for business users.
 
 ## Next steps
+
+[Create the Application Insights resource](#create-the-application-insights-resource) so you can follow along with the testing and monitoring steps above.
 
 Read an overview of the source code structure for the reference architecture:
 

@@ -15,6 +15,12 @@ In addition to Azure Cosmos DB, Relecloud decided to use [Azure SQL Database](ht
 
 ## Next steps
 
+Set up the storage components for the reference architecture:
+
+- [Create the Azure Cosmos DB assets](setup.md#create-the-azure-cosmos-db-assets)
+- [Create the Storage Account](setup.md#create-the-storage-account)
+- [Create the Azure SQL Database assets](setup.md#create-the-azure-sql-database-assets)
+
 Read about the single page application (SPA) used as a user-facing static website for this reference architecture:
 
 - [Client application](client-application.md)

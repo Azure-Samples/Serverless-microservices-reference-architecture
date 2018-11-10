@@ -7,17 +7,17 @@ In this document:
     - [Provision](#provision)
         - [Manual via the Portal](#manual-via-the-portal)
             - [Create the Resource Group](#create-the-resource-group)
-            - [Create the Cosmos Assets](#create-the-cosmos-assets)
-            - [Create the Storage Account](#create-the-storage-account)
-            - [Create the Azure function apps](#create-the-azure-function-apps)
+            - [Create the Azure Cosmos DB assets](#create-the-azure-cosmos-db-assets)
+            - [Create the Storage account](#create-the-storage-account)
+            - [Create the Azure Function Apps](#create-the-azure-function-apps)
             - [Create the Web App Service Plan](#create-the-web-app-service-plan)
             - [Create the Web App](#create-the-web-app)
-            - [Create the Azure SQL Database Assets](#create-the-azure-sql-database-assets)
+            - [Create the Azure SQL Database assets](#create-the-azure-sql-database-assets)
             - [Create the Event Grid Topic](#create-the-event-grid-topic)
-            - [Create the Application Insights Resource](#create-the-application-insights-resource)
+            - [Create the Application Insights resource](#create-the-application-insights-resource)
             - [Create the API Management Service](#create-the-api-management-service)
             - [Create the SignalR Service](#create-the-signalr-service)
-            - [Create the B2C Tenant](#create-the-azure-ad-b2c-tenant)
+            - [Create the B2C tenant](#create-the-azure-ad-b2c-tenant)
         - [Cake Provision](#cake-provision)
     - [Setup](#setup)
         - [Add APIM Products and APIs](#add-apim-products-and-apis)
@@ -108,7 +108,7 @@ Log in to the [Azure portal](https://portal.azure.com).
 
     ![Screenshot of the resource group form](media/resource-group-creation.png)
 
-#### Create the Cosmos Assets
+#### Create the Azure Cosmos DB assets
 
 1.  Type **Cosmos** into the Search box at the top of the `All Services` page, then select **Azure Cosmos DB**  section.
 
@@ -142,7 +142,7 @@ Log in to the [Azure portal](https://portal.azure.com).
 
     ![Screenshot of the cosmos DB account](media/comos-creation2.png)
 
-#### Create the Storage Account
+#### Create the Storage account
 
 1.  Type **Storage** into the Search box at the top of the `All Services` page, then select **Storage accounts**  section.
 
@@ -163,11 +163,11 @@ Log in to the [Azure portal](https://portal.azure.com).
 
     ![Screenshot of the storage account](media/storage-creation2.png)
 
-#### Create the Azure function apps
+#### Create the Azure Function Apps
 
-In this step, you will be creating six new function apps in the Azure portal. There are many ways this can be accomplished, such as [publishing from Visual Studio](), [Visual Studio Code](), the [Azure CLI](), Azure [Cloud Shell](), an [Azure Resource Manager (ARM) template](), and through the Azure portal.
+In this step, you will be creating six new Azure Function Apps in the Azure portal. There are many ways this can be accomplished, such as [publishing from Visual Studio](), [Visual Studio Code](), the [Azure CLI](), Azure [Cloud Shell](), an [Azure Resource Manager (ARM) template](), and through the Azure portal.
 
-Each of these function apps act as a hosting platform for one or more functions. In our solution, they double as microservices with each function serving as an endpoint or method. Having functions distributed amongst multiple function apps enables isolation, providing physical boundaries between the microservices, as well as independent release schedules, administration, and scaling.
+Each of these Function Apps act as a hosting platform for one or more functions. In our solution, they double as microservices with each function serving as an endpoint or method. Having functions distributed amongst multiple function apps enables isolation, providing physical boundaries between the microservices, as well as independent release schedules, administration, and scaling.
 
 1.  Log in to the [Azure portal](https://portal.azure.com).
 
@@ -233,7 +233,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the app service](media/app-service-creation.png)
 
-#### Create the Azure SQL Database Assets
+#### Create the Azure SQL Database assets
 
 1.  Type **SQL** into the Search box at the top of the `All Services` page, then select **SQL Database**  section.
 
@@ -290,7 +290,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the Event Grid Topic endpoint](media/event-grid-topic-creation2.png)
 
-#### Create the Application Insights Resource
+#### Create the Application Insights resource
 
 1.  Type **Application Insights** into the Search box at the top of the `All Services` page, then select **Application Insights**  section.
 
@@ -310,7 +310,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the Application Insights instrumentation key](media/application-insights-creation1.png)
 
-#### Create the API Management Service 
+#### Create the API Management Service
 
 1.  Type **API Management** into the Search box at the top of the `All Services` page, then select **API Management**  section.
 
@@ -348,7 +348,7 @@ Each of these function apps act as a hosting platform for one or more functions.
 
     ![Screenshot of the SignalR service connection string](media/signalr-creation1.png)
 
-#### Create the Azure AD B2C Tenant
+#### Create the Azure AD B2C tenant
 
 The Azure Active Directory B2C tenant is used to store customer/passenger accounts and information, such as their full name, address, etc.
 
@@ -422,7 +422,7 @@ Adding the Azure AD Graph API to the new Azure AD B2C tenant will allow you to q
 
     ![Microsoft Graph API required permissions](media/graph-api-required-permissions.png)
 
-#### Configure Azure AD B2C Tenant
+#### Configure Azure AD B2C tenant
 
 Your new Azure AD B2C tenant must be configured before it can be used from the website. The Reply URLs you add will allow the website to successfully route the users to the login/logout forms.
 

@@ -109,16 +109,8 @@ When events are sent to the `Event Grid Topic`, they trigger the different handl
 
 ## Next steps
 
-Read detailed descriptions of the components that make up the architecture:
+Read about the API endpoints that are created using Azure Functions:
 
-- [API Management](#api-management)
-- [RideShare APIs](#rideshare-apis)
-- [Durable Orchestrators](#durable-orchestrators)
-- [Event Grid](#event-grid)
-  - [Logic App handler](#logic-app-handler)
-  - [SignalR handler](#signalr-handler)
-    - [DOTNET SignalR client](#dotnet-signalr-client)
-    - [JavaScript SignalR client](#javascript-signalr-client)
-  - [Power BI handler](#power-bi-handler)
-  - [Trip Archiver handler](#trip-archiver-handler)
-- [SPA website](#spa-website)
+- [API endpoints using Azure Functions](documentation/api-endpoints.md)
+  - [RideShare APIs](documentation/api-endpoints.md#rideshare-apis)
+  - [Durable Orchestrators](documentation/api-endpoints.md#durable-orchestrators)

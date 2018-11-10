@@ -23,7 +23,31 @@ Being an event source, the [Durable Orchestrators](#durable-orchestrators) exter
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public const string EVG_SUBJECT_TRIP_DRIVERS_NOTIFIED = "Drivers notified!";
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -31,7 +55,31 @@ public const string EVG_SUBJECT_TRIP_DRIVER_PICKED = "Driver picked :-)";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public const string EVG_SUBJECT_TRIP_STARTING = "Trip starting :-)";
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -39,11 +87,47 @@ public const string EVG_SUBJECT_TRIP_RUNNING = "Trip running...";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public const string EVG_SUBJECT_TRIP_COMPLETED = "Trip completed :-)";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public const string EVG_SUBJECT_TRIP_ABORTED = "Trip aborted :-(";
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -56,7 +140,31 @@ private static async Task Externalize(TripItem trip, string subject)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -64,7 +172,31 @@ private static async Task Externalize(TripItem trip, string subject)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -79,11 +211,47 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "code")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -95,11 +263,59 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Included here ...just in case the passenger state changed ...this captures the passenger state at the time of the trip
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "passenger")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -111,11 +327,59 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Included here ...just in case the driver state changed ...this captures the driver state at the time of the trip
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "driver")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -127,11 +391,59 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Included here ...just in case the driver state changed ...this captures the available drivers state at the time of the trip
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "availableDrivers")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -143,7 +455,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "source")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -155,7 +503,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "destination")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -167,7 +551,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "acceptDate")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -179,7 +599,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "startDate")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -191,7 +647,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "endDate")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -203,11 +695,59 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     // Computed values
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "duration")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -219,7 +759,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "monitorIterations")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -231,7 +807,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "isAborted")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -243,7 +855,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "error")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -255,7 +903,43 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     [JsonProperty(PropertyName = "type")]
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -263,7 +947,31 @@ public class TripItem : BaseItem
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -292,7 +1000,31 @@ Azure Functions provide a special binding trigger `EventGridEvent` to handle the
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] EventGridEvent eventGridEvent,
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -300,7 +1032,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     ILogger log)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -308,7 +1064,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     log.LogInformation($"ProcessTripExternalizations2SignalR triggered....EventGridEvent" +
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -316,7 +1096,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
                     $"\n\tTopic:{eventGridEvent.Topic}" +
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -324,7 +1128,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
                     $"\n\tType:{eventGridEvent.EventType}" +
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -336,7 +1164,43 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     try
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -344,7 +1208,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -352,7 +1240,43 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
             throw new Exception("Trip is null!");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -368,7 +1292,43 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         // Convert the `event subject` to a method to be called on clients
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -376,7 +1336,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_DRIVERS_NOTIFIED)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -384,7 +1368,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_DRIVER_PICKED)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -392,7 +1400,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_STARTING)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -400,7 +1432,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_RUNNING)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -408,7 +1464,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_COMPLETED)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -416,7 +1496,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         else if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_ABORTED)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -428,7 +1532,43 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         log.LogInformation($"ProcessTripExternalizations2SignalR firing SignalR `{clientMethod}` client method!");
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -436,7 +1576,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -444,7 +1608,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
             Arguments = new object[] { trip}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -452,7 +1640,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -460,7 +1672,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -468,7 +1704,31 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         log.LogError(error);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -476,11 +1736,47 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -503,11 +1799,47 @@ The following is sample .NET SignalR client written to receive the `SignalR` mes
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 var singnalRInfo = await GetSignalRInfo();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 if (singnalRInfo == null)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -519,7 +1851,43 @@ if (singnalRInfo == null)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 var connection = new HubConnectionBuilder()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -527,7 +1895,31 @@ var connection = new HubConnectionBuilder()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -535,7 +1927,31 @@ var connection = new HubConnectionBuilder()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -543,11 +1959,47 @@ var connection = new HubConnectionBuilder()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     };
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -555,7 +2007,31 @@ var connection = new HubConnectionBuilder()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -563,7 +2039,31 @@ var connection = new HubConnectionBuilder()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 })
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -575,7 +2075,43 @@ var connection = new HubConnectionBuilder()
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 connection.On<TripItem>("tripUpdated", (trip) =>
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -583,11 +2119,59 @@ connection.On<TripItem>("tripUpdated", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     Console.WriteLine($"tripUpdated - {trip.Code}");
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -599,7 +2183,31 @@ connection.On<TripItem>("tripDriversNotified", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -607,7 +2215,43 @@ connection.On<TripItem>("tripDriversNotified", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -619,7 +2263,31 @@ connection.On<TripItem>("tripDriverPicked", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -627,7 +2295,43 @@ connection.On<TripItem>("tripDriverPicked", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -639,7 +2343,31 @@ connection.On<TripItem>("tripStarting", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -647,7 +2375,43 @@ connection.On<TripItem>("tripStarting", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -659,7 +2423,31 @@ connection.On<TripItem>("tripRunning", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -667,7 +2455,43 @@ connection.On<TripItem>("tripRunning", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -679,7 +2503,31 @@ connection.On<TripItem>("tripCompleted", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -687,7 +2535,43 @@ connection.On<TripItem>("tripCompleted", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -699,7 +2583,31 @@ connection.On<TripItem>("tripAborted", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -707,7 +2615,43 @@ connection.On<TripItem>("tripAborted", (trip) =>
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -723,11 +2667,59 @@ await connection.StartAsync();
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 Console.WriteLine("SignalR client started....waiting for messages from server. To cancel......press any key!");
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 Console.ReadLine();
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -740,7 +2732,31 @@ Where `GetSignalRInfo` retrieves via a `Get` operation the `SignalR Info` from a
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -748,11 +2764,47 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     ILogger log)
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -764,7 +2816,43 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     try
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -772,7 +2860,31 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         if (info == null)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -784,11 +2896,59 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         return (ActionResult)new OkObjectResult(info);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -796,7 +2956,31 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -804,7 +2988,31 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         log.LogError(error);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -812,11 +3020,47 @@ public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anony
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -831,7 +3075,43 @@ let signalRInfoUrl = "<trips-function-app-base-url>/api/signalrinfo";
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 let hubConnection = {};
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -843,7 +3123,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 	console.log(`SignalR Info URL ${url}`);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -851,7 +3155,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         method: "GET", // *GET, POST, PUT, DELETE, etc.
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -859,7 +3187,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         cache: "no-cache", // *default, no-cache, reload, force-cache, only-if-cached
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -867,7 +3219,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         headers: {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -875,7 +3251,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         },
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -883,7 +3283,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         referrer: "no-referrer" // no-referrer, *client
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -891,7 +3315,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 	if (rawResponse.status === 200) {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -899,7 +3347,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		console.log(signalRInfo);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -907,7 +3379,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		console.log(signalRInfo.endpoint);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -915,7 +3411,31 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 	} else {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -923,11 +3443,47 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		return null;
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 	}
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -939,7 +3495,43 @@ getSignalRInfoAsync = async (url) => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 document.getElementById("start").addEventListener("click", async e => {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -951,7 +3543,43 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 	let info = await getSignalRInfoAsync(signalRInfoUrl);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -959,11 +3587,47 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		let options = {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			accessTokenFactory: () => info.accessKey
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -975,7 +3639,43 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		hubConnection = new signalR.HubConnectionBuilder()
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -983,7 +3683,31 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			.configureLogging(signalR.LogLevel.Information)
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -995,7 +3719,43 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		hubConnection.on('tripUpdated', (trip) => {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1003,7 +3763,43 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1015,11 +3811,59 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			console.log(`tripDriversNotified: ${trip.code}`);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1031,11 +3875,59 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			console.log(`tripDriverPicked: ${trip.code}`);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1047,11 +3939,59 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			console.log(`tripStarting: ${trip.code}`);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1063,11 +4003,59 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			console.log(`tripRunning: ${trip.code}`);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1079,11 +4067,59 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			console.log(`tripCompleted: ${trip.code}`);
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 		});
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1095,7 +4131,31 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 			console.log(`tripAborted: ${trip.code}`);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1107,7 +4167,43 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 		hubConnection.start().catch(err => console.error(err.toString()));
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1115,7 +4211,31 @@ document.getElementById("start").addEventListener("click", async e => {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 });
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1130,7 +4250,31 @@ Similar to the [SignalR](#signalr-handler) handler above, the [Power BI](https:/
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] EventGridEvent eventGridEvent,
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1138,7 +4282,31 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1146,7 +4314,31 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
                     $"\n\tId:{eventGridEvent.Id}" +
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1154,11 +4346,47 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
                     $"\n\tSubject:{eventGridEvent.Subject}" +
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
                     $"\n\tType:{eventGridEvent.EventType}" +
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1170,7 +4398,43 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
     try
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1178,7 +4442,31 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         TripItem trip = JsonConvert.DeserializeObject<TripItem>(eventGridEvent.Data.ToString());
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1186,7 +4474,43 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
             throw new Exception("Trip is null!");
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1202,7 +4526,43 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
         if (eventGridEvent.Subject == Constants.EVG_SUBJECT_TRIP_ABORTED ||
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1210,11 +4570,47 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         {
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
             var archiveService = ServiceFactory.GetArchiveService();
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1226,7 +4622,43 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
             var powerBIService = ServiceFactory.GetPowerBIService();
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1234,11 +4666,47 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1246,7 +4714,31 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1254,7 +4746,31 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         log.LogError(error);
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1262,11 +4778,47 @@ public static async Task ProcessTripExternalizations2PowerBI([EventGridTrigger] 
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     }
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
 }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1305,11 +4857,47 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     "bindings": [
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
       {
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1317,7 +4905,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         "name": "eventGridEvent",
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1325,7 +4937,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
       },
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1333,7 +4969,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         "type": "documentDB",
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1341,7 +5001,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         "databaseName": "RideShare",
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1349,7 +5033,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         "createIfNotExists": false,
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1357,7 +5065,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
         "direction": "out"
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1365,7 +5097,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
     ],
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1373,7 +5129,31 @@ index.js
 
 
 
+
+
+
+
+
+
+
+
+
+
+
+
   }
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
@@ -1404,6 +5184,11 @@ When an Event Grid Topic event arrives at the Trip Archiver processor, it extrac
 - Persists the trip in the Cosmos DB Archiver Collection.
 
 ## Next steps
+
+[Create the Event Grid Topic](setup.md#create-the-event-grid-topic), then perform the following steps to consume Event Grid events:
+
+- [Connect Event Grid to Function Apps](setup.md#connect-event-grid-to-function-apps)
+- [Connect Event Grid to Logic App](setup.md#connect-event-grid-to-logic-app)
 
 Read about how API Management is used as a gateway for all API endpoints of the Relecloud Rideshare architecture:
 

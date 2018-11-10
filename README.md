@@ -26,7 +26,7 @@ Each section of the lab will briefly explain what you are trying to accomplish a
 
 ## Detailed documentation
 
-Use the table of contents below for detailed documentation for each component of the reference architecture.
+Use the table of contents below for detailed documentation of each component of the reference architecture.
 
 - [Introduction to serverless microservices](documentation/introduction.md)
   - [What are microservices?](documentation/intro.md#what-are-microservices)
@@ -41,7 +41,7 @@ Use the table of contents below for detailed documentation for each component of
 - [Services intercommunication using Event Grid](documentation/services-intercommunication.md)
   - [Logic App handler](documentation/services-intercommunication.md#logic-app-handler)
   - [SignalR handler](documentation/services-intercommunication.md#signalr-handler)
-    - [DOTNET SignalR client](documentation/services-intercommunication.md#dotnet-signalr-client)
+    - [.NET SignalR client](documentation/services-intercommunication.md#dotnet-signalr-client)
     - [JavaScript SignalR client](documentation/services-intercommunication.md#javascript-signalr-client)
   - [Power BI handler](documentation/services-intercommunication.md#power-bi-handler)
   - [Trip Archiver handler](documentation/services-intercommunication.md#trip-archiver-handler)

@@ -34,7 +34,19 @@ export function getPassengers() {
 
 
 
+
+
+
+
+
+
+
+
 [FunctionName("GetPassengers")]
+
+
+
+
 
 
 
@@ -42,7 +54,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
         Route = "passengers")] HttpRequest req,
+
+
+
+
 
 
 
@@ -50,7 +70,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -62,7 +90,19 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
+
+
+
+
     try
+
+
+
+
 
 
 
@@ -70,7 +110,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
         await Utilities.ValidateToken(req);
+
+
+
+
 
 
 
@@ -78,11 +126,23 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
         var (users, error) = await passengers.GetUsers();
 
 
 
+
+
+
+
         if (!string.IsNullOrWhiteSpace(error))
+
+
+
+
 
 
 
@@ -94,11 +154,27 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
+
+
+
+
         return (ActionResult)new OkObjectResult(users.ToList());
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -106,7 +182,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -114,7 +198,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
         log.LogError(error);
+
+
+
+
 
 
 
@@ -122,7 +214,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
             return new StatusCodeResult(401);
+
+
+
+
 
 
 
@@ -130,7 +230,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
             return new BadRequestObjectResult(error);
+
+
+
+
 
 
 
@@ -138,7 +246,15 @@ public static async Task<IActionResult> GetPassengers([HttpTrigger(Authorization
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -151,7 +267,15 @@ const string GraphBaseUrl = "https://graph.windows.net/";
 
 
 
+
+
+
+
 const string GraphVersionQueryString = "?" + GraphVersion;
+
+
+
+
 
 
 
@@ -163,11 +287,27 @@ const string GraphVersion = "api-version=1.6";
 
 
 
+
+
+
+
+
+
+
+
 private readonly AuthenticationContext _authContext;
 
 
 
+
+
+
+
 private readonly ClientCredential _clientCreds;
+
+
+
+
 
 
 
@@ -179,11 +319,27 @@ private readonly string _graphUrl;
 
 
 
+
+
+
+
+
+
+
+
 public UserService(string tenantId, string clientId, string clientSecret)
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -195,7 +351,19 @@ public UserService(string tenantId, string clientId, string clientSecret)
 
 
 
+
+
+
+
+
+
+
+
     var authority = "https://login.microsoftonline.com/" + tenantId;
+
+
+
+
 
 
 
@@ -203,11 +371,27 @@ public UserService(string tenantId, string clientId, string clientSecret)
 
 
 
+
+
+
+
     _clientCreds = new ClientCredential(clientId, clientSecret);
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -223,11 +407,27 @@ public UserService(string tenantId, string clientId, string clientSecret)
 
 
 
+
+
+
+
+
+
+
+
 public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -239,7 +439,19 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
+
+
+
+
     // Call with HttpClient:
+
+
+
+
 
 
 
@@ -247,7 +459,15 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
     if (response.IsSuccessStatusCode)
+
+
+
+
 
 
 
@@ -255,7 +475,15 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
         var json = await response.Content.ReadAsStringAsync();
+
+
+
+
 
 
 
@@ -263,11 +491,23 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
         return (result.Value, null);
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -275,7 +515,15 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -283,7 +531,15 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
         var badRequest = JsonConvert.DeserializeObject<BadRequestResponse>(json);
+
+
+
+
 
 
 
@@ -291,7 +547,15 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -299,7 +563,15 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -307,11 +579,23 @@ public async Task<(IEnumerable<User>, string error)> GetUsers()
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -353,7 +637,19 @@ export function getDrivers() {
 
 
 
+
+
+
+
+
+
+
+
 [FunctionName("GetDrivers")]
+
+
+
+
 
 
 
@@ -361,7 +657,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
         Route = "drivers")] HttpRequest req,
+
+
+
+
 
 
 
@@ -369,7 +673,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
 {
+
+
+
+
 
 
 
@@ -381,11 +693,27 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
+
+
+
+
     try
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -393,7 +721,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
         var persistenceService = ServiceFactory.GetPersistenceService();
+
+
+
+
 
 
 
@@ -401,7 +737,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -409,7 +753,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -417,7 +769,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
         log.LogError(error);
+
+
+
+
 
 
 
@@ -425,7 +785,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
             return new StatusCodeResult(401);
+
+
+
+
 
 
 
@@ -433,7 +801,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
             return new BadRequestObjectResult(error);
+
+
+
+
 
 
 
@@ -441,7 +817,15 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -454,11 +838,23 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
 {
 
 
 
+
+
+
+
     var error = "";
+
+
+
+
 
 
 
@@ -470,7 +866,19 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
+
+
+
+
     try
+
+
+
+
 
 
 
@@ -478,11 +886,27 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
         if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
 
 
 
+
+
+
+
             throw new Exception("No Digital Main collection defined!");
+
+
+
+
+
+
+
+
 
 
 
@@ -498,7 +922,19 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
+
+
+
+
         var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
+
+
+
+
 
 
 
@@ -506,7 +942,15 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
                         .Where(e => e.CollectionType == ItemCollectionTypes.Driver)
+
+
+
+
 
 
 
@@ -514,7 +958,15 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
                         .Take(max)
+
+
+
+
 
 
 
@@ -526,7 +978,19 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
+
+
+
+
         List<DriverItem> allDocuments = new List<DriverItem>();
+
+
+
+
 
 
 
@@ -534,7 +998,15 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
         {
+
+
+
+
 
 
 
@@ -542,11 +1014,23 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
             cost += queryResult.RequestCharge;
 
 
 
+
+
+
+
             allDocuments.AddRange(queryResult.ToList());
+
+
+
+
 
 
 
@@ -558,11 +1042,27 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
+
+
+
+
         return allDocuments;
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -570,7 +1070,15 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -578,11 +1086,23 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
         throw new Exception(error);
 
 
 
+
+
+
+
     }
+
+
+
+
 
 
 
@@ -590,7 +1110,15 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
     {
+
+
+
+
 
 
 
@@ -598,11 +1126,23 @@ public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETR
 
 
 
+
+
+
+
     }
 
 
 
+
+
+
+
 }
+
+
+
+
 
 
 
@@ -644,7 +1184,15 @@ export class Authentication {
 
 
 
+
+
+
+
   constructor() {
+
+
+
+
 
 
 
@@ -652,11 +1200,23 @@ export class Authentication {
 
 
 
+
+
+
+
     this._scopes = window.authScopes;
 
 
 
+
+
+
+
     this._clientId = window.authClientId;
+
+
+
+
 
 
 
@@ -668,7 +1228,19 @@ export class Authentication {
 
 
 
+
+
+
+
+
+
+
+
     var cb = this._tokenCallback.bind(this);
+
+
+
+
 
 
 
@@ -676,7 +1248,15 @@ export class Authentication {
 
 
 
+
+
+
+
       validateAuthority: false
+
+
+
+
 
 
 
@@ -684,7 +1264,15 @@ export class Authentication {
 
 
 
+
+
+
+
     this._userAgentApplication = new UserAgentApplication(
+
+
+
+
 
 
 
@@ -692,7 +1280,15 @@ export class Authentication {
 
 
 
+
+
+
+
       this._authority,
+
+
+
+
 
 
 
@@ -700,7 +1296,15 @@ export class Authentication {
 
 
 
+
+
+
+
       opts
+
+
+
+
 
 
 
@@ -708,7 +1312,19 @@ export class Authentication {
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -720,7 +1336,15 @@ export class Authentication {
 
 
 
+
+
+
+
     this._error = error;
+
+
+
+
 
 
 
@@ -728,7 +1352,15 @@ export class Authentication {
 
 
 
+
+
+
+
       this._token = token;
+
+
+
+
 
 
 
@@ -736,7 +1368,15 @@ export class Authentication {
 
 
 
+
+
+
+
   }
+
+
+
+
 
 
 
@@ -749,11 +1389,27 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
     return this._userAgentApplication.getUser();
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -765,7 +1421,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
     return this._userAgentApplication.acquireTokenSilent(this._scopes).then(
+
+
+
+
 
 
 
@@ -773,7 +1437,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
         return accessToken;
+
+
+
+
 
 
 
@@ -781,7 +1453,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
       error => {
+
+
+
+
 
 
 
@@ -789,7 +1469,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
           accessToken => {
+
+
+
+
 
 
 
@@ -797,7 +1485,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
           },
+
+
+
+
 
 
 
@@ -805,7 +1501,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
             console.error(err);
+
+
+
+
 
 
 
@@ -813,7 +1517,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
         );
+
+
+
+
 
 
 
@@ -821,11 +1533,27 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
     );
 
 
 
+
+
+
+
   }
+
+
+
+
+
+
+
+
 
 
 
@@ -837,7 +1565,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
     return this._userAgentApplication.loginPopup(this._scopes).then(
+
+
+
+
 
 
 
@@ -845,7 +1581,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
         const user = this._userAgentApplication.getUser();
+
+
+
+
 
 
 
@@ -853,7 +1597,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
           return user;
+
+
+
+
 
 
 
@@ -861,7 +1613,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
           return null;
+
+
+
+
 
 
 
@@ -869,7 +1629,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
       },
+
+
+
+
 
 
 
@@ -877,7 +1645,15 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
         return null;
+
+
+
+
 
 
 
@@ -885,11 +1661,23 @@ Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it t
 
 
 
+
+
+
+
     );
 
 
 
+
+
+
+
   }
+
+
+
+
 
 
 
@@ -934,7 +1722,15 @@ export function post(uri, data, apiKey) {
 
 
 
+
+
+
+
   return auth.getAccessToken().then(token => {
+
+
+
+
 
 
 
@@ -942,7 +1738,15 @@ export function post(uri, data, apiKey) {
 
 
 
+
+
+
+
       headers: getHeaders(token, apiKey),
+
+
+
+
 
 
 
@@ -950,7 +1754,15 @@ export function post(uri, data, apiKey) {
 
 
 
+
+
+
+
     });
+
+
+
+
 
 
 
@@ -958,7 +1770,19 @@ export function post(uri, data, apiKey) {
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -970,7 +1794,15 @@ export function put(uri, data, apiKey) {
 
 
 
+
+
+
+
   return auth.getAccessToken().then(token => {
+
+
+
+
 
 
 
@@ -978,7 +1810,15 @@ export function put(uri, data, apiKey) {
 
 
 
+
+
+
+
       headers: getHeaders(token, apiKey),
+
+
+
+
 
 
 
@@ -986,7 +1826,15 @@ export function put(uri, data, apiKey) {
 
 
 
+
+
+
+
     });
+
+
+
+
 
 
 
@@ -994,7 +1842,19 @@ export function put(uri, data, apiKey) {
 
 
 
+
+
+
+
 }
+
+
+
+
+
+
+
+
 
 
 
@@ -1006,7 +1866,15 @@ export function remove(uri, apiKey) {
 
 
 
+
+
+
+
   return auth.getAccessToken().then(token => {
+
+
+
+
 
 
 
@@ -1014,7 +1882,15 @@ export function remove(uri, apiKey) {
 
 
 
+
+
+
+
       headers: getHeaders(token, apiKey),
+
+
+
+
 
 
 
@@ -1022,11 +1898,23 @@ export function remove(uri, apiKey) {
 
 
 
+
+
+
+
     });
 
 
 
+
+
+
+
   });
+
+
+
+
 
 
 
@@ -1038,7 +1926,19 @@ export function remove(uri, apiKey) {
 
 
 
+
+
+
+
+
+
+
+
 export function get(uri, data = {}, apiKey) {
+
+
+
+
 
 
 
@@ -1046,7 +1946,15 @@ export function get(uri, data = {}, apiKey) {
 
 
 
+
+
+
+
     uri = `${uri}?${qs(data)}`;
+
+
+
+
 
 
 
@@ -1054,7 +1962,15 @@ export function get(uri, data = {}, apiKey) {
 
 
 
+
+
+
+
   return auth.getAccessToken().then(token => {
+
+
+
+
 
 
 
@@ -1062,7 +1978,15 @@ export function get(uri, data = {}, apiKey) {
 
 
 
+
+
+
+
       headers: getHeaders(token, apiKey),
+
+
+
+
 
 
 
@@ -1070,11 +1994,23 @@ export function get(uri, data = {}, apiKey) {
 
 
 
+
+
+
+
     });
 
 
 
+
+
+
+
   });
+
+
+
+
 
 
 
@@ -1326,21 +2262,25 @@ As an example, the customer visits the "My Trip" page on the website to request 
 
     
 
+
+    ```
+
+
     public static async Task<IActionResult> CreateTrip([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "trips")] HttpRequest req,
 
-    
+
 
         ILogger log)
 
-    
+
 
     {
 
-    
+
 
         log.LogInformation("CreateTrip triggered....");
 
-    
+
 
 
     ```
@@ -1402,6 +2342,9 @@ As an example, the customer visits the "My Trip" page on the website to request 
     // Excerpt from the CosmosPersistenceService.UpsertTrip method:
 
     
+
+
+    ```
 
 
     ```
@@ -1482,6 +2425,12 @@ These are the following features of this page:
 1. The driver information is displayed after a driver is selected. This happens when the `tripDriverPicked` SignalR message is received by updating the local trip state with the `this.setTrip(trip)` command.
 
 ## Next steps
+
+Create the required assets for the SPA website, then configure it for your environment:
+
+- [Create the Web App Service Plan](setup.md#create-the-web-app-service-plan)
+- [Create the Web App](setup.md#create-the-web-app)
+- [Configure and build the web solution](setup.md#web)
 
 Read details about how Relecloud is performing monitoring and testing in this reference architecture:
 

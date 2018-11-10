@@ -23,63 +23,123 @@ Please note the following:
 ```csharp
 public interface IPersistenceService
 
+
+
 {
+
+
 
     // Drivers
 
+
+
     Task<DriverItem> RetrieveDriver(string code);
+
+
 
     Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETRIEVE_DOCS);
 
+
+
     Task<List<DriverItem>> RetrieveDrivers(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS);
+
+
 
     Task<List<DriverItem>> RetrieveActiveDrivers(int max = Constants.MAX_RETRIEVE_DOCS);
 
+
+
     Task<int> RetrieveDriversCount();
+
+
 
     Task<DriverItem> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false);
 
+
+
     Task<string> UpsertDriverLocation(DriverLocationItem driver, bool isIgnoreChangeFeed = false);
 
+
+
     Task<List<DriverLocationItem>> RetrieveDriverLocations(string code, int max = Constants.MAX_RETRIEVE_DOCS);
+
+
 
     Task DeleteDriver(string code);
 
 
 
+
+
+
+
     // Trips
+
+
 
     Task<TripItem> RetrieveTrip(string code);
 
+
+
     Task<List<TripItem>> RetrieveTrips(int max = Constants.MAX_RETRIEVE_DOCS);
+
+
 
     Task<List<TripItem>> RetrieveTrips(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS);
 
+
+
     Task<List<TripItem>> RetrieveActiveTrips(int max = Constants.MAX_RETRIEVE_DOCS);
+
+
 
     Task<int> RetrieveTripsCount();
 
+
+
     Task<int> RetrieveActiveTripsCount();
 
+
+
     Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false);
+
+
 
     Task DeleteTrip(string code);
 
 
 
+
+
+
+
     // High-level methods
+
+
 
     Task<TripItem> AssignTripAvailableDrivers(TripItem trip, List<DriverItem> drivers);
 
+
+
     Task<TripItem> AssignTripDriver(TripItem trip, string driverCode);
+
+
 
     Task RecycleTripDriver(TripItem trip);
 
+
+
     Task<TripItem> CheckTripCompletion(TripItem trip);
+
+
 
     Task<TripItem> AbortTrip(TripItem trip);
 
+
+
 }
+
+
 
 ```
 
@@ -88,39 +148,75 @@ public interface IPersistenceService
 ```csharp
 [FunctionName("GetTrips")]
 
+
+
 public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Function, "get", Route = "trips")] HttpRequest req,
+
+
 
     ILogger log)
 
+
+
 {
+
+
 
     log.LogInformation("GetTrips triggered....");
 
 
 
+
+
+
+
     try
 
+
+
     {
+
+
 
         var persistenceService = ServiceFactory.GetPersistenceService();
 
+
+
         return (ActionResult)new OkObjectResult(await persistenceService.RetrieveTrips());
 
+
+
     }
+
+
 
     catch (Exception e)
 
+
+
     {
+
+
 
         var error = $"GetTrips failed: {e.Message}";
 
+
+
         log.LogError(error);
+
+
 
         return new BadRequestObjectResult(error);
 
+
+
     }
 
+
+
 }
+
+
 
 ```
 
@@ -129,17 +225,31 @@ public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel
 ```csharp
 public interface IChangeNotifierService
 
+
+
 {
+
+
 
     Task DriverChanged(DriverItem driver);
 
+
+
     Task TripCreated(TripItem trip, int activeTrips);
+
+
 
     Task TripDeleted(TripItem trip);
 
+
+
     Task PassengerChanged(PassengerItem trip);
 
+
+
 }
+
+
 
 ```
 
@@ -150,25 +260,49 @@ In addition, depending on whether the newly created trip is `normal` or `demo` m
 ```csharp
 public async Task TripCreated(TripItem trip, int activeTrips)
 
+
+
 {
+
+
 
     var error = "";
 
 
 
+
+
+
+
     try
+
+
 
     {
 
+
+
         // Start a trip manager
+
+
 
         var baseUrl = _settingService.GetStartTripManagerOrchestratorBaseUrl();
 
+
+
         var key = _settingService.GetStartTripManagerOrchestratorApiKey();
+
+
 
         if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
 
+
+
             throw new Exception("Trip manager orchestrator base URL and key must be both provided");
+
+
+
+
 
 
 
@@ -176,43 +310,85 @@ public async Task TripCreated(TripItem trip, int activeTrips)
 
 
 
+
+
+
+
         // ...omitted for brevity
+
+
+
+
 
 
 
         if (trip.Type == TripTypes.Demo)
 
+
+
         {
+
+
 
             // Trigger the trip demo orchestrator
 
 
 
+
+
+
+
             // ...omitted for brevity
+
+
 
         }
 
+
+
     }
+
+
 
     catch (Exception ex)
 
+
+
     {
+
+
 
         error = $"Error while starting the trip manager: {ex.Message}";
 
+
+
         throw new Exception(error);
 
+
+
     }
+
+
 
     finally
 
+
+
     {
+
+
 
         _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
 
+
+
     }
 
+
+
 }
+
+
 
 ```
 
@@ -278,7 +454,23 @@ IList<DurableOrchestrationStatus> instances = await context.GetStatusAsync(); //
 
 
 
+
+
+
+
+
+
+
+
 foreach (var instance in instances)
+
+
+
+
+
+
+
+
 
 
 
@@ -294,7 +486,23 @@ foreach (var instance in instances)
 
 
 
+
+
+
+
+
+
+
+
     log.Info(JsonConvert.SerializeObject(instance));
+
+
+
+
+
+
+
+
 
 
 
@@ -310,11 +518,30 @@ foreach (var instance in instances)
 
 
 
+
+
+
+
+
+
+
+
 ```
 
 it is still probably a good idea to store the instance ids and their status in a table storage for example in case a solution requires special querying capability against the instances.
 
 ## Next steps
+
+Create your Azure Function Apps, then perform the steps to configure and deploy your functions:
+
+- [Create the Azure Function Apps](setup.md#create-the-azure-function-apps)
+- [Setting files](setup.md#setting-files)
+  - [Drivers Function App](setup.md#drivers-function-app)
+  - [Passengers Function App](setup.md#passengers-function-app)
+  - [Orchestrators Function App](setup.md#orchestrators-function-app)
+  - [Trips Function App](setup.md#trips-function-app)
+  - [Trip Archiver Function App](setup.md#trip-archiver-function-app)
+- [Build the solution](setup.md#build-the-solution)
 
 Read about how the Relecloud Rideshare architecture uses Event Grid for services intercommunication:
 
