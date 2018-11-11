@@ -28,577 +28,80 @@ export function getPassengers() {
 ```csharp
 // GetPassengers function within the Passengers Function App:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 [FunctionName("GetPassengers")]
-
-
-
-
-
-
-
 public static async Task<IActionResult> GetPassengers([HttpTrigger(AuthorizationLevel.Anonymous, "get",
-
-
-
-
-
-
-
         Route = "passengers")] HttpRequest req,
-
-
-
-
-
-
-
     ILogger log)
-
-
-
-
-
-
-
 {
-
-
-
-
-
-
-
     log.LogInformation("GetPassengers triggered....");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     try
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         await Utilities.ValidateToken(req);
-
-
-
-
-
-
-
         var passengers = ServiceFactory.GetUserService();
-
-
-
-
-
-
-
         var (users, error) = await passengers.GetUsers();
-
-
-
-
-
-
-
         if (!string.IsNullOrWhiteSpace(error))
-
-
-
-
-
-
-
             throw new Exception(error);
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return (ActionResult)new OkObjectResult(users.ToList());
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     catch (Exception e)
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         var error = $"GetPassengers failed: {e.Message}";
-
-
-
-
-
-
-
         log.LogError(error);
-
-
-
-
-
-
-
         if (error.Contains(Constants.SECURITY_VALITION_ERROR))
-
-
-
-
-
-
-
             return new StatusCodeResult(401);
-
-
-
-
-
-
-
         else
-
-
-
-
-
-
-
             return new BadRequestObjectResult(error);
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
 ```
 
 The `UserService.GetUsers` method makes a secure call to the Microsoft Graph API as in the following excerpt:
 
 ```csharp
 const string GraphBaseUrl = "https://graph.windows.net/";
-
-
-
-
-
-
-
 const string GraphVersionQueryString = "?" + GraphVersion;
-
-
-
-
-
-
-
 const string GraphVersion = "api-version=1.6";
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 private readonly AuthenticationContext _authContext;
-
-
-
-
-
-
-
 private readonly ClientCredential _clientCreds;
-
-
-
-
-
-
-
 private readonly string _graphUrl;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public UserService(string tenantId, string clientId, string clientSecret)
-
-
-
-
-
-
-
 {
-
-
-
-
-
-
-
     _graphUrl = GraphBaseUrl + tenantId;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     var authority = "https://login.microsoftonline.com/" + tenantId;
-
-
-
-
-
-
-
     _authContext = new AuthenticationContext(authority);
-
-
-
-
-
-
-
     _clientCreds = new ClientCredential(clientId, clientSecret);
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 // Code removed for brevity...
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 public async Task<(IEnumerable<User>, string error)> GetUsers()
-
-
-
-
-
-
-
 {
-
-
-
-
-
-
-
     var url = _graphUrl + "/users" + GraphVersionQueryString;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     // Call with HttpClient:
-
-
-
-
-
-
-
     var response = await client.GetAsync(url);
-
-
-
-
-
-
-
     if (response.IsSuccessStatusCode)
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         var json = await response.Content.ReadAsStringAsync();
-
-
-
-
-
-
-
         var result = JsonConvert.DeserializeObject<UsersResult>(json);
-
-
-
-
-
-
-
         return (result.Value, null);
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     else if (response.StatusCode == System.Net.HttpStatusCode.BadRequest)
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         var json = await response.Content.ReadAsStringAsync();
-
-
-
-
-
-
-
         var badRequest = JsonConvert.DeserializeObject<BadRequestResponse>(json);
-
-
-
-
-
-
-
         return (null, badRequest.ErrorMessage);
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     else
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         return (null, "Error Getting Users. HTTP Status Code: " + (int)response.StatusCode);
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
 ```
 
 The Microsoft Graph data is deserialized to a `UsersResult` object containing a collection of `User` strongly-typed class objects that store the user profile data that is ultimately returned to the client in JSON format.
@@ -631,524 +134,76 @@ export function getDrivers() {
 ```csharp
 // GetDrivers function within the Drivers Function App:
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 [FunctionName("GetDrivers")]
-
-
-
-
-
-
-
 public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLevel.Anonymous, "get",
-
-
-
-
-
-
-
         Route = "drivers")] HttpRequest req,
-
-
-
-
-
-
-
     ILogger log)
-
-
-
-
-
-
-
 {
-
-
-
-
-
-
-
     log.LogInformation("GetDrivers triggered....");
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     try
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         await Utilities.ValidateToken(req);
-
-
-
-
-
-
-
         var persistenceService = ServiceFactory.GetPersistenceService();
-
-
-
-
-
-
-
         return (ActionResult)new OkObjectResult(await persistenceService.RetrieveDrivers());
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     catch (Exception e)
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         var error = $"GetDrivers failed: {e.Message}";
-
-
-
-
-
-
-
         log.LogError(error);
-
-
-
-
-
-
-
         if (error.Contains(Constants.SECURITY_VALITION_ERROR))
-
-
-
-
-
-
-
             return new StatusCodeResult(401);
-
-
-
-
-
-
-
         else
-
-
-
-
-
-
-
             return new BadRequestObjectResult(error);
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
 ```
 
 The `GetDrivers` function calls the `RetrieveDrivers` method from the `IPersistenceService` implementation. In this case we using the `CosmosPersistenceService` to handle the request and pull the data from Cosmos DB:
 
 ```csharp
 public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETRIEVE_DOCS)
-
-
-
-
-
-
-
 {
-
-
-
-
-
-
-
     var error = "";
-
-
-
-
-
-
-
     double cost = 0;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     try
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
-
-
-
-
-
-
-
             throw new Exception("No Digital Main collection defined!");
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
         FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
-
-
-
-
-
-
-
                         UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
-
-
-
-
-
-
-
                         .Where(e => e.CollectionType == ItemCollectionTypes.Driver)
-
-
-
-
-
-
-
                         .OrderByDescending(e => e.UpsertDate)
-
-
-
-
-
-
-
                         .Take(max)
-
-
-
-
-
-
-
                         .AsDocumentQuery();
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         List<DriverItem> allDocuments = new List<DriverItem>();
-
-
-
-
-
-
-
         while (query.HasMoreResults)
-
-
-
-
-
-
-
         {
-
-
-
-
-
-
-
             var queryResult = await query.ExecuteNextAsync<DriverItem>();
-
-
-
-
-
-
-
             cost += queryResult.RequestCharge;
-
-
-
-
-
-
-
             allDocuments.AddRange(queryResult.ToList());
-
-
-
-
-
-
-
         }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
         return allDocuments;
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     catch (Exception ex)
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         error = ex.Message;
-
-
-
-
-
-
-
         throw new Exception(error);
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
     finally
-
-
-
-
-
-
-
     {
-
-
-
-
-
-
-
         _loggerService.Log($"{LOG_TAG} - RetrieveDrivers - Error: {error}");
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
 ```
 
-![Screensot of the Drivers page, displaying a list of drivers pulled from Cosmos DB](media/drivers-page.png 'Drivers page')
+![Screenshot of the Drivers page, displaying a list of drivers pulled from Cosmos DB](media/drivers-page.png 'Drivers page')
 
 When you select a driver, their information will appear within a modal window, including their car information that is displayed to a passenger when the driver has accepted their trip request.
 
@@ -1181,506 +236,72 @@ User settings are supplied by the `public/js/settings.js` file, which are used w
 
 ```javascript
 export class Authentication {
-
-
-
-
-
-
-
   constructor() {
-
-
-
-
-
-
-
     // The window values below should by set by public/js/settings.js
-
-
-
-
-
-
-
     this._scopes = window.authScopes;
-
-
-
-
-
-
-
     this._clientId = window.authClientId;
-
-
-
-
-
-
-
     this._authority = window.authAuthority;
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     var cb = this._tokenCallback.bind(this);
-
-
-
-
-
-
-
     var opts = {
-
-
-
-
-
-
-
       validateAuthority: false
-
-
-
-
-
-
-
     };
-
-
-
-
-
-
-
     this._userAgentApplication = new UserAgentApplication(
-
-
-
-
-
-
-
       this._clientId,
-
-
-
-
-
-
-
       this._authority,
-
-
-
-
-
-
-
       cb,
-
-
-
-
-
-
-
       opts
-
-
-
-
-
-
-
     );
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   _tokenCallback(errorDesc, token, error, tokenType) {
-
-
-
-
-
-
-
     this._error = error;
-
-
-
-
-
-
-
     if (tokenType === 'access_token') {
-
-
-
-
-
-
-
       this._token = token;
-
-
-
-
-
-
-
     }
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
 ```
 
 Now that we have a reference to `msal`'s `UserAgentApplication`, we can use it to easily authenticate the user and perform other tasks against Azure Active Directory B2C:
 
 ```javascript
   getUser() {
-
-
-
-
-
-
-
     return this._userAgentApplication.getUser();
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   getAccessToken() {
-
-
-
-
-
-
-
     return this._userAgentApplication.acquireTokenSilent(this._scopes).then(
-
-
-
-
-
-
-
       accessToken => {
-
-
-
-
-
-
-
         return accessToken;
-
-
-
-
-
-
-
       },
-
-
-
-
-
-
-
       error => {
-
-
-
-
-
-
-
         return this._userAgentApplication.acquireTokenPopup(this._scopes).then(
-
-
-
-
-
-
-
           accessToken => {
-
-
-
-
-
-
-
             return accessToken;
-
-
-
-
-
-
-
           },
-
-
-
-
-
-
-
           err => {
-
-
-
-
-
-
-
             console.error(err);
-
-
-
-
-
-
-
           }
-
-
-
-
-
-
-
         );
-
-
-
-
-
-
-
       }
-
-
-
-
-
-
-
     );
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
   login() {
-
-
-
-
-
-
-
     return this._userAgentApplication.loginPopup(this._scopes).then(
-
-
-
-
-
-
-
       idToken => {
-
-
-
-
-
-
-
         const user = this._userAgentApplication.getUser();
-
-
-
-
-
-
-
         if (user) {
-
-
-
-
-
-
-
           return user;
-
-
-
-
-
-
-
         } else {
-
-
-
-
-
-
-
           return null;
-
-
-
-
-
-
-
         }
-
-
-
-
-
-
-
       },
-
-
-
-
-
-
-
       () => {
-
-
-
-
-
-
-
         return null;
-
-
-
-
-
-
-
       }
-
-
-
-
-
-
-
     );
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
 ```
 
 ## Wrapping HTTP calls with authentication token
@@ -1719,301 +340,42 @@ Each HTTP method ensures these headers are added to each request:
 
 ```javascript
 export function post(uri, data, apiKey) {
-
-
-
-
-
-
-
   return auth.getAccessToken().then(token => {
-
-
-
-
-
-
-
     return axios.post(uri, data, {
-
-
-
-
-
-
-
       headers: getHeaders(token, apiKey),
-
-
-
-
-
-
-
       withCredentials: false
-
-
-
-
-
-
-
     });
-
-
-
-
-
-
-
   });
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export function put(uri, data, apiKey) {
-
-
-
-
-
-
-
   return auth.getAccessToken().then(token => {
-
-
-
-
-
-
-
     return axios.put(uri, data, {
-
-
-
-
-
-
-
       headers: getHeaders(token, apiKey),
-
-
-
-
-
-
-
       withCredentials: false
-
-
-
-
-
-
-
     });
-
-
-
-
-
-
-
   });
-
-
-
-
-
-
-
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 export function remove(uri, apiKey) {
-
-
-
-
-
-
-
   return auth.getAccessToken().then(token => {
-
-
-
-
-
-
-
     return axios.delete(uri, {
-
-
-
-
-
-
-
       headers: getHeaders(token, apiKey),
-
-
-
-
-
-
-
       withCredentials: false
-
-
-
-
-
-
-
     });
-
-
-
-
-
-
-
   });
-
-
-
-
-
-
-
 }
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 export function get(uri, data = {}, apiKey) {
-
-
-
-
-
-
-
   if (Object.keys(data).length > 0) {
-
-
-
-
-
-
-
     uri = `${uri}?${qs(data)}`;
-
-
-
-
-
-
-
   }
-
-
-
-
-
-
-
   return auth.getAccessToken().then(token => {
-
-
-
-
-
-
-
     return axios.get(uri, {
-
-
-
-
-
-
-
       headers: getHeaders(token, apiKey),
-
-
-
-
-
-
-
       withCredentials: false
-
-
-
-
-
-
-
     });
-
-
-
-
-
-
-
   });
-
-
-
-
-
-
-
 ```
 
 The HTTP helper helps simplify API calls and ensure standardization across calls to the microservices endpoints. The `api` folder contains files for each of these services (Drivers, Passengers, Trips) that are accessed by the website.
@@ -2071,7 +433,7 @@ export function updateDriverLocation(driver) {
 
 ## SignalR Service message handling and trip request flow
 
-As [covered earlier](#signalr-handler) in this document, the [SignalR Service](https://azure.microsoft.com/en-us/services/signalr-service/) makes it very easy to push real-time messages through a websocket connection between the website and the Azure Function that serves as the SignalR Service handler microservice.
+As [covered earlier](services-intercommunication.md#signalr-handler) in this document, the [SignalR Service](https://azure.microsoft.com/en-us/services/signalr-service/) makes it very easy to push real-time messages through a websocket connection between the website and the Azure Function that serves as the SignalR Service handler microservice.
 
 As an example, the customer visits the "My Trip" page on the website to request a new trip. They start out by selecting the pickup location and their destination. When they select **Request Driver**, the following steps take place:
 
@@ -2079,164 +441,86 @@ As an example, the customer visits the "My Trip" page on the website to request 
 
     ```javascript
     // Trip.vue file excerpt:
-    ```
-
 
     methods: {
-
     ...commonActions(['setUser']),
-
     ...tripActions(['setTrip', 'setCurrentStep', 'createTrip']),
-
     createTripRequest(trip) {
-
       this.createTrip(trip)
-
         .then(response => {
-
           this.setCurrentStep(1);
-
           this.$toast.success(
-
             `Request Code: <b>${response.code}`,
-
             'Driver Requested Successfully',
-
             this.notificationSystem.options.success
-
           );
-
         })
-
         .catch(err => {
-
           this.$toast.error(
-
             err.response ? err.response : err.message ? err.message : err,
-
             'Error',
-
             this.notificationSystem.options.error
-
           );
-
         });
-
     },
-
     requestDriver() {
-
       if (this.user) {
-
         getPassenger(this.user.idToken.oid)
-
           .then(response => {
-
             this.passengerInfo = response.data;
 
-
-
             var trip = {
-
               passenger: {
-
                 code: this.passengerInfo.email,
-
                 firstName: this.passengerInfo.givenName,
-
                 surname: this.passengerInfo.surname,
-
                 //"mobileNumber": this.passengerInfo.mobileNumber,
-
                 email: this.passengerInfo.givenName
-
               },
-
               source: {
-
                 latitude: this.selectedPickUpLocation.latitude,
-
                 longitude: this.selectedPickUpLocation.longitude
-
               },
-
               destination: {
-
                 latitude: this.selectedDestinationLocation.latitude,
-
                 longitude: this.selectedDestinationLocation.longitude
-
               },
-
               type: 1 //0 = Normal, 1 = Demo
-
             };
-
             this.createTripRequest(trip);
-
           })
-
           .catch(err => {
-
             this.$toast.error(
-
               err.response,
-
               'Error',
-
               this.notificationSystem.options.error
-
             );
-
           });
-
       } else {
-
         this.$toast.error(
-
           'You must be logged in to start a new trip!',
-
           'Error',
-
           this.notificationSystem.options.error
-
         );
-
       }
-
     }
-
     ```
 
     ```javascript
     // store/trips.js excerpt:
 
-
-
     async createTrip({ commit }, value) {
-
       try {
-
         commit('contentLoading', true);
-
         let trip = await createTrip(value);
-
         commit('trip', trip.data);
-
         return trip.data;
-
       } catch (e) {
-
         throw e;
-
       } finally {
-
         commit('contentLoading', false);
-
       }
-
     }
-
     ```
 
     ```javascript
@@ -2255,151 +539,74 @@ As an example, the customer visits the "My Trip" page on the website to request 
 
     ![Screenshot showing the My Trip page after the user submits a new trip request](media/trip-request-submitted.png 'Trip request submitted')
 
-1.  The API Management **/trips** endpoint routes the request to the `CreateTrip` function within the **Trips** Function App. This function validates the authentication token, validates the passenger information, and finally calls the `UpsertTrip` method within the [Persistence Layer](#rideshare-apis):
+1.  The API Management **/trips** endpoint routes the request to the `CreateTrip` function within the **Trips** Function App. This function validates the authentication token, validates the passenger information, and finally calls the `UpsertTrip` method within the [Persistence Layer](api-endpoints.md#rideshare-apis):
 
     ```csharp
     [FunctionName("CreateTrip")]
-
-    
-
-
-    ```
-
-
     public static async Task<IActionResult> CreateTrip([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "trips")] HttpRequest req,
-
-
-
         ILogger log)
-
-
-
     {
-
-
-
         log.LogInformation("CreateTrip triggered....");
 
-
-
-
-    ```
-
-
         try
-
         {
-
             await Utilities.ValidateToken(req);
-
             string requestBody = new StreamReader(req.Body).ReadToEnd();
-
             TripItem trip = JsonConvert.DeserializeObject<TripItem>(requestBody);
 
-
-
             // validate
-
             if (trip.Passenger == null || string.IsNullOrEmpty(trip.Passenger.Code))
-
                 throw new Exception("A passenger with a valid code must be attached to the trip!!");
 
-
-
             trip.EndDate = null;
-
             var persistenceService = ServiceFactory.GetPersistenceService();
-
             return (ActionResult)new OkObjectResult(await persistenceService.UpsertTrip(trip));
-
         }
-
         catch (Exception e)
-
         {
-
             var error = $"CreateTrip failed: {e.Message}";
-
             log.LogError(error);
-
             if (error.Contains(Constants.SECURITY_VALITION_ERROR))
-
                 return new StatusCodeResult(401);
-
             else
-
                 return new BadRequestObjectResult(error);
-
         }
-
     }
-
     ```
 
-1.  The `UpsertTrip` method within the `Persistence Layer` saves the trip information to Cosmos DB and calls the `TripCreated` method of the `ChangeNotifierService` to initiate the **Trip Manager** Durable Orchestrator, as outlined in the [Durable Orchestrators](#durable-orchestrators) section:
+1.  The `UpsertTrip` method within the `Persistence Layer` saves the trip information to Cosmos DB and calls the `TripCreated` method of the `ChangeNotifierService` to initiate the **Trip Manager** Durable Orchestrator, as outlined in the [Durable Orchestrators](api-endpoints.md#durable-orchestrators) section:
 
     ```csharp
     // Excerpt from the CosmosPersistenceService.UpsertTrip method:
 
-    
-
-
-    ```
-
-
-    ```
-
-
     var response = await (await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), trip);
 
-
-
     if (!isIgnoreChangeFeed && blInsert)
-
     {
-
         await _changeNotifierService.TripCreated(trip, await RetrieveActiveTripsCount());
-
     }
-
     ```
 
     ```csharp
     // Excerpt from the ChangeNotifierService.TripCreated method:
 
-
-
     // Start a trip manager
-
     if (!_settingService.IsEnqueueToOrchestrators())
-
     {
-
         var baseUrl = _settingService.GetStartTripManagerOrchestratorBaseUrl();
-
         var key = _settingService.GetStartTripManagerOrchestratorApiKey();
-
         if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
-
             throw new Exception("Trip manager orchestrator base URL and key must be both provided");
 
-
-
         await Utilities.Post<dynamic, dynamic>(null, trip, $"{baseUrl}/tripmanagers?code={key}", new Dictionary<string, string>());
-
     }
-
     else
-
     {
-
         await _storageService.Enqueue(trip);
-
     }
-
     ```
 
-1.  From here, the **Trip Manager** Durable Orchestrator is triggered, which in turn triggers the **Trip Monitor** Durable Orchestrator. As the trip progresses, new Event Grid events are fired to trigger actions by [multiple listeners](#event-grid), including the [SignalR Azure Functions handler](#signalr-handler). The `/components/SignalRTrips.vue` file contains the [JavaScript SignalR client code](#javascript-signalr-client) that connects to the SignalR Service and receives and processes each message. In the code excerpt below, we are handling the `tripDriverPicked` SignalR message, updating the current trip step, setting the local trip state to display to the user, and firing the toast notification:
+1.  From here, the **Trip Manager** Durable Orchestrator is triggered, which in turn triggers the **Trip Monitor** Durable Orchestrator. As the trip progresses, new Event Grid events are fired to trigger actions by [multiple listeners](services-intercommunication.md#event-grid), including the [SignalR Azure Functions handler](services-intercommunication.md#signalr-handler). The `/components/SignalRTrips.vue` file contains the [JavaScript SignalR client code](services-intercommunication.md#javascript-signalr-client) that connects to the SignalR Service and receives and processes each message. In the code excerpt below, we are handling the `tripDriverPicked` SignalR message, updating the current trip step, setting the local trip state to display to the user, and firing the toast notification:
 
     ```javascript
     hubConnection.on('tripDriverPicked', trip => {

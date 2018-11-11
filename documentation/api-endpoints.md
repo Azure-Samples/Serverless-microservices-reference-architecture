@@ -22,235 +22,70 @@ Please note the following:
 
 ```csharp
 public interface IPersistenceService
-
-
-
 {
-
-
-
     // Drivers
-
-
-
     Task<DriverItem> RetrieveDriver(string code);
-
-
-
     Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task<List<DriverItem>> RetrieveDrivers(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task<List<DriverItem>> RetrieveActiveDrivers(int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task<int> RetrieveDriversCount();
-
-
-
     Task<DriverItem> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false);
-
-
-
     Task<string> UpsertDriverLocation(DriverLocationItem driver, bool isIgnoreChangeFeed = false);
-
-
-
     Task<List<DriverLocationItem>> RetrieveDriverLocations(string code, int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task DeleteDriver(string code);
 
-
-
-
-
-
-
     // Trips
-
-
-
     Task<TripItem> RetrieveTrip(string code);
-
-
-
     Task<List<TripItem>> RetrieveTrips(int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task<List<TripItem>> RetrieveTrips(double latitude, double longitude, double miles, int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task<List<TripItem>> RetrieveActiveTrips(int max = Constants.MAX_RETRIEVE_DOCS);
-
-
-
     Task<int> RetrieveTripsCount();
-
-
-
     Task<int> RetrieveActiveTripsCount();
-
-
-
     Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false);
-
-
-
     Task DeleteTrip(string code);
 
-
-
-
-
-
-
     // High-level methods
-
-
-
     Task<TripItem> AssignTripAvailableDrivers(TripItem trip, List<DriverItem> drivers);
-
-
-
     Task<TripItem> AssignTripDriver(TripItem trip, string driverCode);
-
-
-
     Task RecycleTripDriver(TripItem trip);
-
-
-
     Task<TripItem> CheckTripCompletion(TripItem trip);
-
-
-
     Task<TripItem> AbortTrip(TripItem trip);
-
-
-
 }
-
-
-
 ```
 
 - To make things testable, the Functions are only a wrapper around the PersistenceLayer. Here is an example:
 
 ```csharp
 [FunctionName("GetTrips")]
-
-
-
 public static async Task<IActionResult> GetTrips([HttpTrigger(AuthorizationLevel.Function, "get", Route = "trips")] HttpRequest req,
-
-
-
     ILogger log)
-
-
-
 {
-
-
-
     log.LogInformation("GetTrips triggered....");
 
-
-
-
-
-
-
     try
-
-
-
     {
-
-
-
         var persistenceService = ServiceFactory.GetPersistenceService();
-
-
-
         return (ActionResult)new OkObjectResult(await persistenceService.RetrieveTrips());
-
-
-
     }
-
-
-
     catch (Exception e)
-
-
-
     {
-
-
-
         var error = $"GetTrips failed: {e.Message}";
-
-
-
         log.LogError(error);
-
-
-
         return new BadRequestObjectResult(error);
-
-
-
     }
-
-
-
 }
-
-
-
 ```
 
 - The `PersistenceService` accepts an `IChangeNotifierService` as one of its dependencies. The purpose of this service is to handle entity changes:
 
 ```csharp
 public interface IChangeNotifierService
-
-
-
 {
-
-
-
     Task DriverChanged(DriverItem driver);
-
-
-
     Task TripCreated(TripItem trip, int activeTrips);
-
-
-
     Task TripDeleted(TripItem trip);
-
-
-
     Task PassengerChanged(PassengerItem trip);
-
-
-
 }
-
-
-
 ```
 
 When a trip is added, for example, the change notifier service implementation triggers the `TripManagerOrchestrator` so it creates and assigns a new instance to manage the newly created trip.
@@ -259,137 +94,36 @@ In addition, depending on whether the newly created trip is `normal` or `demo` m
 
 ```csharp
 public async Task TripCreated(TripItem trip, int activeTrips)
-
-
-
 {
-
-
-
     var error = "";
 
-
-
-
-
-
-
     try
-
-
-
     {
-
-
-
         // Start a trip manager
-
-
-
         var baseUrl = _settingService.GetStartTripManagerOrchestratorBaseUrl();
-
-
-
         var key = _settingService.GetStartTripManagerOrchestratorApiKey();
-
-
-
         if (string.IsNullOrEmpty(baseUrl) || string.IsNullOrEmpty(key))
-
-
-
             throw new Exception("Trip manager orchestrator base URL and key must be both provided");
 
-
-
-
-
-
-
         // Trigger the trip manager orchestrator
-
-
-
-
-
-
-
         // ...omitted for brevity
 
-
-
-
-
-
-
         if (trip.Type == TripTypes.Demo)
-
-
-
         {
-
-
-
             // Trigger the trip demo orchestrator
-
-
-
-
-
-
-
             // ...omitted for brevity
-
-
-
         }
-
-
-
     }
-
-
-
     catch (Exception ex)
-
-
-
     {
-
-
-
         error = $"Error while starting the trip manager: {ex.Message}";
-
-
-
         throw new Exception(error);
-
-
-
     }
-
-
-
     finally
-
-
-
     {
-
-
-
         _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
-
-
-
     }
-
-
-
 }
-
-
-
 ```
 
 ### Durable Orchestrators
@@ -438,7 +172,7 @@ The following describes the process that newly created trips go through:
 **Please note** that, in the the reference implementation:
 
 - The trip is considered `complete` if the trip's driver location matches the trip's destination location. While this is not realistic, it does provide a method to determine when the trip is complete. In reality though, there has to be a more reliable way of determining completion.
-- The orchestrators currently use the persistence layer (described above) instead of calling the APIs to retrieve and persist trips. There is a setting in the `ISettingService` that controls this behavior i.e. `IsPersistDirectly`. More about this in the [source code](#source-code-structure) section.
+- The orchestrators currently use the persistence layer (described above) instead of calling the APIs to retrieve and persist trips. There is a setting in the `ISettingService` that controls this behavior i.e. `IsPersistDirectly`. More about this in the [source code](source-code-structure.md) document.
 - The route locations that the `Demo` uses to step through the trip's source and destination locations is not really. It is basically the random number of locations made up from the trip's source location and destination location. In real scenarios, [Bing Route API](https://msdn.microsoft.com/library/ff701717.aspx?f=255&MSPPError=-2147217396) can be used to determine the actual route between the source and destination.
 
 The Azure Durable Functions are quite powerful as they provide a way to instantiate thousands of managed stateful instances in a serverless environment. This capability exists in other Azure products such as [Service Fabric](https://azure.microsoft.com/services/service-fabric/)'s stateful actors. The difference is that the Azure Durable Functions require a lot less effort to setup, maintain and code.
@@ -447,88 +181,13 @@ Although Azure Durable Functions can [query and enumerate all instances](https:/
 
 ```csharp
 IList<DurableOrchestrationStatus> instances = await context.GetStatusAsync(); // You can pass CancellationToken as a parameter.
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 foreach (var instance in instances)
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 {
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
     log.Info(JsonConvert.SerializeObject(instance));
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 };
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 ```
 
-it is still probably a good idea to store the instance ids and their status in a table storage for example in case a solution requires special querying capability against the instances.
+It is still probably a good idea to store the instance ids and their status in a table storage for example in case a solution requires special querying capability against the instances.
 
 ## Next steps
 

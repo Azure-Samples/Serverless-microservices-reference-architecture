@@ -25,114 +25,39 @@ The following are some notes about the source code:
 ```csharp
 private static ISettingService _settingService = null;
 
-
-
-
-
-
-
 public static ISettingService GetSettingService()
-
-
-
 {
-
-
-
     if (_settingService == null)
-
-
-
     _settingService = new SettingService();
 
-
-
-
-
-
-
     return _settingService;
-
-
-
 }
-
-
-
 ```
 
 - The `ISettingService` service implementation is used to read settings from environment variables:
 
 ```csharp
 var seconds = _settingService.GetTripMonitorIntervalInSeconds();
-
-
-
 var maxIterations = _settingService..GetTripMonitorMaxIterations();
-
-
-
 ```
 
 - The `ILoggerService` service implementation sends traces, exceptions, custom events and metrics to the `Application Insights` resource associated with the Function App:
 
 ```csharp
     // Send a trace
-
-
-
     _loggerService.Log($"{LOG_TAG} - TripCreated - Error: {error}");
 
-
-
-
-
-
-
     // Send an event telemetry
-
-
-
     _loggerService.Log("Trip created", new Dictionary<string, string>
-
-
-
     {
-
-
-
         {"Code", trip.Code },
-
-
-
         {"Passenger", $"{trip.Passenger.FirstName} {trip.Passenger.LastName}" },
-
-
-
         {"Destination", $"{trip.Destination.Latitude} - {trip.Destination.Longitude}" },
-
-
-
         {"Mode", $"{trip.Type}" }
-
-
-
     });
 
-
-
-
-
-
-
     // Send a metric telemetry
-
-
-
     _loggerService.Log("Active trips", activeTrips);
-
-
-
 ```
 
 - `IPersistenceService` has two implementations: `CosmosPersistenceService` and `SqlPersistenceService`. The Azure Cosmos DB implementation is complete and used in the APIs while the SQL implementation is partially implemented and only used in the `TripExternalizations2PowerBI` handler to persist trip summaries to SQL.

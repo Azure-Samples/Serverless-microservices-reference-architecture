@@ -84,7 +84,7 @@ When a passenger decides to request a trip, a request containing the passenger i
 
 The `Trips` Microservice stores the trip in Azure Cosmos DB, enqueues the `Trip` item to the `Orchestrators` Microservice and returns the newly created `Trip` information such as code and other properties. Optionally the `Orchestrators` Microservice can also be triggered via its internally-exposed API.
 
-**For more information** on the operation of the durable orchestrators, please refer to the [Durable Orchestrators](#durable-orchestrators) section below.
+**For more information** on the operation of the durable orchestrators, please refer to the [Durable Orchestrators](api-endpoints.md#durable-orchestrators) document.
 
 The `Orchestrators` Microservice instantiates a Durable `Trip Manager` to manage the trip until it completes. The `Trip Manager` performs the following tasks:
 
