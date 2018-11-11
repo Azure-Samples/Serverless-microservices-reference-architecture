@@ -111,6 +111,6 @@ When events are sent to the `Event Grid Topic`, they trigger the different handl
 
 Read about the API endpoints that are created using Azure Functions:
 
-- [API endpoints using Azure Functions](documentation/api-endpoints.md)
-  - [RideShare APIs](documentation/api-endpoints.md#rideshare-apis)
-  - [Durable Orchestrators](documentation/api-endpoints.md#durable-orchestrators)
+- [API endpoints using Azure Functions](api-endpoints.md)
+  - [RideShare APIs](api-endpoints.md#rideshare-apis)
+  - [Durable Orchestrators](api-endpoints.md#durable-orchestrators)
