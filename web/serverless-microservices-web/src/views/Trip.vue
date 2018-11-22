@@ -189,15 +189,15 @@ export default {
         },
         {
           id: 2,
-          name: 'Microsoft Conference Center',
-          latitude: 47.6384841,
-          longitude: -122.1449758
+          name: 'Hyatt Regency Bellevue',
+          latitude: 47.618282,
+          longitude: -122.201035
         },
         {
           id: 3,
-          name: 'Microsoft Production Studios',
-          latitude: 47.6490121,
-          longitude: -122.139642
+          name: 'Space Needle',
+          latitude: 47.620530,
+          longitude: -122.349300
         }
       ],
       destinationLocations: [

@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ServerlessMicroservices.AI": {
+      "commandName": "Project",
+      "commandLineArgs": "seedMlTrainingData -a \"test\" -e \"uri\" -r \"125\""
+    }
+  }
+}

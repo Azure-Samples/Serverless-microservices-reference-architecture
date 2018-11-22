@@ -1,0 +1,19 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp2.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\ServerlessMicroservices.Models\ServerlessMicroservices.Models.csproj" />
+    <ProjectReference Include="..\ServerlessMicroservices.Shared\ServerlessMicroservices.Shared.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Reference Include="Microsoft.Extensions.CommandLineUtils">
+      <HintPath>..\..\..\..\..\..\Users\joel\.nuget\packages\microsoft.extensions.commandlineutils\1.1.1\lib\netstandard1.3\Microsoft.Extensions.CommandLineUtils.dll</HintPath>
+    </Reference>
+  </ItemGroup>
+
+</Project>
