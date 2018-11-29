@@ -57,6 +57,11 @@ namespace ServerlessMicroservices.Models
 
         [JsonProperty(PropertyName = "type")]
         public TripTypes Type { get; set; } = TripTypes.Normal;
+
+        // Trip review
+        // TODO: Persist Trip review to the database
+        //[JsonProperty(PropertyName = "passengerTripReview")]
+        //public PassengerTripReview PassengerTripReview { get; set; } = null;
     }
 
     public class TripLocation
@@ -91,4 +96,5 @@ namespace ServerlessMicroservices.Models
         public string TripCode { get; set; } = "";
         public string DriverCode { get; set; } = "";
     }
+
 }

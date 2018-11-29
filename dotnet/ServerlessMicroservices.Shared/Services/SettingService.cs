@@ -66,6 +66,9 @@ namespace ServerlessMicroservices.Shared.Services
         private const string GraphClientId = "GraphClientId";
         private const string GraphClientSecret = "GraphClientSecret";
 
+        // Trip functions
+        private const string TextAnalyticsSentimentUriKey = "TextAnalyticsSentimentUri";
+        private const string TextAnalyticsKeyPhraseUriKey = "TextAnalyticsKeyPhraseUri";
 
         public string GetSiteName()
         {
@@ -300,6 +303,17 @@ namespace ServerlessMicroservices.Shared.Services
         public string GetGraphClientSecret()
         {
             return GetEnvironmentVariable(GraphClientSecret);
+        }
+
+        // Trip functions
+        public string GetTextAnalyticsSentimentUri()
+        {
+            return GetEnvironmentVariable(TextAnalyticsSentimentUriKey);
+        }
+
+        public string GetTextAnalyticsKeyPhraseUri()
+        {
+            return GetEnvironmentVariable(TextAnalyticsKeyPhraseUriKey);
         }
 
         //*** PRIVATE ***//

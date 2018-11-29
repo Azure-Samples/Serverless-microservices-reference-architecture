@@ -149,6 +149,39 @@
                 </div>
             </div>
         </section>
+        <b-button v-b-modal.tripSurveyModal variant="primary"><i class="far fa-list-alt"></i> Submit feedback</b-button>
+        <!-- Trip survey modal -->
+        <b-modal id="tripSurveyModal"
+                ref="modalRef"
+                title="How was your trip?"
+                header-bg-variant="warning"
+                header-text-variant="dark"
+                footer-bg-variant="light"
+                footer-text-variant="dark">
+          <b-container fluid>
+            <b-form-row>
+              <h3>Let us know how <!--{{trip.driver.firstName}}--> did</h3>
+              <p>Your feedback is important to us. Please rate and review your driver. Let us know what we did right and how we can improve.</p>
+            </b-form-row>
+            <b-form-row>
+              <b-col><em><strong>Rate your trip</strong></em></b-col><b-col>ADD STAR RATING</b-col>
+            </b-form-row>
+            <b-form-row>
+              <hr />
+            </b-form-row>
+            <b-form-row>
+              <b-col aria-colspan="2"><textarea rows="4" cols="52"></textarea></b-col>
+            </b-form-row>
+          </b-container>
+          <div slot="modal-footer" class="w-100">
+            <b-btn size="sm" class="float-left" variant="critical" @click="hideModal()">
+              Cancel
+            </b-btn>
+            <b-btn size="sm" class="float-right" variant="primary" @click="hideModal()">
+              Submit
+            </b-btn>
+          </div>
+        </b-modal>
     </div>
 </template>
 
@@ -196,8 +229,8 @@ export default {
         {
           id: 3,
           name: 'Space Needle',
-          latitude: 47.620530,
-          longitude: -122.349300
+          latitude: 47.62053,
+          longitude: -122.3493
         }
       ],
       destinationLocations: [
@@ -343,6 +376,9 @@ export default {
     },
     selectDestination(location) {
       this.selectedDestinationLocation = location;
+    },
+    hideModal() {
+      this.$refs.modalRef.hide();
     }
   },
   mounted() {

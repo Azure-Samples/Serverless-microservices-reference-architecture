@@ -47,6 +47,14 @@
                 </div>
             </div>
         </div>
+        <div class="container">
+            <div class="section-heading text-center" style="margin-bottom:50px;">
+                <h2>Predict best pickup location</h2>
+                <p class="text-muted">Use our advanced AI to predict the best place to pickup passengers any given day</p>
+                <hr>
+                TODO: Add pickup prediction form here
+            </div>
+        </div>
     </section>
     <!-- Driver information modal -->
     <b-modal id="driverInformationModal"

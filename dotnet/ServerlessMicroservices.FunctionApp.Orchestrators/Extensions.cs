@@ -52,8 +52,6 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         }
     }
 
-
-
     public static class ResponseTranscriptHelpers
     {
         public static async Task FromHttpResponseMessage(this HttpResponse resp, HttpResponseMessage msg)
@@ -95,4 +93,5 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             return msg;
         }
     }
+
 }

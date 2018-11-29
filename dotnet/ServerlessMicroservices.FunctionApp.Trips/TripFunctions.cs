@@ -15,6 +15,8 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
+using ServerlessMicroservices.Models.Request;
 
 namespace ServerlessMicroservices.FunctionApp.Trips
 {
@@ -162,10 +164,77 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             }
         }
 
+        [FunctionName("SubmitTripReview")]
+        public static async Task<IActionResult> SubmitTripReview([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "trips/{code}/drivers/{drivercode}/review")] HttpRequest req,
+            string code,
+            string drivercode,
+            ILogger log)
+        {
+            log.LogInformation("SubmitTripReview triggered....");
+
+            try
+            {
+                await Utilities.ValidateToken(req);
+                var settingService = ServiceFactory.GetSettingService();
+                var requestBody = new StreamReader(req.Body).ReadToEnd();
+                var submittedReview = JsonConvert.DeserializeObject<dynamic>(requestBody);
+
+                // validate
+                if (submittedReview.driverRating == null || submittedReview.review == null ||
+                    string.IsNullOrWhiteSpace((string)submittedReview.review))
+                    throw new Exception("You must submit a driverRating (decimal) and review (string) value");
+
+                var requestPayload = new CognitiveRequest
+                {
+                    Documents = new List<RequestDocument>
+                    {
+                        new RequestDocument
+                        {
+                            Text = submittedReview.review
+                        }
+                    }
+                };
+
+                var sentimentResponse = await Utilities.Post<dynamic, CognitiveSentimentResponse>(null, requestPayload, settingService.GetTextAnalyticsSentimentUri(), new Dictionary<string, string>());
+                var keyPhraseResponse = await Utilities.Post<dynamic, CognitiveKeyPhrasesResponse>(null, requestPayload, settingService.GetTextAnalyticsKeyPhraseUri(), new Dictionary<string, string>());
+
+                // Validate responses
+                if (sentimentResponse.Documents.Count == 0)
+                {
+                    log.LogWarning("SubmitTripReview function failed to retrieve the sentiment score. Please try again.");
+                    return new StatusCodeResult(400);
+                }
+
+                if (keyPhraseResponse.Documents.Count == 0)
+                {
+                    log.LogWarning("SubmitTripReview function failed to retrieve the key phrases from the review. Please try again.");
+                    return new StatusCodeResult(400);
+                }
+
+                // TODO: Persist review (PassengerTripReview) to the trip record, as its own PassengerTripReviewItem, and update the driver's average score.
+                //var persistenceService = ServiceFactory.GetPersistenceService();
+
+                return (ActionResult)new OkObjectResult(new
+                {
+                    sentimentScore = sentimentResponse.Documents[0].Score,
+                    keyPhrases = keyPhraseResponse.Documents[0].KeyPhrases
+                });
+            }
+            catch (Exception e)
+            {
+                var error = $"CreateTrip failed: {e.Message}";
+                log.LogError(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
+            }
+        }
+
         /*** SignalR Info or Negotiate Function ****/
         [FunctionName("GetSignalRInfo")]
         public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
-            [SignalRConnectionInfo(HubName = "trips")] AzureSignalRConnectionInfo info,
+            [SignalRConnectionInfo(HubName = "trips")] SignalRConnectionInfo info,
             ILogger log)
         {
             log.LogInformation("GetSignalRInfo triggered....");

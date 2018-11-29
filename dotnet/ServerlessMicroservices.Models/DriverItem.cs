@@ -24,6 +24,9 @@ namespace ServerlessMicroservices.Models
 
         [JsonProperty(PropertyName = "isAcceptingRides")]
         public bool IsAcceptingRides { get; set; } = true;
+
+        [JsonProperty(PropertyName = "averageRating")]
+        public decimal? AverageRating { get; set; } = null;
     }
 
     public class DriverLocationItem : BaseItem

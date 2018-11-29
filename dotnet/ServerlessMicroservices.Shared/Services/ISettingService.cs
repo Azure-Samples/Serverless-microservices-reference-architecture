@@ -60,5 +60,9 @@
         string GetGraphTenantId();
         string GetGraphClientId();
         string GetGraphClientSecret();
+
+        // Trip functions settings
+        string GetTextAnalyticsSentimentUri();
+        string GetTextAnalyticsKeyPhraseUri();
     }
 }
