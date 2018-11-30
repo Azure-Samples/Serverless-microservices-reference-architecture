@@ -15,13 +15,14 @@
     "axios": "^0.18.0",
     "bootstrap-vue": "^2.0.0-rc.11",
     "msal": "^0.2.2",
+    "signalrcoreclientpreview": "~1.0.0-preview1-t000",
     "vue": "^2.5.17",
     "vue-blockui": "^1.1.7",
     "vue-flatpickr-component": "^6.2.0",
     "vue-izitoast": "^1.1.0",
     "vue-router": "^3.0.1",
-    "vuex": "^3.0.1",
-    "signalrcoreclientpreview": "~1.0.0-preview1-t000"
+    "vue-stars": "^1.0.0",
+    "vuex": "^3.0.1"
   },
   "devDependencies": {
     "@vue/cli-plugin-babel": "^3.0.0",

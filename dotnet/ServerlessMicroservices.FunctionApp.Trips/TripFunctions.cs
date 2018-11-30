@@ -242,7 +242,9 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             try
             {
                 if (info == null)
+                {
                     throw new Exception("SignalR Info is null!");
+                }
 
                 return (ActionResult)new OkObjectResult(info);
             }

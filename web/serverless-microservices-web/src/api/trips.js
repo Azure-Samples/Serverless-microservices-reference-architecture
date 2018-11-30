@@ -7,3 +7,11 @@ const apiKey = window.apiKey;
 export function createTrip(trip) {
   return post(`${baseUrl}/trips`, trip, apiKey).then(checkResponse);
 }
+
+export function submitTripReview(code, driverCode, review) {
+  return post(
+    `${baseUrl}/trips/${code}/drivers/${driverCode}/review`,
+    review,
+    apiKey
+  ).then(checkResponse);
+}

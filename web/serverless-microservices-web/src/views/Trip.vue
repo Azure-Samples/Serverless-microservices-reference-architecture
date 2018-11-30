@@ -1,209 +1,321 @@
 <template>
   <div>
     <header class="masthead masthead-custom">
-        <div class="container h-100" style="height:155px;">
-            <div class="row justify-content-center h-100" style="height:120px;">
-                <div class="col-12 col-lg-7 mt-auto" style="margin:0px;margin-top:0px;margin-bottom:0px;height:80px;max-width:100%;">
-                    <div class="mx-auto header-content">
-                        <h1 class="mb-5">MY TRIP<img class="float-right" src="../assets/img/ride-icon.png" alt="Start my ride"></h1>
-                    </div>
-                </div>
+      <div class="container h-100" style="height:155px;">
+        <div class="row justify-content-center h-100" style="height:120px;">
+          <div
+            class="col-12 col-lg-7 mt-auto"
+            style="margin:0px;margin-top:0px;margin-bottom:0px;height:80px;max-width:100%;"
+          >
+            <div class="mx-auto header-content">
+              <h1 class="mb-5">
+                MY TRIP
+                <img
+                  class="float-right"
+                  src="../assets/img/ride-icon.png"
+                  alt="Start my ride"
+                >
+              </h1>
             </div>
+          </div>
         </div>
+      </div>
     </header>
     <BlockUI message="Please wait..." :html="html" v-show="contentLoading"></BlockUI>
     <section id="features" class="features" style="padding-top:60px;">
-        <div class="container">
-            <div class="section-heading text-center" style="margin-bottom:50px;">
-                <h2>Find my ride!</h2>
-                <p class="text-muted">Confirm your pickup and destination to start your trip.</p>
-                <hr>
-            </div>
+      <div class="container">
+        <div class="section-heading text-center" style="margin-bottom:50px;">
+          <h2>Find my ride!</h2>
+          <p class="text-muted">Confirm your pickup and destination to start your trip.</p>
+          <hr>
+        </div>
+        <div class="row">
+          <div class="container-fluid">
             <div class="row">
-                <div class="container-fluid">
-                    <div class="row">
-                        <div class="col-md-4">
-                            <div class="feature-item"><i class="icon-location-pin text-primary"></i>
-                                <h3>Confirm pickup location</h3>
-                            </div>
-                            <div class="feature-item">
-                                <b-dropdown id="ddown-pickup" text="Pickup Location" variant="info" class="">
-                                    <b-dropdown-item-button @click.stop="selectPickup(location)" v-bind:key ="location.id" v-for="location in pickUpLocations">{{location.name}}</b-dropdown-item-button>
-                                </b-dropdown>
-                                <div v-show="selectedPickUpLocationName !== null">
-                                    {{ selectedPickUpLocationName }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="feature-item"><i class="icon-map text-primary"></i>
-                                <h3>Select destination</h3>
-                            </div>
-                            <div class="feature-item">
-                                <b-dropdown id="ddown-pickup" text="Destination" variant="info" class="">
-                                    <b-dropdown-item-button @click.stop="selectDestination(location)" v-bind:key ="location.id" v-for="location in destinationLocations">{{location.name}}</b-dropdown-item-button>
-                                </b-dropdown>
-                                <div v-show="selectedDestinationLocationName !== null">
-                                    {{ selectedDestinationLocationName }}
-                                </div>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="feature-item"><i class="icon-flag text-primary"></i>
-                                <h3>Request a driver</h3>
-                            </div>
-                            <div class="feature-item">
-                                <b-button id="request-driver" text="Request Driver" variant="primary" v-bind:disabled="requestDriverDisabled" @click="requestDriver()">
-                                    Request Driver
-                                </b-button>
-                                <p v-show="requestDriverDisabled" class="text-muted"><em>Select your pickup location and destination to start your trip</em></p>
-                            </div>
-                        </div>
-                    </div>
+              <div class="col-md-4">
+                <div class="feature-item">
+                  <i class="icon-location-pin text-primary"></i>
+                  <h3>Confirm pickup location</h3>
                 </div>
+                <div class="feature-item">
+                  <b-dropdown id="ddown-pickup" text="Pickup Location" variant="info" class>
+                    <b-dropdown-item-button
+                      @click.stop="selectPickup(location)"
+                      v-bind:key="location.id"
+                      v-for="location in pickUpLocations"
+                    >{{location.name}}</b-dropdown-item-button>
+                  </b-dropdown>
+                  <div v-show="selectedPickUpLocationName !== null">{{ selectedPickUpLocationName }}</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="feature-item">
+                  <i class="icon-map text-primary"></i>
+                  <h3>Select destination</h3>
+                </div>
+                <div class="feature-item">
+                  <b-dropdown id="ddown-pickup" text="Destination" variant="info" class>
+                    <b-dropdown-item-button
+                      @click.stop="selectDestination(location)"
+                      v-bind:key="location.id"
+                      v-for="location in destinationLocations"
+                    >{{location.name}}</b-dropdown-item-button>
+                  </b-dropdown>
+                  <div
+                    v-show="selectedDestinationLocationName !== null"
+                  >{{ selectedDestinationLocationName }}</div>
+                </div>
+              </div>
+              <div class="col-md-4">
+                <div class="feature-item">
+                  <i class="icon-flag text-primary"></i>
+                  <h3>Request a driver</h3>
+                </div>
+                <div class="feature-item">
+                  <b-button
+                    id="request-driver"
+                    text="Request Driver"
+                    variant="primary"
+                    v-bind:disabled="requestDriverDisabled"
+                    @click="requestDriver()"
+                  >Request Driver</b-button>
+                  <p v-show="requestDriverDisabled" class="text-muted">
+                    <em>Select your pickup location and destination to start your trip</em>
+                  </p>
+                </div>
+              </div>
             </div>
-            <hr>
-            <!-- <div class="section-heading text-center" style="margin-bottom:50px;">
+          </div>
+        </div>
+        <hr>
+        <!-- <div class="section-heading text-center" style="margin-bottom:50px;">
                 <h2>Trip progress</h2>
                 <hr>
-            </div> -->
-            <ol class="step-indicator" key="trip-progress">
-                <li :class="tripRequestedClass">
-                    <div class="step"><i class="fas fa-check"></i></div>
-                    <div class="caption hidden-xs hidden-sm">Trip requested</div>
-                </li>
-                <li :class="driverFoundClass">
-                    <div class="step"><i class="fas fa-car"></i></div>
-                    <div class="caption hidden-xs hidden-sm">Driver found</div>
-                </li>
-                <li :class="tripStartedClass">
-                    <div class="step"><i class="fas fa-car-side"></i></div>
-                    <div class="caption hidden-xs hidden-sm">Trip started</div>
-                </li>
-                <li :class="tripEndedClass">
-                    <div class="step"><i class="fas fa-flag-checkered"></i></div>
-                    <div class="caption hidden-xs hidden-sm">You have arrived!</div>
-                </li>
-            </ol>
-        </div>
+        </div>-->
+        <ol class="step-indicator" key="trip-progress">
+          <li :class="tripRequestedClass">
+            <div class="step">
+              <i class="fas fa-check"></i>
+            </div>
+            <div class="caption hidden-xs hidden-sm">Trip requested</div>
+          </li>
+          <li :class="driverFoundClass">
+            <div class="step">
+              <i class="fas fa-car"></i>
+            </div>
+            <div class="caption hidden-xs hidden-sm">Driver found</div>
+          </li>
+          <li :class="tripStartedClass">
+            <div class="step">
+              <i class="fas fa-car-side"></i>
+            </div>
+            <div class="caption hidden-xs hidden-sm">Trip started</div>
+          </li>
+          <li :class="tripEndedClass">
+            <div class="step">
+              <i class="fas fa-flag-checkered"></i>
+            </div>
+            <div class="caption hidden-xs hidden-sm">You have arrived!</div>
+          </li>
+        </ol>
+      </div>
     </section>
     <section id="features" class="features" style="padding-top:10px;">
-        <div class="container">
-             <div class="row">
-                <div class="col-lg-6 my-auto" v-if="currentStep > 0">
-                    <div class="container-fluid" v-if="driverFound">
-                        <div class="row">
-                            <div class="col-lg-6">
-                                <div class="feature-item"><i class="icon-user text-primary"></i>
-                                    <h3>Your driver is {{trip.driver.firstName}} {{trip.driver.lastName}}</h3>
-                                    <p class="text-muted">Meet {{trip.driver.firstName}} at the pickup point.</p>
-                                </div>
-                            </div>
-                            <div class="col-lg-6">
-                                <div class="feature-item">
-                                    <div class="card text-black bg-warning">
-                                        <div class="card-header">CAR</div>
-                                        <div class="card-body">
-                                            <b-form-row>
-                                            <b-col><em><strong>Make</strong></em></b-col><b-col>{{trip.driver.car.make}}</b-col>
-                                            </b-form-row>
-                                            <b-form-row>
-                                            <b-col><em><strong>Model</strong></em></b-col><b-col>{{trip.driver.car.model}}</b-col>
-                                            </b-form-row>
-                                            <b-form-row>
-                                            <b-col><em><strong>Color</strong></em></b-col><b-col>{{trip.driver.car.color}}</b-col>
-                                            </b-form-row>
-                                            <b-form-row>
-                                            <b-col><em><strong>License plate</strong></em></b-col><b-col>{{trip.driver.car.licensePlate}}</b-col>
-                                            </b-form-row>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                    <div class="container-fluid" v-else>
-                        <div class="feature-item"><i class="icon-user text-primary"></i>
-                            <h3>Searching for a nearby driver...</h3>
-                            <p class="text-muted">Your driver's information will appear here once found.</p>
-                        </div>
-                    </div>
+      <div class="container">
+        <div class="row">
+          <div class="col-lg-6 my-auto" v-if="currentStep > 0">
+            <div class="container-fluid" v-if="driverFound">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="feature-item">
+                    <i class="icon-user text-primary"></i>
+                    <h3>Your driver is {{trip.driver.firstName}} {{trip.driver.lastName}}</h3>
+                    <p class="text-muted">Meet {{trip.driver.firstName}} at the pickup point.</p>
+                  </div>
                 </div>
-                <div class="col-lg-6 my-auto" v-else>
-                    <div class="container-fluid">
-                        <div class="feature-item"><i class="icon-screen-smartphone text-primary"></i>
-                            <h3>Use the options above to find a ride</h3>
-                            <p class="text-muted">Confirm your pickup location, set your destination, then select <strong>request driver</strong>
-                            to get started. Your driver information will appear here once they are found!</p>
-                        </div>
+                <div class="col-lg-6">
+                  <div class="feature-item">
+                    <div class="card text-black bg-warning">
+                      <div class="card-header">CAR</div>
+                      <div class="card-body">
+                        <b-form-row>
+                          <b-col>
+                            <em>
+                              <strong>Make</strong>
+                            </em>
+                          </b-col>
+                          <b-col>{{trip.driver.car.make}}</b-col>
+                        </b-form-row>
+                        <b-form-row>
+                          <b-col>
+                            <em>
+                              <strong>Model</strong>
+                            </em>
+                          </b-col>
+                          <b-col>{{trip.driver.car.model}}</b-col>
+                        </b-form-row>
+                        <b-form-row>
+                          <b-col>
+                            <em>
+                              <strong>Color</strong>
+                            </em>
+                          </b-col>
+                          <b-col>{{trip.driver.car.color}}</b-col>
+                        </b-form-row>
+                        <b-form-row>
+                          <b-col>
+                            <em>
+                              <strong>License plate</strong>
+                            </em>
+                          </b-col>
+                          <b-col>{{trip.driver.car.licensePlate}}</b-col>
+                        </b-form-row>
+                      </div>
                     </div>
+                  </div>
                 </div>
-                <div class="col-lg-6 my-auto">
-                    <div class="device-container">
-                        <div class="device-container">
-                            <div><img class="img-fluid" src="../assets/img/yellow-car.png" alt="Yellow car"></div>
-                        </div>
-                            <p class="text-muted" style="margin-top:28px;font-size:16px;">Our drivers pass rigorous background checks and are required to maintain a high standard of driving, customer satisfaction, and vehicle maintenance. You will be rolling like a rockstar in no time!</p>
-                        </div>
-                    </div>
+              </div>
+              <!-- TRIP REVIEW FEEDBACK FORM -->
+              <div class="row">
+                <div class="col-lg-12">
+                  <!-- <b-button v-b-modal.tripSurveyModal variant="primary" :disabled="currentStep < 4">
+                    <i class="far fa-list-alt"></i> Review your trip
+                  </b-button>-->
+                  <b-button @click="showModal()" variant="primary">
+                    <i class="far fa-list-alt"></i> Review your trip
+                  </b-button>
                 </div>
+              </div>
             </div>
-        </section>
-        <b-button v-b-modal.tripSurveyModal variant="primary"><i class="far fa-list-alt"></i> Submit feedback</b-button>
-        <!-- Trip survey modal -->
-        <b-modal id="tripSurveyModal"
-                ref="modalRef"
-                title="How was your trip?"
-                header-bg-variant="warning"
-                header-text-variant="dark"
-                footer-bg-variant="light"
-                footer-text-variant="dark">
-          <b-container fluid>
-            <b-form-row>
-              <h3>Let us know how <!--{{trip.driver.firstName}}--> did</h3>
-              <p>Your feedback is important to us. Please rate and review your driver. Let us know what we did right and how we can improve.</p>
-            </b-form-row>
-            <b-form-row>
-              <b-col><em><strong>Rate your trip</strong></em></b-col><b-col>ADD STAR RATING</b-col>
-            </b-form-row>
-            <b-form-row>
-              <hr />
-            </b-form-row>
-            <b-form-row>
-              <b-col aria-colspan="2"><textarea rows="4" cols="52"></textarea></b-col>
-            </b-form-row>
-          </b-container>
-          <div slot="modal-footer" class="w-100">
-            <b-btn size="sm" class="float-left" variant="critical" @click="hideModal()">
-              Cancel
-            </b-btn>
-            <b-btn size="sm" class="float-right" variant="primary" @click="hideModal()">
-              Submit
-            </b-btn>
+            <div class="container-fluid" v-else>
+              <div class="feature-item">
+                <i class="icon-user text-primary"></i>
+                <h3>Searching for a nearby driver...</h3>
+                <p class="text-muted">Your driver's information will appear here once found.</p>
+              </div>
+            </div>
           </div>
-        </b-modal>
-    </div>
+          <div class="col-lg-6 my-auto" v-else>
+            <div class="container-fluid">
+              <div class="feature-item">
+                <i class="icon-screen-smartphone text-primary"></i>
+                <h3>Use the options above to find a ride</h3>
+                <p class="text-muted">
+                  Confirm your pickup location, set your destination, then select
+                  <strong>request driver</strong>
+                  to get started. Your driver information will appear here once they are found!
+                </p>
+              </div>
+            </div>
+          </div>
+          <div class="col-lg-6 my-auto">
+            <div class="device-container">
+              <div class="device-container">
+                <div>
+                  <img class="img-fluid" src="../assets/img/yellow-car.png" alt="Yellow car">
+                </div>
+              </div>
+              <p
+                class="text-muted"
+                style="margin-top:28px;font-size:16px;"
+              >Our drivers pass rigorous background checks and are required to maintain a high standard of driving, customer satisfaction, and vehicle maintenance. You will be rolling like a rockstar in no time!</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <!-- Trip survey modal -->
+    <b-modal
+      id="tripSurveyModal"
+      ref="modalRef"
+      title="How was your trip?"
+      header-bg-variant="warning"
+      header-text-variant="dark"
+      footer-bg-variant="light"
+      footer-text-variant="dark"
+    >
+      <b-container fluid>
+        <b-form-row>
+          <h3>
+            Let us know how
+            <span v-if="trip && trip.driver">{{trip.driver.firstName}} did</span>
+            <span v-else>your driver did</span>
+          </h3>
+          <p>Your feedback is important to us. Please rate and review your driver. Let us know what we did right and how we can improve.</p>
+        </b-form-row>
+        <b-form-row>
+          <b-col>
+            <em>
+              <strong>Rate your trip</strong>
+            </em>
+          </b-col>
+          <b-col>
+            <vue-stars name="rating" v-model="driverRating" :value="3" :readonly="false"/>
+          </b-col>
+        </b-form-row>
+        <b-form-row>
+          <hr>
+        </b-form-row>
+        <b-form-row>
+          <b-form-textarea
+            id="reviewTextarea"
+            v-model="review"
+            placeholder="Write your review here..."
+            :rows="3"
+            :max-rows="6"
+          ></b-form-textarea>
+        </b-form-row>
+        <b-form-row v-if="reviewResults && reviewResults.sentimentScore">
+          <div v-if="reviewResults.sentimentScore >= 0.50">
+            <h2>
+              <i class="fas fa-grin-beam"></i>
+              ({{reviewResults.sentimentScore}})
+            </h2>
+          </div>
+          <div v-else>
+            <h2>
+              <i class="fas fa-frown"></i>
+              ({{reviewResults.sentimentScore}})
+            </h2>
+          </div>
+        </b-form-row>
+        <b-form-row v-if="reviewResults && reviewResults.keyPhrases">
+          <h3 v-for="phrase in reviewResults.keyPhrases" v-bind:key="phrase">
+            <span class="badge badge-primary">{{phrase}}</span>&nbsp;
+          </h3>
+        </b-form-row>
+      </b-container>
+      <div slot="modal-footer" class="w-100">
+        <b-btn size="sm" class="float-left" variant="critical" @click="hideModal()">Close</b-btn>
+        <b-btn size="sm" class="float-right" variant="primary" @click="submitReview()">Submit</b-btn>
+      </div>
+    </b-modal>
+  </div>
 </template>
 
 <script>
-import { createNamespacedHelpers } from 'vuex';
+import { createNamespacedHelpers } from "vuex";
+import VueStars from "vue-stars";
 const {
   mapGetters: commonGetters,
   mapActions: commonActions
-} = createNamespacedHelpers('common');
-import { getDrivers, getDriver } from '@/api/drivers';
-import { getPassenger } from '@/api/passengers';
-import { Authentication } from '@/utils/Authentication';
+} = createNamespacedHelpers("common");
+import { getDrivers, getDriver } from "@/api/drivers";
+import { getPassenger } from "@/api/passengers";
+import { Authentication } from "@/utils/Authentication";
 const {
   mapGetters: tripGetters,
   mapActions: tripActions
-} = createNamespacedHelpers('trips');
+} = createNamespacedHelpers("trips");
 
 const auth = new Authentication();
 
 export default {
-  name: 'Trip',
-  props: ['authenticated'],
+  name: "Trip",
+  props: ["authenticated"],
+  components: {
+    VueStars
+  },
   data() {
     return {
       drivers: [],
@@ -212,23 +324,25 @@ export default {
       selectedDestinationLocation: null,
       driverInfo: null,
       passengerInfo: null,
+      driverRating: 3,
+      review: "",
       html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
       pickUpLocations: [
         {
           id: 1,
-          name: 'Microsoft Corporate Office',
+          name: "Microsoft Corporate Office",
           latitude: 47.6423354,
           longitude: -122.1391189
         },
         {
           id: 2,
-          name: 'Hyatt Regency Bellevue',
+          name: "Hyatt Regency Bellevue",
           latitude: 47.618282,
           longitude: -122.201035
         },
         {
           id: 3,
-          name: 'Space Needle',
+          name: "Space Needle",
           latitude: 47.62053,
           longitude: -122.3493
         }
@@ -236,28 +350,35 @@ export default {
       destinationLocations: [
         {
           id: 1,
-          name: 'Seattle, Washington',
+          name: "Seattle, Washington",
           latitude: 47.6131746,
           longitude: -122.4821466
         },
         {
           id: 2,
-          name: 'Bellevue, Washington',
+          name: "Bellevue, Washington",
           latitude: 47.5963256,
           longitude: -122.1928181
         },
         {
           id: 3,
-          name: 'Redmond, Washington',
+          name: "Redmond, Washington",
           latitude: 47.6721228,
           longitude: -122.1356409
         }
       ]
     };
   },
+  watch: {
+    currentStep: function(val) {
+      if (val === 4) {
+        this.showModal();
+      }
+    }
+  },
   computed: {
-    ...commonGetters(['notificationSystem', 'user']),
-    ...tripGetters(['trip', 'currentStep', 'contentLoading']),
+    ...commonGetters(["notificationSystem", "user"]),
+    ...tripGetters(["trip", "currentStep", "reviewResults", "contentLoading"]),
     requestDriverDisabled() {
       return (
         this.selectedPickUpLocation === null ||
@@ -310,22 +431,28 @@ export default {
     }
   },
   methods: {
-    ...commonActions(['setUser']),
-    ...tripActions(['setTrip', 'setCurrentStep', 'createTrip']),
+    ...commonActions(["setUser"]),
+    ...tripActions([
+      "setTrip",
+      "setCurrentStep",
+      "createTrip",
+      "submitTripReview",
+      "clearReviewResults"
+    ]),
     createTripRequest(trip) {
       this.createTrip(trip)
         .then(response => {
           this.setCurrentStep(1);
           this.$toast.success(
             `Request Code: <b>${response.code}`,
-            'Driver Requested Successfully',
+            "Driver Requested Successfully",
             this.notificationSystem.options.success
           );
         })
         .catch(err => {
           this.$toast.error(
             err.response ? err.response : err.message ? err.message : err,
-            'Error',
+            "Error",
             this.notificationSystem.options.error
           );
         });
@@ -359,14 +486,14 @@ export default {
           .catch(err => {
             this.$toast.error(
               err.response,
-              'Error',
+              "Error",
               this.notificationSystem.options.error
             );
           });
       } else {
         this.$toast.error(
-          'You must be logged in to start a new trip!',
-          'Error',
+          "You must be logged in to start a new trip!",
+          "Error",
           this.notificationSystem.options.error
         );
       }
@@ -377,8 +504,43 @@ export default {
     selectDestination(location) {
       this.selectedDestinationLocation = location;
     },
+    showModal() {
+      // Clear the results first.
+      this.clearReviewResults();
+      this.$refs.modalRef.show();
+    },
     hideModal() {
       this.$refs.modalRef.hide();
+    },
+    submitReview() {
+      let code = "code";
+      let driverCode = "driverCode";
+      if (this.trip && this.trip.driver) {
+        code = this.trip.code;
+        driverCode = this.trip.driver.code;
+      }
+      console.log(`code: ${code}, driverCode: ${driverCode}`);
+
+      this.submitTripReview({
+        code: code,
+        driverCode: driverCode,
+        rating: this.driverRating,
+        review: this.review
+      })
+        .then(response => {
+          this.$toast.success(
+            `Thank you for your review!`,
+            "Trip review submitted",
+            this.notificationSystem.options.success
+          );
+        })
+        .catch(err => {
+          this.$toast.error(
+            err.response ? err.response : err.message ? err.message : err,
+            "Error",
+            this.notificationSystem.options.error
+          );
+        });
     }
   },
   mounted() {
@@ -427,7 +589,7 @@ section.features .feature-item {
 }
 .step-indicator li:after {
   background-color: #ccc;
-  content: '';
+  content: "";
   display: block;
   height: 1px;
   position: absolute;

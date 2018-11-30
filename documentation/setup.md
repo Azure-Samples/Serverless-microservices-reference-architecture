@@ -708,7 +708,8 @@ For each API, please add a new operation as defined below. Once completed, pleas
 | Get Active Trips | get-active-trips | `GET`/activetrips | None | `GetActiveTrips` Auth Code | 
 | Get Trip | get-trip | `GET`/trips/{code} | code = trip code = string | `GetTrip` Auth Code | 
 | Create Trip | create-trip | `POST`/trips | None | `CreateTrip` Auth Code | 
-| Assign Trip Driver | assign-trip-driver | `POST`/trips/{code}/drivers/{drivercode} | code = trip code = string, drivercode = driver code = string | `AssignTripDriver` Auth Code | 
+| Assign Trip Driver | assign-trip-driver | `POST`/trips/{code}/drivers/{drivercode} | code = trip code = string, drivercode = driver code = string | `AssignTripDriver` Auth Code |
+| Submit Trip Review | submit-trip-review | `POST`/trips/{code}/drivers/{drivercode}/review | code = trip code = string, drivercode = driver code = string | `SubmitTripReview` Auth Code | 
 
 #### Passengers API
 
