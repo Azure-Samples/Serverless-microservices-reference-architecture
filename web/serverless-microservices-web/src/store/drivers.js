@@ -1,4 +1,4 @@
-import { getDrivers } from '@/api/drivers';
+import { getDrivers, predict } from '@/api/drivers';
 
 export default {
   namespaced: true,
@@ -38,6 +38,18 @@ export default {
       try {
         commit('contentLoading', true);
         let drivers = await getDrivers();
+        return drivers.data;
+      } catch (e) {
+        throw e;
+      } finally {
+        commit('contentLoading', false);
+      }
+    },
+
+    async predict({ commit }, payload) {
+      try {
+        commit('contentLoading', true);
+        let drivers = await predict(payload);
         return drivers.data;
       } catch (e) {
         throw e;

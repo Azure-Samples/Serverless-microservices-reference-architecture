@@ -8,8 +8,11 @@ using ServerlessMicroservices.Models;
 using ServerlessMicroservices.Shared.Helpers;
 using ServerlessMicroservices.Shared.Services;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Linq;
 using System.Threading.Tasks;
+using ServerlessMicroservices.Models.Request;
 
 namespace ServerlessMicroservices.FunctionApp.Drivers
 {
@@ -228,6 +231,67 @@ namespace ServerlessMicroservices.FunctionApp.Drivers
             catch (Exception e)
             {
                 var error = $"DeleteDriver failed: {e.Message}";
+                log.LogError(error);
+                if (error.Contains(Constants.SECURITY_VALITION_ERROR))
+                    return new StatusCodeResult(401);
+                else
+                    return new BadRequestObjectResult(error);
+            }
+        }
+
+        [FunctionName("PredictBestPickupLocation")]
+        public static async Task<IActionResult> PredictBestPickupLocation([HttpTrigger(AuthorizationLevel.Anonymous, "get",
+                Route = "predict/{date}")] HttpRequest req,
+            string date,
+            [Blob("data/Samples/RidesharePredictions_%PredictionFileVersion%.json", FileAccess.Read,
+                Connection = "PredictionStorageConnection")] string predictionsJson,
+            ILogger log)
+        {
+            log.LogInformation("PredictBestPickupLocation triggered....");
+            var returnPrediction = new DriverPickupPredictionResponse();
+
+            try
+            {
+                await Utilities.ValidateToken(req);
+
+                var predictions = JsonConvert.DeserializeObject<List<DriverPickupPrediction>>(predictionsJson);
+
+                DateTime.TryParse(date, out var predictionDate);
+
+                if (predictionDate == DateTime.MinValue || predictionDate > DateTime.UtcNow.AddDays(15))
+                {
+                    return new BadRequestObjectResult("You must pass in a valid date that is no greater than 15 days from today.");
+                }
+
+                var candidatePredictions = new List<DriverPickupPredictionPayload>();
+
+                // Filter each prediction set by the requested date.
+                foreach (var prediction in predictions)
+                {
+                    var pred = prediction.Predictions.FirstOrDefault(p => DateTime.Parse(p.D).Equals(predictionDate));
+                    if (pred != null)
+                    {
+                        candidatePredictions.Add(new DriverPickupPredictionPayload
+                        {
+                            LocationFriendlyName = $"{prediction.Location.Latitude}, {prediction.Location.Longitude}",
+                            Location = prediction.Location,
+                            PredictedPickupRequests = pred.Ppr
+                        });
+                    }
+                }
+
+                // Order by top pickup requests.
+                candidatePredictions = candidatePredictions.OrderByDescending(p => p.PredictedPickupRequests).ToList();
+
+                // Return the highest predicted pickup value.
+                returnPrediction.TopPrediction = candidatePredictions.Aggregate((i1, i2) => i1.PredictedPickupRequests > i2.PredictedPickupRequests ? i1 : i2);
+                returnPrediction.AllPredictions = candidatePredictions;
+
+                return (ActionResult)new OkObjectResult(returnPrediction);
+            }
+            catch (Exception e)
+            {
+                var error = $"PredictBestPickupLocation failed: {e.Message}";
                 log.LogError(error);
                 if (error.Contains(Constants.SECURITY_VALITION_ERROR))
                     return new StatusCodeResult(401);

@@ -9,10 +9,17 @@ import BootstrapVue from 'bootstrap-vue';
 import BlockUI from 'vue-blockui';
 import VueIziToast from 'vue-izitoast';
 import 'izitoast/dist/css/iziToast.min.css';
+import * as VueGoogleMaps from 'vue2-google-maps';
 
 Vue.use(BootstrapVue);
 Vue.use(BlockUI);
 Vue.use(VueIziToast);
+Vue.use(VueGoogleMaps, {
+  load: {
+    key: 'AIzaSyCZ84xe7tuFmDUSONuRlJNLIltzaIkVxLw',
+    libraries: 'places,visualization'
+  }
+});
 
 Vue.config.productionTip = false;
 

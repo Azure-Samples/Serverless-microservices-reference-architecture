@@ -222,7 +222,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             }
             catch (Exception e)
             {
-                var error = $"CreateTrip failed: {e.Message}";
+                var error = $"SubmitTripReview failed: {e.Message}";
                 log.LogError(error);
                 if (error.Contains(Constants.SECURITY_VALITION_ERROR))
                     return new StatusCodeResult(401);

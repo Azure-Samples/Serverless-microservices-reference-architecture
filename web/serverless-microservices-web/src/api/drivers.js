@@ -32,6 +32,10 @@ export function getDriverLocationChanges(driverCode) {
   );
 }
 
+export function predict(date) {
+  return get(`${baseUrl}/predict/${date}`, {}, apiKey).then(checkResponse);
+}
+
 // POST methods
 export function createDriver(driver) {
   return post(`${baseUrl}/drivers`, driver, apiKey).then(checkResponse);
