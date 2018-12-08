@@ -19,6 +19,7 @@ In this document:
             - [Create the SignalR Service](#create-the-signalr-service)
             - [Create the B2C tenant](#create-the-azure-ad-b2c-tenant)
         - [Cake Provision](#cake-provision)
+        - [Deploy from ARM template](#deploy-from-arm-template)
     - [Setup](#setup)
         - [Add APIM Products and APIs](#add-apim-products-and-apis)
             - [Drivers API](#drivers-api)
@@ -87,7 +88,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 There are 3 ways to provision the required resources:
 
 - [Manual via the Portal](#manual-via-the-portal)
-- [ARM Template](#arm-template)
+- [ARM Template](#deploy-from-arm-template)
 - [Cake](#cake-provision)
 
 ### Manual via the Portal
@@ -588,6 +589,18 @@ Unfortunately, the Cake script cannot provision the following resources because 
 - [Logic App](#create-the-logic-app)
 - [API Management Service](#create-the-api-management-service)
 - [SignalR Service](#create-the-signalr-service)
+- [B2C Tenant](#create-the-b2c-tenant)
+
+Once completed, please jump to the [setup](#setup) section to continue.
+
+### Deploy from ARM template
+
+You can provision most of the services required through the supplied [ARM (Azure Resource Manager) template](../arm/template.json). The Azure portal provides a nice user interface for deploying resources when using an ARM template. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fserverless-microservices%2Fmaster%2Farm%2Ftemplate.json).
+
+Unfortunately, the ARM template cannot provision the following resources. Please provision these manually as described in the steps above:
+
+- [Logic App](#create-the-logic-app)
+- [API Management Service](#create-the-api-management-service)
 - [B2C Tenant](#create-the-b2c-tenant)
 
 Once completed, please jump to the [setup](#setup) section to continue.
