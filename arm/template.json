@@ -1,0 +1,1800 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_Rideshare_name": {
+      "defaultValue": "Rideshare",
+      "type": "String"
+    },
+    "functionApps_RideshareTrips_name": {
+      "defaultValue": "RideshareTrips",
+      "type": "String"
+    },
+    "serverfarms_FunctionAppServicePlan_name": {
+      "defaultValue": "WestUSPlan",
+      "type": "String"
+    },
+    "functionApps_RideshareDrivers_name": {
+      "defaultValue": "RideshareDrivers",
+      "type": "String"
+    },
+    "servers_rideshare_server_name": {
+      "defaultValue": "rideshare-server",
+      "type": "String"
+    },
+    "functionApps_RidesharePassengers_name": {
+      "defaultValue": "RidesharePassengers",
+      "type": "String"
+    },
+    "config_web_name": {
+      "defaultValue": "web",
+      "type": "String"
+    },
+    "functionApps_RideshareTripArchiver_name": {
+      "defaultValue": "RideshareTripArchiver",
+      "type": "String"
+    },
+    "functionApps_RideshareOrchestrators_name": {
+      "defaultValue": "RideshareOrchestrators",
+      "type": "String"
+    },
+    "serverfarms_RideshareAppService_name": {
+      "defaultValue": "RideshareAppService",
+      "type": "String"
+    },
+    "components_RideshareInsights_name": {
+      "defaultValue": "RideshareInsights",
+      "type": "String"
+    },
+    "databaseAccounts_ridesharedb_name": {
+      "defaultValue": "ridesharedb",
+      "type": "String"
+    },
+    "SignalR_RideshareSignalR_name": {
+      "defaultValue": "RideshareSignalR",
+      "type": "String"
+    },
+    "topics_RideshareTripExternalizations_name": {
+      "defaultValue": "RideshareTripExternalizations",
+      "type": "String"
+    },
+    "advisors_DropIndex_name": {
+      "defaultValue": "DropIndex",
+      "type": "String"
+    },
+    "databases_Rideshare_name": {
+      "defaultValue": "Rideshare",
+      "type": "String"
+    },
+    "keys_ServiceManaged_name": {
+      "defaultValue": "ServiceManaged",
+      "type": "String"
+    },
+    "advisors_CreateIndex_name": {
+      "defaultValue": "CreateIndex",
+      "type": "String"
+    },
+    "advisors_DefragmentIndex_name": {
+      "defaultValue": "DefragmentIndex",
+      "type": "String"
+    },
+    "auditingPolicies_Default_name": {
+      "defaultValue": "Default",
+      "type": "String"
+    },
+    "advisors_ForceLastGoodPlan_name": {
+      "defaultValue": "ForceLastGoodPlan",
+      "type": "String"
+    },
+    "advisors_DbParameterization_name": {
+      "defaultValue": "DbParameterization",
+      "type": "String"
+    },
+    "encryptionProtector_current_name": {
+      "defaultValue": "current",
+      "type": "String"
+    },
+    "alertrules_Failure_Anomalies___RideshareInsights_name": {
+      "defaultValue": "Failure Anomalies - RideshareInsights",
+      "type": "String"
+    },
+    "hostNameBindings_rideshare.azurewebsites.net_name": {
+      "defaultValue": "rideshare.azurewebsites.net",
+      "type": "String"
+    },
+    "firewallRules_AllowAllWindowsAzureIps_name": {
+      "defaultValue": "AllowAllWindowsAzureIps",
+      "type": "String"
+    },
+    "advisors_DropIndex_name_1": {
+      "defaultValue": "DropIndex",
+      "type": "String"
+    },
+    "advisors_CreateIndex_name_1": {
+      "defaultValue": "CreateIndex",
+      "type": "String"
+    },
+    "auditingPolicies_Default_name_1": {
+      "defaultValue": "Default",
+      "type": "String"
+    },
+    "databases_master_name": {
+      "defaultValue": "master",
+      "type": "String"
+    },
+    "geoBackupPolicies_Default_name": {
+      "defaultValue": "Default",
+      "type": "String"
+    },
+    "advisors_DefragmentIndex_name_1": {
+      "defaultValue": "DefragmentIndex",
+      "type": "String"
+    },
+    "auditingPolicies_Default_name_2": {
+      "defaultValue": "Default",
+      "type": "String"
+    },
+    "geoBackupPolicies_Default_name_1": {
+      "defaultValue": "Default",
+      "type": "String"
+    },
+    "hostNameBindings_ridesharetrips.azurewebsites.net_name": {
+      "defaultValue": "ridesharetrips.azurewebsites.net",
+      "type": "String"
+    },
+    "advisors_ForceLastGoodPlan_name_1": {
+      "defaultValue": "ForceLastGoodPlan",
+      "type": "String"
+    },
+    "advisors_DbParameterization_name_1": {
+      "defaultValue": "DbParameterization",
+      "type": "String"
+    },
+    "hostNameBindings_ridesharedrivers.azurewebsites.net_name": {
+      "defaultValue": "ridesharedrivers.azurewebsites.net",
+      "type": "String"
+    },
+    "transparentDataEncryption_current_name": {
+      "defaultValue": "current",
+      "type": "String"
+    },
+    "transparentDataEncryption_current_name_1": {
+      "defaultValue": "current",
+      "type": "String"
+    },
+    "hostNameBindings_ridesharepassengers.azurewebsites.net_name": {
+      "defaultValue": "ridesharepassengers.azurewebsites.net",
+      "type": "String"
+    },
+    "hostNameBindings_ridesharetriparchiver.azurewebsites.net_name": {
+      "defaultValue": "ridesharetriparchiver.azurewebsites.net",
+      "type": "String"
+    },
+    "hostNameBindings_rideshareorchestrators.azurewebsites.net_name": {
+      "defaultValue": "rideshareorchestrators.azurewebsites.net",
+      "type": "String"
+    }
+  },
+  "variables": {},
+  "resources": [
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.DocumentDB/databaseAccounts/ridesharedb'.",
+      "type": "Microsoft.DocumentDB/databaseAccounts",
+      "kind": "GlobalDocumentDB",
+      "name": "[parameters('databaseAccounts_ridesharedb_name')]",
+      "apiVersion": "2015-04-08",
+      "location": "West US",
+      "tags": {
+        "defaultExperience": "Core (SQL)"
+      },
+      "scale": null,
+      "properties": {
+        "ipRangeFilter": "",
+        "enableAutomaticFailover": false,
+        "enableMultipleWriteLocations": false,
+        "isVirtualNetworkFilterEnabled": false,
+        "virtualNetworkRules": [],
+        "databaseAccountOfferType": "Standard",
+        "consistencyPolicy": {
+          "defaultConsistencyLevel": "Session",
+          "maxIntervalInSeconds": 5,
+          "maxStalenessPrefix": 100
+        },
+        "locations": [
+          {
+            "locationName": "West US",
+            "provisioningState": "Succeeded",
+            "failoverPriority": 0
+          }
+        ],
+        "capabilities": []
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.EventGrid/topics/RideshareTripExternalizations'.",
+      "type": "Microsoft.EventGrid/topics",
+      "name": "[parameters('topics_RideshareTripExternalizations_name')]",
+      "apiVersion": "2018-01-01",
+      "location": "westus",
+      "scale": null,
+      "properties": {
+        "provisioningState": "Succeeded",
+        "endpoint": "[concat('https://ridesharetripexternalizations.westus-1.eventgrid.azure.net/api/events')]",
+        "inputSchema": "EventGridSchema"
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/microsoft.insights/alertrules/Failure Anomalies - RideshareInsights'.",
+      "type": "microsoft.insights/alertrules",
+      "name": "[parameters('alertrules_Failure_Anomalies___RideshareInsights_name')]",
+      "apiVersion": "2014-04-01",
+      "location": "West US 2",
+      "tags": {
+        "hidden-link:/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/microsoft.insights/components/RideshareInsights": "Resource"
+      },
+      "scale": null,
+      "properties": {
+        "name": "[parameters('alertrules_Failure_Anomalies___RideshareInsights_name')]",
+        "description": "",
+        "isEnabled": true,
+        "condition": {
+          "odata.type": "Microsoft.Azure.Management.Insights.Models.ThresholdRuleCondition",
+          "dataSource": {
+            "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleMetricDataSource",
+            "resourceUri": "[resourceId('microsoft.insights/components', parameters('components_RideshareInsights_name'))]",
+            "metricNamespace": null,
+            "metricName": "advanced::A3108E3D-5E26-44CF-B232-783F5E20EF10::ewAiAEgAeQBwAGUAcgBpAG8AbgBBAHAAcABsAGkAYwBhAHQAaQBvAG4AUwBpAGQAIgA6AG4AdQBsAGwALAAiAEgAeQBwAGUAcgBpAG8AbgBTAHUAYgBqAGUAYwB0AFMAaQBkACIAOgBuAHUAbABsACwAIgBIAHkAcABlAHIAaQBvAG4ATwBiAHMAZQByAHYAZQByAFMAaQBkACIAOgBuAHUAbABsACwAIgBDAHUAcwB0AG8AbQBlAHIAQQBjAGMAbwB1AG4AdABJAGQAIgA6ACIAMAAwADAAMAAwADAAMAAwAC0AMAAwADAAMAAtADAAMAAwADAALQAwADAAMAAwAC0AMAAwADAAMAAwADAAMAAwADAAMAAwADAAIgAsACIAQQBwAHAAbABpAGMAYQB0AGkAbwBuAE4AYQBtAGUAIgA6AG4AdQBsAGwALAAiAEEAcABwAGwAaQBjAGEAdABpAG8AbgBJAGQAIgA6AG4AdQBsAGwALAAiAFAAcgBvAGYAaQBsAGUASQBkACIAOgAwACwAIgBXAGkAbgBkAG8AdwBTAGkAegBlAEkAbgBNAGkAbgB1AHQAZQBzACIAOgA2ADAALAAiAE0AZQB0AHIAaQBjAE4AYQBtAGUAIgA6ACIAIgAsACIAVABoAHIAZQBzAGgAbwBsAGQAIgA6ADIALgAwACwAIgBBAGwAZQByAHQAVABlAG0AcABsAGEAdABlAEkAZAAiADoAIgAiACwAIgBSAHUAbABlAEkAZAAiADoAIgAiACwAIgBSAHUAbABlAE4AYQBtAGUAIgA6ACIAIgAsACIAUgB1AGwAZQBEAGUAcwBjAHIAaQBwAHQAaQBvAG4AIgA6ACIAIgAsACIAUgBlAHMAbwB1AHIAYwBlAEkAZAAiADoAbgB1AGwAbAAsACIAUwB1AGIAcwBjAHIAaQBwAHQAaQBvAG4ASQBkACIAOgBuAHUAbABsACwAIgBBAGcAZwByAGUAZwBhAHQAZQBGAHUAbgBjAHQAaQBvAG4AIgA6ACIAIgAsACIAQwBvAG0AcABhAHIAaQBzAG8AbgBPAHAAZQByAGEAdABvAHIAIgA6ACIAewBcACIAQgBhAHMAZQBsAGkAbgBlAFQAaQBtAGUAcwBwAGEAbgBcACIAOgBcACIAMAAwADoANAAwADoAMAAwAFwAIgAsAFwAIgBJAG4AcwBpAGcAaAB0AHMAUwBlAHIAdgBpAGMAZQBMAGEAZwBcACIAOgBcACIAMAAwADoAMAAwADoAMAAwAFwAIgAsAFwAIgBCAHUAZgBmAGUAcgBUAGkAbQBlAFwAIgA6AFwAIgAwADAAOgAwADEAOgAwADAAXAAiACwAXAAiAEIAbABvAGIAUwB0AG8AcgBhAGcAZQBMAG8AZwBnAGkAbgBnAEUAbgBhAGIAbABlAGQAXAAiADoAZgBhAGwAcwBlACwAXAAiAFUAcwBlAHIAUwB1AHAAcAByAGUAcwBzAGkAbwBuAHMAXAAiADoAbgB1AGwAbAAsAFwAIgBQAHIAbwBmAGkAbABlAEkAZABcACIAOgAwACwAXAAiAEUAbQBhAGkAbABUAHkAcABlAFwAIgA6ADAALABcACIAUgBkAGQARgBhAGkAbAB1AHIAZQBzAFMAcABpAGsAZQBUAGgAcgBlAHMAaABvAGwAZABcACIAOgAzAC4AMAAsAFwAIgBSAGEAdwBQAHIAbwBhAGMAdABpAHYAZQBSAHUAbABlAEMAbwBuAGYAaQBnAFwAIgA6AG4AdQBsAGwAfQAiACwAIgBFAG4AYQBiAGwAZQBTAGUAbgBkAEUAbQBhAGkAbABUAG8AQwB1AHMAdABvAG0AIgA6AGYAYQBsAHMAZQAsACIAQwB1AHMAdABvAG0ARQBtAGEAaQBsAHMARQBuAGMAbwBkAGUAZAAiADoAIgAiACwAIgBFAG4AYQBiAGwAZQBTAGUAbgBkAEUAbQBhAGkAbABUAG8ATwB3AG4AZQByAHMAIgA6AGYAYQBsAHMAZQB9AA=="
+          },
+          "operator": "GreaterThan",
+          "threshold": 2,
+          "windowSize": "PT1H"
+        },
+        "action": {
+          "odata.type": "Microsoft.Azure.Management.Insights.Models.RuleEmailAction",
+          "sendToServiceOwners": true,
+          "customEmails": []
+        }
+      },
+      "dependsOn": [
+        "[resourceId('microsoft.insights/components', parameters('components_RideshareInsights_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/microsoft.insights/components/RideshareInsights'.",
+      "type": "microsoft.insights/components",
+      "kind": "other",
+      "name": "[parameters('components_RideshareInsights_name')]",
+      "apiVersion": "2015-05-01",
+      "location": "westus2",
+      "tags": {},
+      "scale": null,
+      "properties": {
+        "Application_Type": "other",
+        "Flow_Type": "Redfield",
+        "Request_Source": "IbizaAIExtension",
+        "HockeyAppId": null,
+        "SamplingPercentage": null
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.SignalRService/SignalR/RideshareSignalR'.",
+      "type": "Microsoft.SignalRService/SignalR",
+      "sku": {
+        "name": "Free_F1",
+        "tier": "Free",
+        "size": "F1",
+        "capacity": 1
+      },
+      "name": "[parameters('SignalR_RideshareSignalR_name')]",
+      "apiVersion": "2018-10-01",
+      "location": "westus",
+      "scale": null,
+      "properties": {
+        "hostNamePrefix": null
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server'.",
+      "type": "Microsoft.Sql/servers",
+      "kind": "v12.0",
+      "name": "[parameters('servers_rideshare_server_name')]",
+      "apiVersion": "2015-05-01-preview",
+      "location": "westus",
+      "scale": null,
+      "properties": {
+        "administratorLogin": "ridesharedb",
+        "version": "12.0"
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/serverfarms/RideshareAppService'.",
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "F1",
+        "tier": "Free",
+        "size": "F1",
+        "family": "F",
+        "capacity": 0
+      },
+      "kind": "app",
+      "name": "[parameters('serverfarms_RideshareAppService_name')]",
+      "apiVersion": "2016-09-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "name": "[parameters('serverfarms_RideshareAppService_name')]",
+        "workerTierName": null,
+        "adminSiteName": null,
+        "hostingEnvironmentProfile": null,
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/serverfarms/WestUSPlan'.",
+      "type": "Microsoft.Web/serverfarms",
+      "sku": {
+        "name": "Y1",
+        "tier": "Dynamic",
+        "size": "Y1",
+        "family": "Y",
+        "capacity": 0
+      },
+      "kind": "functionapp",
+      "name": "[parameters('serverfarms_FunctionAppServicePlan_name')]",
+      "apiVersion": "2016-09-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "name": "[parameters('serverfarms_FunctionAppServicePlan_name')]",
+        "workerTierName": null,
+        "adminSiteName": null,
+        "hostingEnvironmentProfile": null,
+        "perSiteScaling": false,
+        "reserved": false,
+        "targetWorkerCount": 0,
+        "targetWorkerSizeId": 0
+      },
+      "dependsOn": []
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareTripArchiver'.",
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[parameters('functionApps_RideshareTripArchiver_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('functionApps_RideshareTripArchiver_name'),'ridesharetriparchiver.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('functionApps_RideshareTripArchiver_name'),'ridesharetriparchiver.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null,
+        "httpsOnly": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareDrivers'.",
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[parameters('functionApps_RideshareDrivers_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('functionApps_RideshareDrivers_name'),'ridesharedrivers.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('functionApps_RideshareDrivers_name'),'ridesharedrivers.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null,
+        "httpsOnly": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareTrips'.",
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[parameters('functionApps_RideshareTrips_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('functionApps_RideshareTrips_name'),'ridesharetrips.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('functionApps_RideshareTrips_name'),'ridesharetrips.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null,
+        "httpsOnly": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RidesharePassengers'.",
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[parameters('functionApps_RidesharePassengers_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('functionApps_RidesharePassengers_name'),'ridesharepassengers.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('functionApps_RidesharePassengers_name'),'ridesharepassengers.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null,
+        "httpsOnly": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/Rideshare'.",
+      "type": "Microsoft.Web/sites",
+      "kind": "app",
+      "name": "[parameters('sites_Rideshare_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('sites_Rideshare_name'),'rideshare.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('sites_Rideshare_name'),'rideshare.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_RideshareAppService_name'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": true,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 0,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null,
+        "httpsOnly": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_RideshareAppService_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareOrchestrators'.",
+      "type": "Microsoft.Web/sites",
+      "kind": "functionapp",
+      "name": "[parameters('functionApps_RideshareOrchestrators_name')]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "enabled": true,
+        "hostNameSslStates": [
+          {
+            "name": "[concat(parameters('functionApps_RideshareOrchestrators_name'),'rideshareorchestrators.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Standard"
+          },
+          {
+            "name": "[concat(parameters('functionApps_RideshareOrchestrators_name'),'rideshareorchestrators.scm.azurewebsites.net')]",
+            "sslState": "Disabled",
+            "virtualIP": null,
+            "thumbprint": null,
+            "toUpdate": null,
+            "hostType": "Repository"
+          }
+        ],
+        "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]",
+        "reserved": false,
+        "siteConfig": null,
+        "scmSiteAlsoStopped": false,
+        "hostingEnvironmentProfile": null,
+        "clientAffinityEnabled": false,
+        "clientCertEnabled": false,
+        "hostNamesDisabled": false,
+        "containerSize": 1536,
+        "dailyMemoryTimeQuota": 0,
+        "cloningInfo": null,
+        "httpsOnly": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/serverfarms', parameters('serverfarms_FunctionAppServicePlan_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/advisors/CreateIndex'.",
+      "type": "Microsoft.Sql/servers/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('advisors_CreateIndex_name'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/advisors/DropIndex'.",
+      "type": "Microsoft.Sql/servers/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('advisors_DropIndex_name'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/advisors/DbParameterization'.",
+      "type": "Microsoft.Sql/servers/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('advisors_DbParameterization_name'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/advisors/DefragmentIndex'.",
+      "type": "Microsoft.Sql/servers/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('advisors_DefragmentIndex_name'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/advisors/ForceLastGoodPlan'.",
+      "type": "Microsoft.Sql/servers/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('advisors_ForceLastGoodPlan_name'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/auditingPolicies/Default'.",
+      "type": "Microsoft.Sql/servers/auditingPolicies",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('auditingPolicies_Default_name'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "auditingState": "New",
+        "eventTypesToAudit": "PlainSQL_Success,PlainSQL_Failure,ParameterizedSQL_Success,ParameterizedSQL_Failure,StoredProcedure_Success,StoredProcedure_Failure,Login_Success,Login_Failure,TransactionManagement_Success,TransactionManagement_Failure",
+        "storageAccountName": null,
+        "storageAccountKey": null,
+        "storageAccountSecondaryKey": null,
+        "storageTableEndpoint": null,
+        "storageAccountResourceGroupName": null,
+        "storageAccountSubscriptionId": null,
+        "fullAuditLogsTableName": "SQLDBAuditLogsRideshareserver",
+        "auditLogsTableName": "Rideshareserver",
+        "retentionDays": "0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare'.",
+      "type": "Microsoft.Sql/servers/databases",
+      "sku": {
+        "name": "S0",
+        "tier": "Standard"
+      },
+      "kind": "v12.0,user",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'))]",
+      "apiVersion": "2017-03-01-preview",
+      "location": "westus",
+      "scale": null,
+      "properties": {
+        "collation": "SQL_Latin1_General_CP1_CI_AS",
+        "maxSizeBytes": 268435456000,
+        "catalogCollation": "SQL_Latin1_General_CP1_CI_AS",
+        "zoneRedundant": false
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/firewallRules/AllowAllWindowsAzureIps'.",
+      "type": "Microsoft.Sql/servers/firewallRules",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('firewallRules_AllowAllWindowsAzureIps_name'))]",
+      "apiVersion": "2015-05-01-preview",
+      "scale": null,
+      "properties": {
+        "startIpAddress": "0.0.0.0",
+        "endIpAddress": "0.0.0.0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/encryptionProtector/current'.",
+      "type": "Microsoft.Sql/servers/encryptionProtector",
+      "kind": "servicemanaged",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('encryptionProtector_current_name'))]",
+      "apiVersion": "2015-05-01-preview",
+      "scale": null,
+      "properties": {
+        "serverKeyName": "ServiceManaged",
+        "serverKeyType": "ServiceManaged"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/keys/ServiceManaged'.",
+      "type": "Microsoft.Sql/servers/keys",
+      "kind": "servicemanaged",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('keys_ServiceManaged_name'))]",
+      "apiVersion": "2015-05-01-preview",
+      "scale": null,
+      "properties": {
+        "serverKeyType": "[parameters('keys_ServiceManaged_name')]"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/master/auditingPolicies/Default'.",
+      "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_master_name'), '/', parameters('auditingPolicies_Default_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "auditingState": "New",
+        "eventTypesToAudit": "PlainSQL_Success,PlainSQL_Failure,ParameterizedSQL_Success,ParameterizedSQL_Failure,StoredProcedure_Success,StoredProcedure_Failure,Login_Success,Login_Failure,TransactionManagement_Success,TransactionManagement_Failure",
+        "storageAccountName": null,
+        "storageAccountKey": null,
+        "storageAccountSecondaryKey": null,
+        "storageTableEndpoint": null,
+        "storageAccountResourceGroupName": null,
+        "storageAccountSubscriptionId": null,
+        "useServerDefault": "Enabled",
+        "fullAuditLogsTableName": "SQLDBAuditLogsRideshareserverMaster",
+        "auditLogsTableName": "RideshareserverMaster",
+        "retentionDays": "0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/master/geoBackupPolicies/Default'.",
+      "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_master_name'), '/', parameters('geoBackupPolicies_Default_name'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "state": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/master/transparentDataEncryption/current'.",
+      "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_master_name'), '/', parameters('transparentDataEncryption_current_name'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "status": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/advisors/CreateIndex'.",
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('advisors_CreateIndex_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/advisors/DropIndex'.",
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('advisors_DropIndex_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/advisors/DbParameterization'.",
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('advisors_DbParameterization_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/advisors/DefragmentIndex'.",
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('advisors_DefragmentIndex_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/advisors/ForceLastGoodPlan'.",
+      "type": "Microsoft.Sql/servers/databases/advisors",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('advisors_ForceLastGoodPlan_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "scale": null,
+      "properties": {
+        "autoExecuteValue": "Disabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/auditingPolicies/Default'.",
+      "type": "Microsoft.Sql/servers/databases/auditingPolicies",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('auditingPolicies_Default_name_2'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "auditingState": "New",
+        "eventTypesToAudit": "PlainSQL_Success,PlainSQL_Failure,ParameterizedSQL_Success,ParameterizedSQL_Failure,StoredProcedure_Success,StoredProcedure_Failure,Login_Success,Login_Failure,TransactionManagement_Success,TransactionManagement_Failure",
+        "storageAccountName": null,
+        "storageAccountKey": null,
+        "storageAccountSecondaryKey": null,
+        "storageTableEndpoint": null,
+        "storageAccountResourceGroupName": null,
+        "storageAccountSubscriptionId": null,
+        "useServerDefault": "Enabled",
+        "fullAuditLogsTableName": "SQLDBAuditLogsRideshareserverRideshare",
+        "auditLogsTableName": "RideshareserverRideshare",
+        "retentionDays": "0"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/geoBackupPolicies/Default'.",
+      "type": "Microsoft.Sql/servers/databases/geoBackupPolicies",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('geoBackupPolicies_Default_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "state": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Sql/servers/rideshare-server/databases/Rideshare/transparentDataEncryption/current'.",
+      "type": "Microsoft.Sql/servers/databases/transparentDataEncryption",
+      "name": "[concat(parameters('servers_rideshare_server_name'), '/', parameters('databases_Rideshare_name'), '/', parameters('transparentDataEncryption_current_name_1'))]",
+      "apiVersion": "2014-04-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "status": "Enabled"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Sql/servers', parameters('servers_rideshare_server_name'))]",
+        "[resourceId('Microsoft.Sql/servers/databases', parameters('servers_rideshare_server_name'), parameters('databases_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareTripArchiver/config/web'.",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(parameters('functionApps_RideshareTripArchiver_name'), '/', parameters('config_web_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "",
+        "nodeVersion": "",
+        "linuxFxVersion": "",
+        "windowsFxVersion": null,
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": null,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$RideshareTripArchiver",
+        "publishingPassword": null,
+        "appSettings": null,
+        "azureStorageAccounts": {},
+        "metadata": null,
+        "connectionStrings": null,
+        "machineKey": null,
+        "handlerMappings": null,
+        "documentRoot": null,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "javaVersion": null,
+        "javaContainer": null,
+        "javaContainerVersion": null,
+        "appCommandLine": "",
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false,
+            "virtualDirectories": null
+          }
+        ],
+        "winAuthAdminState": 0,
+        "winAuthTenantState": 0,
+        "customAppPoolIdentityAdminState": false,
+        "customAppPoolIdentityTenantState": false,
+        "runtimeADUser": null,
+        "runtimeADUserPassword": null,
+        "loadBalancing": "LeastRequests",
+        "routingRules": [],
+        "experiments": {
+          "rampUpRules": []
+        },
+        "limits": null,
+        "autoHealEnabled": false,
+        "autoHealRules": null,
+        "tracingOptions": null,
+        "vnetName": "",
+        "siteAuthEnabled": false,
+        "siteAuthSettings": {
+          "enabled": null,
+          "unauthenticatedClientAction": null,
+          "tokenStoreEnabled": null,
+          "allowedExternalRedirectUrls": null,
+          "defaultProvider": null,
+          "clientId": null,
+          "clientSecret": null,
+          "clientSecretCertificateThumbprint": null,
+          "issuer": null,
+          "allowedAudiences": null,
+          "additionalLoginParams": null,
+          "isAadAutoProvisioned": false,
+          "googleClientId": null,
+          "googleClientSecret": null,
+          "googleOAuthScopes": null,
+          "facebookAppId": null,
+          "facebookAppSecret": null,
+          "facebookOAuthScopes": null,
+          "twitterConsumerKey": null,
+          "twitterConsumerSecret": null,
+          "microsoftAccountClientId": null,
+          "microsoftAccountClientSecret": null,
+          "microsoftAccountOAuthScopes": null
+        },
+        "cors": {
+          "allowedOrigins": [
+            "https://functions.azure.com",
+            "https://functions-staging.azure.com",
+            "https://functions-next.azure.com"
+          ],
+          "supportCredentials": false
+        },
+        "push": null,
+        "apiDefinition": null,
+        "autoSwapSlotName": null,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": null,
+        "xManagedServiceIdentityId": null,
+        "ipSecurityRestrictions": null,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareTripArchiver_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareTripArchiver/hostNameBindings/ridesharetriparchiver.azurewebsites.net'.",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(parameters('functionApps_RideshareTripArchiver_name'), '/', parameters('hostNameBindings_ridesharetriparchiver.azurewebsites.net_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "siteName": "RideshareTripArchiver",
+        "domainId": null,
+        "hostNameType": "Verified"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareTripArchiver_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareDrivers/config/web'.",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(parameters('functionApps_RideshareDrivers_name'), '/', parameters('config_web_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "",
+        "nodeVersion": "",
+        "linuxFxVersion": "",
+        "windowsFxVersion": null,
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": null,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$RideshareDrivers",
+        "publishingPassword": null,
+        "appSettings": null,
+        "azureStorageAccounts": {},
+        "metadata": null,
+        "connectionStrings": null,
+        "machineKey": null,
+        "handlerMappings": null,
+        "documentRoot": null,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "javaVersion": null,
+        "javaContainer": null,
+        "javaContainerVersion": null,
+        "appCommandLine": "",
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false,
+            "virtualDirectories": null
+          }
+        ],
+        "winAuthAdminState": 0,
+        "winAuthTenantState": 0,
+        "customAppPoolIdentityAdminState": false,
+        "customAppPoolIdentityTenantState": false,
+        "runtimeADUser": null,
+        "runtimeADUserPassword": null,
+        "loadBalancing": "LeastRequests",
+        "routingRules": [],
+        "experiments": {
+          "rampUpRules": []
+        },
+        "limits": null,
+        "autoHealEnabled": false,
+        "autoHealRules": null,
+        "tracingOptions": null,
+        "vnetName": "",
+        "siteAuthEnabled": false,
+        "siteAuthSettings": {
+          "enabled": null,
+          "unauthenticatedClientAction": null,
+          "tokenStoreEnabled": null,
+          "allowedExternalRedirectUrls": null,
+          "defaultProvider": null,
+          "clientId": null,
+          "clientSecret": null,
+          "clientSecretCertificateThumbprint": null,
+          "issuer": null,
+          "allowedAudiences": null,
+          "additionalLoginParams": null,
+          "isAadAutoProvisioned": false,
+          "googleClientId": null,
+          "googleClientSecret": null,
+          "googleOAuthScopes": null,
+          "facebookAppId": null,
+          "facebookAppSecret": null,
+          "facebookOAuthScopes": null,
+          "twitterConsumerKey": null,
+          "twitterConsumerSecret": null,
+          "microsoftAccountClientId": null,
+          "microsoftAccountClientSecret": null,
+          "microsoftAccountOAuthScopes": null
+        },
+        "cors": {
+          "allowedOrigins": [
+            "https://functions.azure.com",
+            "https://functions-staging.azure.com",
+            "https://functions-next.azure.com"
+          ],
+          "supportCredentials": false
+        },
+        "push": null,
+        "apiDefinition": null,
+        "autoSwapSlotName": null,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": null,
+        "xManagedServiceIdentityId": null,
+        "ipSecurityRestrictions": null,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareDrivers_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareDrivers/hostNameBindings/ridesharedrivers.azurewebsites.net'.",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(parameters('functionApps_RideshareDrivers_name'), '/', parameters('hostNameBindings_ridesharedrivers.azurewebsites.net_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "siteName": "RideshareDrivers",
+        "domainId": null,
+        "hostNameType": "Verified"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareDrivers_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareTrips/config/web'.",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(parameters('functionApps_RideshareTrips_name'), '/', parameters('config_web_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "",
+        "nodeVersion": "",
+        "linuxFxVersion": "",
+        "windowsFxVersion": null,
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": null,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$RideshareTrips",
+        "publishingPassword": null,
+        "appSettings": null,
+        "azureStorageAccounts": {},
+        "metadata": null,
+        "connectionStrings": null,
+        "machineKey": null,
+        "handlerMappings": null,
+        "documentRoot": null,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "javaVersion": null,
+        "javaContainer": null,
+        "javaContainerVersion": null,
+        "appCommandLine": "",
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false,
+            "virtualDirectories": null
+          }
+        ],
+        "winAuthAdminState": 0,
+        "winAuthTenantState": 0,
+        "customAppPoolIdentityAdminState": false,
+        "customAppPoolIdentityTenantState": false,
+        "runtimeADUser": null,
+        "runtimeADUserPassword": null,
+        "loadBalancing": "LeastRequests",
+        "routingRules": [],
+        "experiments": {
+          "rampUpRules": []
+        },
+        "limits": null,
+        "autoHealEnabled": false,
+        "autoHealRules": null,
+        "tracingOptions": null,
+        "vnetName": "",
+        "siteAuthEnabled": false,
+        "siteAuthSettings": {
+          "enabled": null,
+          "unauthenticatedClientAction": null,
+          "tokenStoreEnabled": null,
+          "allowedExternalRedirectUrls": null,
+          "defaultProvider": null,
+          "clientId": null,
+          "clientSecret": null,
+          "clientSecretCertificateThumbprint": null,
+          "issuer": null,
+          "allowedAudiences": null,
+          "additionalLoginParams": null,
+          "isAadAutoProvisioned": false,
+          "googleClientId": null,
+          "googleClientSecret": null,
+          "googleOAuthScopes": null,
+          "facebookAppId": null,
+          "facebookAppSecret": null,
+          "facebookOAuthScopes": null,
+          "twitterConsumerKey": null,
+          "twitterConsumerSecret": null,
+          "microsoftAccountClientId": null,
+          "microsoftAccountClientSecret": null,
+          "microsoftAccountOAuthScopes": null
+        },
+        "cors": {
+          "allowedOrigins": [
+            "https://functions.azure.com",
+            "https://functions-staging.azure.com",
+            "https://functions-next.azure.com"
+          ],
+          "supportCredentials": false
+        },
+        "push": null,
+        "apiDefinition": null,
+        "autoSwapSlotName": null,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": null,
+        "xManagedServiceIdentityId": null,
+        "ipSecurityRestrictions": null,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareTrips_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareTrips/hostNameBindings/ridesharetrips.azurewebsites.net'.",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(parameters('functionApps_RideshareTrips_name'), '/', parameters('hostNameBindings_ridesharetrips.azurewebsites.net_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "siteName": "RideshareTrips",
+        "domainId": null,
+        "hostNameType": "Verified"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareTrips_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RidesharePassengers/config/web'.",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(parameters('functionApps_RidesharePassengers_name'), '/', parameters('config_web_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "",
+        "nodeVersion": "",
+        "linuxFxVersion": "",
+        "windowsFxVersion": null,
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": null,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$RidesharePassengers",
+        "publishingPassword": null,
+        "appSettings": null,
+        "azureStorageAccounts": {},
+        "metadata": null,
+        "connectionStrings": null,
+        "machineKey": null,
+        "handlerMappings": null,
+        "documentRoot": null,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "javaVersion": null,
+        "javaContainer": null,
+        "javaContainerVersion": null,
+        "appCommandLine": "",
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false,
+            "virtualDirectories": null
+          }
+        ],
+        "winAuthAdminState": 0,
+        "winAuthTenantState": 0,
+        "customAppPoolIdentityAdminState": false,
+        "customAppPoolIdentityTenantState": false,
+        "runtimeADUser": null,
+        "runtimeADUserPassword": null,
+        "loadBalancing": "LeastRequests",
+        "routingRules": [],
+        "experiments": {
+          "rampUpRules": []
+        },
+        "limits": null,
+        "autoHealEnabled": false,
+        "autoHealRules": null,
+        "tracingOptions": null,
+        "vnetName": "",
+        "siteAuthEnabled": false,
+        "siteAuthSettings": {
+          "enabled": null,
+          "unauthenticatedClientAction": null,
+          "tokenStoreEnabled": null,
+          "allowedExternalRedirectUrls": null,
+          "defaultProvider": null,
+          "clientId": null,
+          "clientSecret": null,
+          "clientSecretCertificateThumbprint": null,
+          "issuer": null,
+          "allowedAudiences": null,
+          "additionalLoginParams": null,
+          "isAadAutoProvisioned": false,
+          "googleClientId": null,
+          "googleClientSecret": null,
+          "googleOAuthScopes": null,
+          "facebookAppId": null,
+          "facebookAppSecret": null,
+          "facebookOAuthScopes": null,
+          "twitterConsumerKey": null,
+          "twitterConsumerSecret": null,
+          "microsoftAccountClientId": null,
+          "microsoftAccountClientSecret": null,
+          "microsoftAccountOAuthScopes": null
+        },
+        "cors": {
+          "allowedOrigins": [
+            "https://functions.azure.com",
+            "https://functions-staging.azure.com",
+            "https://functions-next.azure.com"
+          ],
+          "supportCredentials": false
+        },
+        "push": null,
+        "apiDefinition": null,
+        "autoSwapSlotName": null,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": null,
+        "xManagedServiceIdentityId": null,
+        "ipSecurityRestrictions": null,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RidesharePassengers_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RidesharePassengers/hostNameBindings/ridesharepassengers.azurewebsites.net'.",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(parameters('functionApps_RidesharePassengers_name'), '/', parameters('hostNameBindings_ridesharepassengers.azurewebsites.net_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "siteName": "RidesharePassengers",
+        "domainId": null,
+        "hostNameType": "Verified"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RidesharePassengers_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/Rideshare/config/web'.",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(parameters('sites_Rideshare_name'), '/', parameters('config_web_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php",
+          "hostingstart.html"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "",
+        "nodeVersion": "",
+        "linuxFxVersion": "",
+        "windowsFxVersion": null,
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": null,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$Rideshare",
+        "publishingPassword": null,
+        "appSettings": null,
+        "azureStorageAccounts": {},
+        "metadata": null,
+        "connectionStrings": null,
+        "machineKey": null,
+        "handlerMappings": null,
+        "documentRoot": null,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "javaVersion": null,
+        "javaContainer": null,
+        "javaContainerVersion": null,
+        "appCommandLine": "",
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false,
+            "virtualDirectories": null
+          }
+        ],
+        "winAuthAdminState": 0,
+        "winAuthTenantState": 0,
+        "customAppPoolIdentityAdminState": false,
+        "customAppPoolIdentityTenantState": false,
+        "runtimeADUser": null,
+        "runtimeADUserPassword": null,
+        "loadBalancing": "LeastRequests",
+        "routingRules": [],
+        "experiments": {
+          "rampUpRules": []
+        },
+        "limits": null,
+        "autoHealEnabled": false,
+        "autoHealRules": null,
+        "tracingOptions": null,
+        "vnetName": "",
+        "siteAuthEnabled": false,
+        "siteAuthSettings": {
+          "enabled": null,
+          "unauthenticatedClientAction": null,
+          "tokenStoreEnabled": null,
+          "allowedExternalRedirectUrls": null,
+          "defaultProvider": null,
+          "clientId": null,
+          "clientSecret": null,
+          "clientSecretCertificateThumbprint": null,
+          "issuer": null,
+          "allowedAudiences": null,
+          "additionalLoginParams": null,
+          "isAadAutoProvisioned": false,
+          "googleClientId": null,
+          "googleClientSecret": null,
+          "googleOAuthScopes": null,
+          "facebookAppId": null,
+          "facebookAppSecret": null,
+          "facebookOAuthScopes": null,
+          "twitterConsumerKey": null,
+          "twitterConsumerSecret": null,
+          "microsoftAccountClientId": null,
+          "microsoftAccountClientSecret": null,
+          "microsoftAccountOAuthScopes": null
+        },
+        "cors": null,
+        "push": null,
+        "apiDefinition": null,
+        "autoSwapSlotName": null,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": null,
+        "xManagedServiceIdentityId": null,
+        "ipSecurityRestrictions": null,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/Rideshare/hostNameBindings/rideshare.azurewebsites.net'.",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(parameters('sites_Rideshare_name'), '/', parameters('hostNameBindings_rideshare.azurewebsites.net_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "siteName": "Rideshare",
+        "domainId": null,
+        "hostNameType": "Verified"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('sites_Rideshare_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareOrchestrators/config/web'.",
+      "type": "Microsoft.Web/sites/config",
+      "name": "[concat(parameters('functionApps_RideshareOrchestrators_name'), '/', parameters('config_web_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "numberOfWorkers": 1,
+        "defaultDocuments": [
+          "Default.htm",
+          "Default.html",
+          "Default.asp",
+          "index.htm",
+          "index.html",
+          "iisstart.htm",
+          "default.aspx",
+          "index.php"
+        ],
+        "netFrameworkVersion": "v4.0",
+        "phpVersion": "5.6",
+        "pythonVersion": "",
+        "nodeVersion": "",
+        "linuxFxVersion": "",
+        "windowsFxVersion": null,
+        "requestTracingEnabled": false,
+        "remoteDebuggingEnabled": false,
+        "remoteDebuggingVersion": null,
+        "httpLoggingEnabled": false,
+        "logsDirectorySizeLimit": 35,
+        "detailedErrorLoggingEnabled": false,
+        "publishingUsername": "$RideshareOrchestrators",
+        "publishingPassword": null,
+        "appSettings": null,
+        "azureStorageAccounts": {},
+        "metadata": null,
+        "connectionStrings": null,
+        "machineKey": null,
+        "handlerMappings": null,
+        "documentRoot": null,
+        "scmType": "None",
+        "use32BitWorkerProcess": true,
+        "webSocketsEnabled": false,
+        "alwaysOn": false,
+        "javaVersion": null,
+        "javaContainer": null,
+        "javaContainerVersion": null,
+        "appCommandLine": "",
+        "managedPipelineMode": "Integrated",
+        "virtualApplications": [
+          {
+            "virtualPath": "/",
+            "physicalPath": "site\\wwwroot",
+            "preloadEnabled": false,
+            "virtualDirectories": null
+          }
+        ],
+        "winAuthAdminState": 0,
+        "winAuthTenantState": 0,
+        "customAppPoolIdentityAdminState": false,
+        "customAppPoolIdentityTenantState": false,
+        "runtimeADUser": null,
+        "runtimeADUserPassword": null,
+        "loadBalancing": "LeastRequests",
+        "routingRules": [],
+        "experiments": {
+          "rampUpRules": []
+        },
+        "limits": null,
+        "autoHealEnabled": false,
+        "autoHealRules": null,
+        "tracingOptions": null,
+        "vnetName": "",
+        "siteAuthEnabled": false,
+        "siteAuthSettings": {
+          "enabled": null,
+          "unauthenticatedClientAction": null,
+          "tokenStoreEnabled": null,
+          "allowedExternalRedirectUrls": null,
+          "defaultProvider": null,
+          "clientId": null,
+          "clientSecret": null,
+          "clientSecretCertificateThumbprint": null,
+          "issuer": null,
+          "allowedAudiences": null,
+          "additionalLoginParams": null,
+          "isAadAutoProvisioned": false,
+          "googleClientId": null,
+          "googleClientSecret": null,
+          "googleOAuthScopes": null,
+          "facebookAppId": null,
+          "facebookAppSecret": null,
+          "facebookOAuthScopes": null,
+          "twitterConsumerKey": null,
+          "twitterConsumerSecret": null,
+          "microsoftAccountClientId": null,
+          "microsoftAccountClientSecret": null,
+          "microsoftAccountOAuthScopes": null
+        },
+        "cors": {
+          "allowedOrigins": [
+            "https://functions.azure.com",
+            "https://functions-staging.azure.com",
+            "https://functions-next.azure.com"
+          ],
+          "supportCredentials": false
+        },
+        "push": null,
+        "apiDefinition": null,
+        "autoSwapSlotName": null,
+        "localMySqlEnabled": false,
+        "managedServiceIdentityId": null,
+        "xManagedServiceIdentityId": null,
+        "ipSecurityRestrictions": null,
+        "http20Enabled": false,
+        "minTlsVersion": "1.2",
+        "ftpsState": "AllAllowed",
+        "reservedInstanceCount": 0
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareOrchestrators_name'))]"
+      ]
+    },
+    {
+      "comments": "Generalized from resource: '/subscriptions/e433f371-e5e9-4238-abc2-7c38aa596a18/resourceGroups/serverless-microservices-dev/providers/Microsoft.Web/sites/RideshareOrchestrators/hostNameBindings/rideshareorchestrators.azurewebsites.net'.",
+      "type": "Microsoft.Web/sites/hostNameBindings",
+      "name": "[concat(parameters('functionApps_RideshareOrchestrators_name'), '/', parameters('hostNameBindings_rideshareorchestrators.azurewebsites.net_name'))]",
+      "apiVersion": "2016-08-01",
+      "location": "West US",
+      "scale": null,
+      "properties": {
+        "siteName": "RideshareOrchestrators",
+        "domainId": null,
+        "hostNameType": "Verified"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Web/sites', parameters('functionApps_RideshareOrchestrators_name'))]"
+      ]
+    }
+  ]
+}

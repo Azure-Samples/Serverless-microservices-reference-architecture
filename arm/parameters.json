@@ -1,0 +1,135 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "sites_Rideshare_name": {
+      "value": null
+    },
+    "functionApps_RideshareTrips_name": {
+      "value": null
+    },
+    "serverfarms_FunctionAppServicePlan_name": {
+      "value": null
+    },
+    "functionApps_RideshareDrivers_name": {
+      "value": null
+    },
+    "servers_rideshare_server_name": {
+      "value": null
+    },
+    "functionApps_RidesharePassengers_name": {
+      "value": null
+    },
+    "config_web_name": {
+      "value": null
+    },
+    "functionApps_RideshareTripArchiver_name": {
+      "value": null
+    },
+    "functionApps_RideshareOrchestrators_name": {
+      "value": null
+    },
+    "serverfarms_RideshareAppService_name": {
+      "value": null
+    },
+    "components_RideshareInsights_name": {
+      "value": null
+    },
+    "databaseAccounts_ridesharedb_name": {
+      "value": null
+    },
+    "SignalR_RideshareSignalR_name": {
+      "value": null
+    },
+    "topics_RideshareTripExternalizations_name": {
+      "value": null
+    },
+    "advisors_DropIndex_name": {
+      "value": null
+    },
+    "databases_Rideshare_name": {
+      "value": null
+    },
+    "keys_ServiceManaged_name": {
+      "value": null
+    },
+    "advisors_CreateIndex_name": {
+      "value": null
+    },
+    "advisors_DefragmentIndex_name": {
+      "value": null
+    },
+    "auditingPolicies_Default_name": {
+      "value": null
+    },
+    "advisors_ForceLastGoodPlan_name": {
+      "value": null
+    },
+    "advisors_DbParameterization_name": {
+      "value": null
+    },
+    "encryptionProtector_current_name": {
+      "value": null
+    },
+    "alertrules_Failure_Anomalies___RideshareInsights_name": {
+      "value": null
+    },
+    "hostNameBindings_rideshare.azurewebsites.net_name": {
+      "value": null
+    },
+    "firewallRules_AllowAllWindowsAzureIps_name": {
+      "value": null
+    },
+    "advisors_DropIndex_name_1": {
+      "value": null
+    },
+    "advisors_CreateIndex_name_1": {
+      "value": null
+    },
+    "auditingPolicies_Default_name_1": {
+      "value": null
+    },
+    "databases_master_name": {
+      "value": null
+    },
+    "geoBackupPolicies_Default_name": {
+      "value": null
+    },
+    "advisors_DefragmentIndex_name_1": {
+      "value": null
+    },
+    "auditingPolicies_Default_name_2": {
+      "value": null
+    },
+    "geoBackupPolicies_Default_name_1": {
+      "value": null
+    },
+    "hostNameBindings_ridesharetrips.azurewebsites.net_name": {
+      "value": null
+    },
+    "advisors_ForceLastGoodPlan_name_1": {
+      "value": null
+    },
+    "advisors_DbParameterization_name_1": {
+      "value": null
+    },
+    "hostNameBindings_ridesharedrivers.azurewebsites.net_name": {
+      "value": null
+    },
+    "transparentDataEncryption_current_name": {
+      "value": null
+    },
+    "transparentDataEncryption_current_name_1": {
+      "value": null
+    },
+    "hostNameBindings_ridesharepassengers.azurewebsites.net_name": {
+      "value": null
+    },
+    "hostNameBindings_ridesharetriparchiver.azurewebsites.net_name": {
+      "value": null
+    },
+    "hostNameBindings_rideshareorchestrators.azurewebsites.net_name": {
+      "value": null
+    }
+  }
+}
