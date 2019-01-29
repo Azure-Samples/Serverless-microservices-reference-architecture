@@ -9,7 +9,7 @@ properties:
           - 'name': 'APPINSIGHTS_INSTRUMENTATIONKEY'
             'value': ''
           - 'name': 'FUNCTIONS_EXTENSION_VERSION'
-            'value': '2.0.11961-alpha'
+            'value': '~2'
           - 'name': 'AzureWebJobsDashboard'
             'value': ''
           - 'name': 'AzureWebJobsStorage'
