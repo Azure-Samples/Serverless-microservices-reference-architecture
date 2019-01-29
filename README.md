@@ -22,13 +22,13 @@ During their initial research phase consisting of comparing serverless offerings
 
 ## Explore Relecloud's solution using serverless and microservices
 
-[Read about Relecloud's solution](./introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservices, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
+[Read about Relecloud's solution](documentation/introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservices, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
 
 ## Deploy Relecloud's solution today with a hands-on lab
 
-After learning about Relecloud's [serverless microservices architecture](./introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](./setup.md), or take the shortcut and deploy with a few clicks [using our templates]().
+After learning about Relecloud's [serverless microservices architecture](documentation/introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](documentation/setup.md), or take the shortcut and deploy with a few clicks [using our templates](documentation/setup.md#cake-provision).
 
-Each section of the lab will briefly explain what you are trying to accomplish and why. It will also link you to the relative portion of the [architecture document](./introduction.md).
+Each section of the lab will briefly explain what you are trying to accomplish and why. It will also link you to the relative portion of the [architecture document](documentation/introduction.md).
 
 ## Detailed documentation
 
