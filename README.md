@@ -1,3 +1,9 @@
+---
+services: functions, logic-apps, event-grid, cosmos-db, sql-database, storage, app-service
+platforms: nodejs, dotnet
+author: gk-8
+---
+
 # Serverless Microservices reference architecture
 
 ## The reference architecture
