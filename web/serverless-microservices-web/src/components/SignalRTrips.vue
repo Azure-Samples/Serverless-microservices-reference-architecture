@@ -36,7 +36,7 @@ export default {
       });
       if (rawResponse.status === 200) {
         let signalRInfo = await rawResponse.json();
-        console.log(`Connection Endpoint: ${signalRInfo.endpoint}`);
+        console.log(`Connection Endpoint: ${signalRInfo.url}`);
         return signalRInfo;
       } else {
         console.log(`getSignalRInfo Response status: ${rawResponse.status}`);
@@ -51,11 +51,11 @@ export default {
         .then(signalrInfo => {
           if (signalrInfo !== null && signalrInfo !== undefined) {
             let options = {
-              accessTokenFactory: () => signalrInfo.accessKey
+              accessTokenFactory: () => signalrInfo.accessToken
             };
 
             let hubConnection = new signalR.HubConnectionBuilder()
-              .withUrl(signalrInfo.endpoint, options)
+              .withUrl(signalrInfo.url, options)
               .configureLogging(signalR.LogLevel.Information)
               .build();
 

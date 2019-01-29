@@ -15,6 +15,7 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace ServerlessMicroservices.FunctionApp.Trips
 {
@@ -165,7 +166,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         /*** SignalR Info or Negotiate Function ****/
         [FunctionName("GetSignalRInfo")]
         public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
-            [SignalRConnectionInfo(HubName = "trips")] AzureSignalRConnectionInfo info,
+            [SignalRConnectionInfo(HubName = "trips")] SignalRConnectionInfo info,
             ILogger log)
         {
             log.LogInformation("GetSignalRInfo triggered....");
