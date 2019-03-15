@@ -35,8 +35,8 @@ Each section of the lab will briefly explain what you are trying to accomplish a
 Use the table of contents below for detailed documentation of each component of the reference architecture.
 
 - [Introduction to serverless microservices](documentation/introduction.md)
-  - [What are microservices?](documentation/intro.md#what-are-microservices)
-  - [What is serverless?](documentation/intro.md#what-is-serverless)
+  - [What are microservices?](documentation/introduction.md#what-are-microservices)
+  - [What is serverless?](documentation/introduction.md#what-is-serverless)
 - [Architecture overview](documentation/architecture-overview.md)
   - [Macro architecture](documentation/architecture-overview.md#macro-architecture)
   - [Data flow](documentation/architecture-overview.md#data-flow)
