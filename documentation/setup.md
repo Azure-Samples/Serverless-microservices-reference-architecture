@@ -730,6 +730,16 @@ For each API, please add a new operation as defined below. Once completed, pleas
 | Get Passengers | get-passengers | `GET`/passengers | None | `GetPassengers` Auth Code | 
 | Get Passenger | get-passenger | `GET`/passengers/{code} | code = passenger code = string | `GetPassenger` Auth Code |
 
+### Publish the RideShare APIM product
+
+Now that you've added your APIs, you need to publish your `RideShare` product. To do this, select **Products** on the left-hand menu of your APIM service. You will see that the `RideShare` product is in the **Not published** state.
+
+![The RideShare product is shown with the current state being Not Published.](media/apim-product-not-published.png "Products")
+
+Select the ellipses (...) on the right-hand side of the `RideShare` product, then select **Publish**.
+
+![The ellipses context menu is shown and the Publish menu item is highlighted.](media/apim-publish-product.png "Products")
+
 ### Retrieve the APIM API key
 
 **Please note** that you should have created the [Create the API Management Service](#create-the-api-management-service) as well as [added the RideShare APIM Product](#add-apim-products-and-apis) before you can proceed with this step.
@@ -1343,17 +1353,16 @@ From a PowerShell command, use the following commands for the `Prod` environment
 
 ## Seeding
 
-The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs` respectively. 
+The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs`, respectively.
 
-**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.  
+**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.
 
-The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed https://ridesharetripsfunctionapp.azurewebsites.net getdriversfunctioncode postdriversfunctioncode getpassengersfunctioncode postpassengersfunctioncode`
+> You must set the **EnableAuth** App Setting on the **Drivers** and **Passengers** Function Apps to `false` for the seeder to work.
 
-- Deployment Base URL  
-- GetDrivers Function Code
-- PostDrivers Function Code
-- GetPassengers Function Code
-- PostPassengers Function Code
+The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net --seedpassengersurl https://ridesharepassengers.azurewebsites.net`
+
+- Drivers Function Base URL  
+- Passengers Function Base URL
 
 ## Containers
 

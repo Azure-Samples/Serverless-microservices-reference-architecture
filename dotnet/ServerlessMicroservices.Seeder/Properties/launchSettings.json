@@ -2,7 +2,7 @@
   "profiles": {
     "ServerlessMicroservices.Seeder": {
       "commandName": "Project",
-      "commandLineArgs": "testSignalr https://ridesharetripsfunctionappdev.azurewebsites.net/api/signalrinfo"
+      "commandLineArgs": "seed --seeddriversurl https://ridesharedrivers.azurewebsites.net"
     }
   }
 }
