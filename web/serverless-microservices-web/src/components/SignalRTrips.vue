@@ -16,26 +16,22 @@ export default {
     return {};
   },
   computed: {
-    ...commonGetters(['notificationSystem']),
+    ...commonGetters(['notificationSystem', 'user']),
     ...tripGetters(['trip', 'currentStep', 'contentLoading'])
   },
+  watch: {
+    user(val, old) {
+      if (old === null && val !== null) {
+        this.connectToSignalR();
+      }
+    }
+  },
   methods: {
-    ...tripActions(['setTrip', 'setCurrentStep', 'createTrip']),
-    getSignalRInfo: async url => {
-      console.log(`SignalR Info URL ${url}`);
-      let rawResponse = await fetch(url, {
-        method: 'GET', // *GET, POST, PUT, DELETE, etc.
-        mode: 'cors', // no-cors, cors, *same-origin
-        cache: 'no-cache', // *default, no-cache, reload, force-cache, only-if-cached
-        credentials: 'same-origin', // include, same-origin, *omit
-        headers: {
-          'Content-Type': 'application/json; charset=utf-8'
-        },
-        redirect: 'follow', // manual, *follow, error
-        referrer: 'no-referrer' // no-referrer, *client
-      });
+    ...tripActions(['setTrip', 'setCurrentStep', 'createTrip', 'getSignalRInfo']),
+    async getSignalRInformation() {
+      let rawResponse = await this.getSignalRInfo(); // {url: '', status: 201};//await this.getSignalRInfo();
       if (rawResponse.status === 200) {
-        let signalRInfo = await rawResponse.json();
+        let signalRInfo = rawResponse.data;
         console.log(`Connection Endpoint: ${signalRInfo.url}`);
         return signalRInfo;
       } else {
@@ -47,7 +43,8 @@ export default {
       }
     },
     connectToSignalR() {
-      this.getSignalRInfo(window.signalrInfoUrl)
+      if (this.user !== null) {
+      this.getSignalRInformation()
         .then(signalrInfo => {
           if (signalrInfo !== null && signalrInfo !== undefined) {
             let options = {
@@ -144,6 +141,10 @@ export default {
             this.notificationSystem.options.error
           );
         });
+      }
+      else {
+        console.log('Not connecting to SignalR because the user is not authenticated.')
+      }
     }
   },
   mounted() {
