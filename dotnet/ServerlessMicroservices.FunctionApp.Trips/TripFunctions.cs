@@ -166,7 +166,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
         /*** SignalR Info or Negotiate Function ****/
         [FunctionName("GetSignalRInfo")]
         public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
-            [SignalRConnectionInfo(HubName = "trips", UserId = "{headers.x-ms-client-principal-id}")] SignalRConnectionInfo info,
+            [SignalRConnectionInfo(HubName = "trips")] SignalRConnectionInfo info,
             ILogger log)
         {
             log.LogInformation("GetSignalRInfo triggered....");
