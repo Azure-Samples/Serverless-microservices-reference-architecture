@@ -22,48 +22,48 @@ During their initial research phase consisting of comparing serverless offerings
 
 ## Explore Relecloud's solution using serverless and microservices
 
-[Read about Relecloud's solution](documentation/introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservices, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
+[Read about Relecloud's solution](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/introduction.md) and overall architecture design and decisions. The article will briefly explain the concepts around both serverless and microservices, and how they can be used together to build solutions with little to no infrastructure overhead. It will then walk you through the sample solution you will deploy in the lab, broken down into its architectural components.
 
 ## Deploy Relecloud's solution today with a hands-on lab
 
-After learning about Relecloud's [serverless microservices architecture](documentation/introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](documentation/setup.md), or take the shortcut and deploy with a few clicks [using our templates](documentation/setup.md#cake-provision).
+After learning about Relecloud's [serverless microservices architecture](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/introduction.md), deploy the companion solution by following the step-by-step [hands-on lab](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/setup.md), or take the shortcut and deploy with a few clicks [using our templates](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/setup.md#cake-provision).
 
-Each section of the lab will briefly explain what you are trying to accomplish and why. It will also link you to the relative portion of the [architecture document](documentation/introduction.md).
+Each section of the lab will briefly explain what you are trying to accomplish and why. It will also link you to the relative portion of the [architecture document](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/introduction.md).
 
 ## Detailed documentation
 
 Use the table of contents below for detailed documentation of each component of the reference architecture.
 
-- [Introduction to serverless microservices](documentation/introduction.md)
-  - [What are microservices?](documentation/introduction.md#what-are-microservices)
-  - [What is serverless?](documentation/introduction.md#what-is-serverless)
-- [Architecture overview](documentation/architecture-overview.md)
-  - [Macro architecture](documentation/architecture-overview.md#macro-architecture)
-  - [Data flow](documentation/architecture-overview.md#data-flow)
-- [Initial setup](documentation/setup.md)
-- [API endpoints using Azure Functions](documentation/api-endpoints.md)
-  - [RideShare APIs](documentation/api-endpoints.md#rideshare-apis)
-  - [Durable Orchestrators](documentation/api-endpoints.md#durable-orchestrators)
-- [Services intercommunication using Event Grid](documentation/services-intercommunication.md)
-  - [Logic App handler](documentation/services-intercommunication.md#logic-app-handler)
-  - [SignalR handler](documentation/services-intercommunication.md#signalr-handler)
-    - [.NET SignalR client](documentation/services-intercommunication.md#dotnet-signalr-client)
-    - [JavaScript SignalR client](documentation/services-intercommunication.md#javascript-signalr-client)
-  - [Power BI handler](documentation/services-intercommunication.md#power-bi-handler)
-  - [Trip Archiver handler](documentation/services-intercommunication.md#trip-archiver-handler)
-- [Gateway with API Management](documentation/api-management.md)
-- [Data storage](documentation/data-storage.md)
-- [Client application](documentation/client-application.md)
-  - [Passengers page](documentation/client-application.md#passengers-page)
-  - [Drivers page](documentation/client-application.md#drivers-page)
-  - [Authentication](documentation/client-application.md#authentication)
-  - [Wrapping HTTP calls with authentication token](documentation/client-application.md#wrapping-http-calls-with-authentication-token)
-- [Monitoring and testing](documentation/monitoring-testing.md)
-  - [Integration testing](documentation/monitoring-testing.md#integration-testing)
-  - [Monitoring](documentation/monitoring-testing.md#monitoring)
-    - [Telemetry correlation](documentation/monitoring-testing.md#telemetry-correlation)
-    - [Monitoring for different audiences](documentation/monitoring-testing.md#monitoring-for-different-audiences)
-- [Source code structure](documentation/source-code-structure.md)
-  - [.NET](documentation/source-code-structure.md#net)
-  - [Node.js](documentation/source-code-structure.md#nodejs)
-  - [Web](documentation/source-code-structure.md#web)
+- [Introduction to serverless microservices](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/introduction.md)
+  - [What are microservices?](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/introduction.md#what-are-microservices)
+  - [What is serverless?](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/introduction.md#what-is-serverless)
+- [Architecture overview](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/architecture-overview.md)
+  - [Macro architecture](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/architecture-overview.md#macro-architecture)
+  - [Data flow](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/architecture-overview.md#data-flow)
+- [Initial setup](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/setup.md)
+- [API endpoints using Azure Functions](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/api-endpoints.md)
+  - [RideShare APIs](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/api-endpoints.md#rideshare-apis)
+  - [Durable Orchestrators](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/api-endpoints.md#durable-orchestrators)
+- [Services intercommunication using Event Grid](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md)
+  - [Logic App handler](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md#logic-app-handler)
+  - [SignalR handler](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md#signalr-handler)
+    - [.NET SignalR client](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md#dotnet-signalr-client)
+    - [JavaScript SignalR client](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md#javascript-signalr-client)
+  - [Power BI handler](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md#power-bi-handler)
+  - [Trip Archiver handler](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/services-intercommunication.md#trip-archiver-handler)
+- [Gateway with API Management](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/api-management.md)
+- [Data storage](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/data-storage.md)
+- [Client application](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/client-application.md)
+  - [Passengers page](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/client-application.md#passengers-page)
+  - [Drivers page](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/client-application.md#drivers-page)
+  - [Authentication](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/client-application.md#authentication)
+  - [Wrapping HTTP calls with authentication token](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/client-application.md#wrapping-http-calls-with-authentication-token)
+- [Monitoring and testing](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/monitoring-testing.md)
+  - [Integration testing](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/monitoring-testing.md#integration-testing)
+  - [Monitoring](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/monitoring-testing.md#monitoring)
+    - [Telemetry correlation](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/monitoring-testing.md#telemetry-correlation)
+    - [Monitoring for different audiences](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/monitoring-testing.md#monitoring-for-different-audiences)
+- [Source code structure](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/source-code-structure.md)
+  - [.NET](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/source-code-structure.md#net)
+  - [Node.js](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/source-code-structure.md#nodejs)
+  - [Web](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/blob/master/documentation/source-code-structure.md#web)
