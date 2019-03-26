@@ -21,6 +21,9 @@ export default {
   },
   watch: {
     user(val, old) {
+      // We watch for the username to change due to logging in or out.
+      // If the username was previously null, but now isn't, then we
+      // connect to SignalR Service.
       if (old === null && val !== null) {
         this.connectToSignalR();
       }
