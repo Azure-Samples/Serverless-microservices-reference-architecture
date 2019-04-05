@@ -340,8 +340,9 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     1. **Resource Name**: Enter a unique value for the SignalR Service i.e. `rideshare`.
     2. **Subscription**: Select your Azure subscription.
     3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
-    3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    7. **Pricing tier**: Select `Free`.
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Pricing tier**: Select `Free`.
+    6. **ServiceMode**: Select `Serverless`.
 
     ![Screenshot of the SignalR form](media/signalr-creation.png)
 
