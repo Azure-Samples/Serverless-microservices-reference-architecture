@@ -128,16 +128,17 @@ Log in to the [Azure portal](https://portal.azure.com).
 
     **Please note** that this process of creating a Cosmos DB Account might take about 5 minutes. 
 
-4.  Once the DB is online, select it and click `Data Explorer` and `Add Collection`:
-
-    1. **Database ID**: Use existing and select the **Cosmos DB Account** you created i.e. `rideshare`.
-    2. **Collection Id**: Type `Main`.
-    3. **Storage capacity**: Select `Fixed`.
-    4. **Throughput**: Select 400.
+4.  Once the DB is online, select it and click `Data Explorer` and `Add Database`:
+    1. **Database ID**: add `rideshare`
+    2. Click `New Container`
+        1. **Database ID**: Use existing and select the **Cosmos DB Account** you created i.e. `rideshare`.
+        2. **Collection Id**: Type `Main`.
+        3. **Storage capacity**: Select `Fixed`.
+        4. **Throughput**: Select 400.
 
     ![Screenshot of the cosmos DB collection](media/comos-creation1.png)
 
-5.  Repeat step 4 for a new collection called `Archiver`
+5.  Repeat step 4 -> 2 for a new container called `Archiver`
 
 6.  Take note of the DB Account keys:
 
