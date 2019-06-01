@@ -4,8 +4,12 @@ const baseUrl = window.apiTripsBaseUrl;
 const apiKey = window.apiKey;
 
 // GET methods
-export function getSignalRInfo() {
-  return get(`${baseUrl}/signalrinfo`, {}, apiKey).then(checkResponse);
+export function getSignalRInfo(username) {
+  let customHeader = null;
+  if (username) {
+    customHeader = { 'x-ms-signalr-userid': username };
+  }
+  return get(`${baseUrl}/signalrinfo`, {}, apiKey, customHeader).then(checkResponse);
 }
 
 // POST methods

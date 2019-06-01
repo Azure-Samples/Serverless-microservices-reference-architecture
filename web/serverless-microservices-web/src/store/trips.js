@@ -51,9 +51,9 @@ export default {
       }
     },
 
-    async getSignalRInfo({ commit }) {
+    async getSignalRInfo({ commit }, username) {
       try {
-        let signalRInfo = await getSignalRInfo();
+        let signalRInfo = await getSignalRInfo(username);
         return signalRInfo;
       } catch (e) {
         throw e;

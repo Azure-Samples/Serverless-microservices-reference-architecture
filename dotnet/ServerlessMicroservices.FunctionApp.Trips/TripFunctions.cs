@@ -165,8 +165,8 @@ namespace ServerlessMicroservices.FunctionApp.Trips
 
         /*** SignalR Info or Negotiate Function ****/
         [FunctionName("GetSignalRInfo")]
-        public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
-            [SignalRConnectionInfo(HubName = "trips")] SignalRConnectionInfo info,
+        public static async Task<IActionResult> GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
+            [SignalRConnectionInfo(HubName = "trips", UserId = "{headers.x-ms-signalr-userid}")] SignalRConnectionInfo info,
             ILogger log)
         {
             log.LogInformation("GetSignalRInfo triggered....");
@@ -175,6 +175,8 @@ namespace ServerlessMicroservices.FunctionApp.Trips
             {
                 if (info == null)
                     throw new Exception("SignalR Info is null!");
+
+                await Utilities.ValidateToken(req);
 
                 return (ActionResult)new OkObjectResult(info);
             }
@@ -223,8 +225,9 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                     clientMethod = "tripAborted";
 
                 log.LogInformation($"ProcessTripExternalizations2SignalR firing SignalR `{clientMethod}` client method!");
-                await signalRMessages.AddAsync(new SignalRMessage()
+                await signalRMessages.AddAsync(new SignalRMessage
                 {
+                    UserId = trip.Passenger.Code,
                     Target = clientMethod,
                     Arguments = new object[] { trip }
                 });
