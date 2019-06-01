@@ -1,4 +1,4 @@
-import { createTrip, submitTripReview } from '@/api/trips';
+import { createTrip, getSignalRInfo, submitTripReview } from '@/api/trips';
 
 export default {
   namespaced: true,
@@ -79,6 +79,14 @@ export default {
       } finally {
         commit('contentLoading', false);
       }
+    },
+
+    async getSignalRInfo({ commit }, username) {
+      try {
+        let signalRInfo = await getSignalRInfo(username);
+        return signalRInfo;
+      } catch (e) {
+        throw e;
+      }
     }
-  }
 };

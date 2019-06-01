@@ -20,11 +20,7 @@ namespace ServerlessMicroservices.Seeder
             app.HelpOption("--help");
 
             // `seed` Seed Command
-            var seedUrlOption = app.Option("-t|--seedbaseurl", "Set seed base url", CommandOptionType.SingleValue, true);
-            var seedGetDriversFunctionCodeOption = app.Option("-t|--seedgetdriverscode", "Set seed get drivers function cpde", CommandOptionType.SingleValue, true);
-            var seedPostDriversFunctionCodeOption = app.Option("-t|--seedpostdriverscode", "Set seed post drivers function cpde", CommandOptionType.SingleValue, true);
-            var seedGetPassengersFunctionCodeOption = app.Option("-t|--seedgetpassengerscode", "Set seed get passengers function cpde", CommandOptionType.SingleValue, true);
-            var seedPostPassengersFunctionCodeOption = app.Option("-t|--seedpostpassengerscode", "Set seed post passengers function cpde", CommandOptionType.SingleValue, true);
+            var seedDriversUrlOption = app.Option("-t|--seeddriversurl", "Set seed drivers url", CommandOptionType.SingleValue, true);
 
             // `testTrips` Test Trips Command
             var testUrlOption = app.Option("-t|--testurl", "Set test url", CommandOptionType.SingleValue, true);
@@ -40,34 +36,22 @@ namespace ServerlessMicroservices.Seeder
 
             app.Command("seed", cmd =>
             {
-                cmd.Description = "Seed Drivers & Passengers";
+                cmd.Description = "Seed Drivers";
                 cmd.HelpOption("--help");
 
                 cmd.OnExecute(async () =>
                 {
-                    var baseUrl = seedUrlOption.Value();
-                    var getDriversCode = seedGetDriversFunctionCodeOption.Value();
-                    var postDriversCode = seedPostDriversFunctionCodeOption.Value();
-                    var getPassengersCode = seedGetPassengersFunctionCodeOption.Value();
-                    var postPassengersCode = seedPostPassengersFunctionCodeOption.Value();
+                    var driversUrl = seedDriversUrlOption.Value();
 
-                    if (string.IsNullOrEmpty(baseUrl) || 
-                        !seedUrlOption.HasValue() ||
-                        string.IsNullOrEmpty(getDriversCode) ||
-                        !seedGetDriversFunctionCodeOption.HasValue() ||
-                        string.IsNullOrEmpty(postDriversCode) ||
-                        !seedPostDriversFunctionCodeOption.HasValue() ||
-                        string.IsNullOrEmpty(getPassengersCode) ||
-                        !seedGetPassengersFunctionCodeOption.HasValue() ||
-                        string.IsNullOrEmpty(postPassengersCode) ||
-                        !seedPostPassengersFunctionCodeOption.HasValue()
-                        )
+                    if (string.IsNullOrEmpty(driversUrl) ||
+                        !seedDriversUrlOption.HasValue()
+                       )
                     {
                         MissingSeedOptions();
                         return 0;
                     }
 
-                    await Seed(baseUrl, getDriversCode, postDriversCode, getPassengersCode, postPassengersCode);
+                    await Seed(driversUrl);
                     return 0;
                 });
             });
@@ -127,6 +111,8 @@ namespace ServerlessMicroservices.Seeder
             });
 
             app.Execute(args);
+
+            Console.ReadLine();
         }
 
         //*** Auxiliary Methods ***//
@@ -134,45 +120,57 @@ namespace ServerlessMicroservices.Seeder
         /*
          * Seed 
          */
-        static async Task Seed(string baseUrl, string getDriversFunctionCode, string postDriversFunctionCode, string getPassengersFunctionCodestring, string postPassengersFunctionCode)
+        static async Task Seed(string driversUrl)
         {
             // Read existing entities
-            List<DriverItem> drivers = await Utilities.Get<List<DriverItem>>(null, $"{baseUrl}/api/drivers?code={getDriversFunctionCode}", new Dictionary<string, string>());
-            List<PassengerItem> passengers = await Utilities.Get<List<PassengerItem>>(null, $"{baseUrl}/api/passengers?code={getPassengersFunctionCodestring}", new Dictionary<string, string>());
+            var drivers = await Utilities.Get<List<DriverItem>>(null, $"{driversUrl}/api/drivers", new Dictionary<string, string>());
+            //List<PassengerItem> passengers = await Utilities.Get<List<PassengerItem>>(null, $"{passengersUrl}/api/passengers", new Dictionary<string, string>());
 
             if (drivers == null || drivers.Count == 0)
             {
                 drivers = new List<DriverItem>()
                 {
-                    new DriverItem() { Code = "AA100", FirstName = "James", LastName = "Beaky", Latitude = 31.7157, Longitude = 117.1611, Car = new  CarItem () { DriverCode = "AA100", Make = "BMW", Model = "735", Year = "2015", Color = "Silver", LicensePlate = "CA-91099"} },
-                    new DriverItem() { Code = "AA110", FirstName = "Rod", LastName = "Snow", Latitude = 34.0552, Longitude = 118.2437, Car = new  CarItem () { DriverCode = "AA110", Make = "Toyota", Model = "Camry", Year = "2013", Color = "Gray", LicensePlate = "CA-78209"} },
-                    new DriverItem() { Code = "AA120", FirstName = "Sam", LastName = "Imada", Latitude = 37.7749, Longitude = 122.4194, Car = new  CarItem () { DriverCode = "AA120", Make = "Honda", Model = "Accord", Year = "2017", Color = "Black", LicensePlate = "CA-76215"} }
+                    new DriverItem() { Code = "AA100", FirstName = "James", LastName = "Beaky", Latitude = 47.6423355, Longitude = -122.1391190, Car = new  CarItem () { DriverCode = "AA100", Make = "BMW", Model = "735", Year = "2015", Color = "Silver", LicensePlate = "HGA-9199"} },
+                    new DriverItem() { Code = "AA110", FirstName = "Rod", LastName = "Snow", Latitude = 47.618288, Longitude = -122.201039, Car = new  CarItem () { DriverCode = "AA110", Make = "Toyota", Model = "Camry", Year = "2013", Color = "Gray", LicensePlate = "CAL-7820"} },
+                    new DriverItem() { Code = "AA120", FirstName = "Sam", LastName = "Imada", Latitude = 47.62050, Longitude = -122.3489, Car = new  CarItem () { DriverCode = "AA120", Make = "Honda", Model = "Accord", Year = "2017", Color = "Black", LicensePlate = "N01DRVR"} },
+                    new DriverItem() { Code = "AA130", FirstName = "Miranda", LastName = "Algernon", Latitude = 47.6131742, Longitude = -122.4821468, Car = new  CarItem () { DriverCode = "AA100", Make = "Toyota", Model = "Prius", Year = "2019", Color = "Red", LicensePlate = "YUL-3628"} },
+                    new DriverItem() { Code = "AA140", FirstName = "Ahmed", LastName = "Zohawi", Latitude = 47.5963251, Longitude = -122.1928185, Car = new  CarItem () { DriverCode = "AA110", Make = "Ford", Model = "Focus", Year = "2016", Color = "Silver", LicensePlate = "HAL-2000"} },
+                    new DriverItem() { Code = "AA150", FirstName = "Jessica", LastName = "Fosterton", Latitude = 47.6721323, Longitude = -122.1355805, Car = new  CarItem () { DriverCode = "AA120", Make = "Dodge", Model = "Challenger", Year = "2018", Color = "Blue", LicensePlate = "CHA11GR"} }
                 };
 
-                foreach(var driver in drivers)
+                foreach (var driver in drivers)
                 {
-                    await Utilities.Post<dynamic, dynamic>(null, driver, $"{baseUrl}/api/drivers?code={postDriversFunctionCode}", new Dictionary<string, string>());
+                    await Utilities.Post<dynamic, dynamic>(null, driver, $"{driversUrl}/api/drivers", new Dictionary<string, string>());
                 }
             }
             else
                 Console.WriteLine("No need to seed ...there are drivers in the solution!");
 
-            if (passengers == null || passengers.Count == 0)
-            {
-                passengers = new List<PassengerItem>()
-                {
-                    new PassengerItem() { Code = "joe.kassini@gmail.com", FirstName = "Joe", LastName = "Kassini", MobileNumber =  "3105551212", Email = "joe.kassini@gmail.com" },
-                    new PassengerItem() { Code = "rob.dart@gmail.com", FirstName = "Rob", LastName = "Dart", MobileNumber =  "7145551313", Email = "rob.dart@gmail.com" },
-                    new PassengerItem() { Code = "sue.faming@gmail.com", FirstName = "Sue", LastName = "Faming", MobileNumber =  "7145551414", Email = "sue.faming@gmail.com" }
-                };
+            //if (passengers == null || passengers.Count == 0)
+            //{
+            //    passengers = new List<PassengerItem>()
+            //    {
+            //        new PassengerItem() { Code = "joe.kassini@gmail.com", FirstName = "Joe", LastName = "Kassini", MobileNumber =  "3105551212", Email = "joe.kassini@gmail.com" },
+            //        new PassengerItem() { Code = "rob.dart@gmail.com", FirstName = "Rob", LastName = "Dart", MobileNumber =  "7145551313", Email = "rob.dart@gmail.com" },
+            //        new PassengerItem() { Code = "sue.faming@gmail.com", FirstName = "Sue", LastName = "Faming", MobileNumber =  "7145551414", Email = "sue.faming@gmail.com" },
+            //        new PassengerItem() { Code = "maryalmont292@hotmail.com", FirstName = "Mary", LastName = "Almont", MobileNumber =  "8195551515", Email = "mary.almont292@hotmail.com" },
+            //        new PassengerItem() { Code = "deon.d.brown51@outlook.com", FirstName = "Deon", LastName = "Brown", MobileNumber =  "7145551616", Email = "deon.d.brown51@outlook.com" },
+            //        new PassengerItem() { Code = "7by7park8orig7@yahoo.com", FirstName = "Chung", LastName = "Wang", MobileNumber =  "3105551717", Email = "7by7park8orig7@yahoo.com" },
+            //        new PassengerItem() { Code = "daheis53bal@hotmail.com", FirstName = "Saruman", LastName = "Balavadadraman", MobileNumber =  "3105551818", Email = "daheis53bal@hotmail.com" },
+            //        new PassengerItem() { Code = "3f3f01ey@netzero.com", FirstName = "Forrest", LastName = "Goldenbear", MobileNumber =  "7145551919", Email = "3f3f01ey@netzero.com" },
+            //        new PassengerItem() { Code = "frighteningcrab@naturecanbescary.net", FirstName = "Alexis", LastName = "Trachtenburg", MobileNumber =  "3105552020", Email = "frighteningcrab@naturecanbescary.net" },
+            //        new PassengerItem() { Code = "tremaineholler81@compuserve.com", FirstName = "Tremaine", LastName = "Holler", MobileNumber =  "8195552121", Email = "tremaineholler81@compuserve.com" },
+            //        new PassengerItem() { Code = "marilynn.von.freidenhammer@aol.com", FirstName = "Marilynn", LastName = "Freidenhammer", MobileNumber =  "7145552222", Email = "marilynn.von.freidenhammer@aol.com" },
+            //        new PassengerItem() { Code = "cirriliuseichelmaniii@geocities.net", FirstName = "Cirrilius", LastName = "Eichelman", MobileNumber =  "3105552323", Email = "cirriliuseichelmaniii@geocities.net" }
+            //    };
 
-                foreach (var passenger in passengers)
-                {
-                    await Utilities.Post<dynamic, dynamic>(null, passenger, $"{baseUrl}/api/passengers?code={postPassengersFunctionCode}", new Dictionary<string, string>());
-                }
-            }
-            else
-                Console.WriteLine("No need to seed ...there are passengers in the solution!");
+            //    foreach (var passenger in passengers)
+            //    {
+            //        await Utilities.Post<dynamic, dynamic>(null, passenger, $"{passengersUrl}/api/passengers", new Dictionary<string, string>());
+            //    }
+            //}
+            //else
+            //    Console.WriteLine("No need to seed ...there are passengers in the solution!");
 
             Console.WriteLine("Seed completed......press any key!");
             Console.ReadLine();
@@ -184,7 +182,7 @@ namespace ServerlessMicroservices.Seeder
         static async Task TestTrips(string url)
         {
             // Read the test parameters
-            var tripTasks = await Utilities.Get<List<TripTestParameters>> (null, url, new Dictionary<string, string>());
+            var tripTasks = await Utilities.Get<List<TripTestParameters>>(null, url, new Dictionary<string, string>());
 
             // Launch the test tasks
             List<Task<TripTestResult>> taskRuns = new List<Task<TripTestResult>>();
@@ -241,7 +239,7 @@ namespace ServerlessMicroservices.Seeder
                         mobileNumber = passengerMobile,
                         email = passengerEmail
                     },
-                    source = new 
+                    source = new
                     {
                         latitude = sourceLatitude,
                         longitude = sourceLongitude
@@ -285,10 +283,10 @@ namespace ServerlessMicroservices.Seeder
                     return Task.FromResult(singnalRInfo.AccessKey);
                 };
             })
-            .ConfigureLogging( logging =>
-            {
-                logging.AddConsole();
-            })
+            .ConfigureLogging(logging =>
+           {
+               logging.AddConsole();
+           })
             .Build();
 
             connection.On<TripItem>("tripUpdated", (trip) =>
@@ -334,7 +332,7 @@ namespace ServerlessMicroservices.Seeder
 
         private static void MissingSeedOptions()
         {
-            Console.WriteLine("Required options: seedbaseurl, seedgetdriverscode, seedpostdriverscode, seedgetpassengerscode, seedpostpassengerscode");
+            Console.WriteLine("Required options: seeddriversurl");
         }
 
         private static void MissingTestTripsOptions()

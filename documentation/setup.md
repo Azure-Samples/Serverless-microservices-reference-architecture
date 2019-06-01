@@ -128,16 +128,17 @@ Log in to the [Azure portal](https://portal.azure.com).
 
     **Please note** that this process of creating a Cosmos DB Account might take about 5 minutes. 
 
-4.  Once the DB is online, select it and click `Data Explorer` and `Add Collection`:
-
-    1. **Database ID**: Use existing and select the **Cosmos DB Account** you created i.e. `rideshare`.
-    2. **Collection Id**: Type `Main`.
-    3. **Storage capacity**: Select `Fixed`.
-    4. **Throughput**: Select 400.
+4.  Once the DB is online, select it and click `Data Explorer` and `Add Database`:
+    1. **Database ID**: add `rideshare`
+    2. Click `New Container`
+        1. **Database ID**: Use existing and select the **Cosmos DB Account** you created i.e. `rideshare`.
+        2. **Collection Id**: Type `Main`.
+        3. **Storage capacity**: Select `Fixed`.
+        4. **Throughput**: Select 400.
 
     ![Screenshot of the cosmos DB collection](media/comos-creation1.png)
 
-5.  Repeat step 4 for a new collection called `Archiver`
+5.  Repeat step 4 -> 2 for a new container called `Archiver`
 
 6.  Take note of the DB Account keys:
 
@@ -340,8 +341,9 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     1. **Resource Name**: Enter a unique value for the SignalR Service i.e. `rideshare`.
     2. **Subscription**: Select your Azure subscription.
     3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
-    3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    7. **Pricing tier**: Select `Free`.
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Pricing tier**: Select `Free`.
+    6. **ServiceMode**: Select `Serverless`.
 
     ![Screenshot of the SignalR form](media/signalr-creation.png)
 
@@ -642,7 +644,7 @@ Therefore we want to create a new product and add to it several APIs.
 
 3.  Re-select the API Management Service to go to detail and click on `APIs`. Click the **Add a new API** and select the `Blank API`. 
 
-**Please note** that, normally the Function App can produce a Swagger file that can be imported directly. But unfortunately for V2 Beta (at the time of this writing), the `API Definitions` feature is not available. 
+**Please note** that, normally the Function App can produce a Swagger file that can be imported directly. But unfortunately for V2 (at the time of this writing), the `API Definitions` feature is not available.
 
 4.  Complete the API Management API creation form for `Drivers` with the following:
 
@@ -658,7 +660,7 @@ Therefore we want to create a new product and add to it several APIs.
 
 5.  Repeat step 4 for the `Trips` and `Passengers` Function Apps. The `Orchestrators` are not exposed to the outside world and hence they should not be added to APIM.
 
-6. For each API we created, we need to design its operations. As noted above, this step will have to be done manually for V2 Beta. Select `Design` and click on **Add operation** for each operation (**please note** that the API operations are listed below so they can be added manually). Complete the operation form as shown here for a sample operation:
+6. For each API we created, we need to design its operations. As noted above, this step will have to be done manually for V2. Select `Design` and click on **Add operation** for each operation (**please note** that the API operations are listed below so they can be added manually). Complete the operation form as shown here for a sample operation:
 
     1. **Display Name**: Enter a name i.e. `Get Driver Locations`.
     2. **Name**: Enter an identifier `get-driver-locations`.
@@ -730,6 +732,16 @@ For each API, please add a new operation as defined below. Once completed, pleas
 |---|---|---|---|---|
 | Get Passengers | get-passengers | `GET`/passengers | None | `GetPassengers` Auth Code | 
 | Get Passenger | get-passenger | `GET`/passengers/{code} | code = passenger code = string | `GetPassenger` Auth Code |
+
+### Publish the RideShare APIM product
+
+Now that you've added your APIs, you need to publish your `RideShare` product. To do this, select **Products** on the left-hand menu of your APIM service. You will see that the `RideShare` product is in the **Not published** state.
+
+![The RideShare product is shown with the current state being Not Published.](media/apim-product-not-published.png "Products")
+
+Select the ellipses (...) on the right-hand side of the `RideShare` product, then select **Publish**.
+
+![The ellipses context menu is shown and the Publish menu item is highlighted.](media/apim-publish-product.png "Products")
 
 ### Retrieve the APIM API key
 
@@ -890,7 +902,7 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
 | DocDbApiKey | The Cosmos DB API Key | 
 | DocDbEndpointUri | The Cosmos DB Endpoint URI | 
 | DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
@@ -907,7 +919,7 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
 | AzureWebJobsDashboard | The Storage Account Connection String | 
 | AzureWebJobsStorage | The Storage Account Connection String | 
 | DocDbApiKey | The Cosmos DB API Key | 
@@ -929,7 +941,7 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
 | AzureWebJobsDashboard | The Storage Account Connection String | 
 | AzureWebJobsStorage | The Storage Account Connection String | 
 | DocDbApiKey | The Cosmos DB API Key | 
@@ -955,7 +967,7 @@ The reference implementation solution requires several settings for each functio
 | KEY | DESCRIPTION |
 |---|---|
 | APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `.0.11961-alpha` since the solution uses V2 beta | 
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
 | AzureWebJobsDashboard | The Storage Account Connection String | 
 | AzureWebJobsStorage | The Storage Account Connection String | 
 | DocDbApiKey | The Cosmos DB API Key | 
@@ -1344,17 +1356,16 @@ From a PowerShell command, use the following commands for the `Prod` environment
 
 ## Seeding
 
-The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs` respectively. 
+The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs`, respectively.
 
-**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.  
+**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.
 
-The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed https://ridesharetripsfunctionapp.azurewebsites.net getdriversfunctioncode postdriversfunctioncode getpassengersfunctioncode postpassengersfunctioncode`
+> You must set the **EnableAuth** App Setting on the **Drivers** and **Passengers** Function Apps to `false` for the seeder to work.
 
-- Deployment Base URL  
-- GetDrivers Function Code
-- PostDrivers Function Code
-- GetPassengers Function Code
-- PostPassengers Function Code
+The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net --seedpassengersurl https://ridesharepassengers.azurewebsites.net`
+
+- Drivers Function Base URL  
+- Passengers Function Base URL
 
 ## Containers
 
@@ -1385,7 +1396,7 @@ In the `Dockerfiles` folder of the `.NET` source code, there is a `docker` file 
 **Drivers**:
 
 ```docker
-FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+FROM microsoft/azure-functions-dotnet-core2.0:2.0
 
 COPY ./ServerlessMicroservices.FunctionApp.Drivers/bin/Debug/netstandard2.0 /home/site/wwwroot
 ```
@@ -1393,7 +1404,7 @@ COPY ./ServerlessMicroservices.FunctionApp.Drivers/bin/Debug/netstandard2.0 /hom
 **Passengers**:
 
 ```docker
-FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+FROM microsoft/azure-functions-dotnet-core2.0:2.0
 
 COPY ./ServerlessMicroservices.FunctionApp.Passengers/bin/Debug/netstandard2.0 /home/site/wwwroot
 ```
@@ -1401,7 +1412,7 @@ COPY ./ServerlessMicroservices.FunctionApp.Passengers/bin/Debug/netstandard2.0 /
 **Orchestrators**:
 
 ```docker
-FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+FROM microsoft/azure-functions-dotnet-core2.0:2.0
 
 COPY ./ServerlessMicroservices.FunctionApp.Orchestrators/bin/Debug/netstandard2.0 /home/site/wwwroot
 ```
@@ -1409,12 +1420,12 @@ COPY ./ServerlessMicroservices.FunctionApp.Orchestrators/bin/Debug/netstandard2.
 **Trips**:
 
 ```docker
-FROM microsoft/azure-functions-dotnet-core2.0:v2.0.11961-alpha
+FROM microsoft/azure-functions-dotnet-core2.0:2.0
 
 COPY ./ServerlessMicroservices.FunctionApp.Trips/bin/Debug/netstandard2.0 /home/site/wwwroot
 ```
 
-The `Dockerfile` is straightforward! We base it on the `microsoft/azure-functions-dotnet-core2.0` image with `v2.0.11961-alpha` tag (as it is the current version) and we copy the output of the `bin\<build>\netstandard2.0` to the `wwwroot` of the image.
+The `Dockerfile` is straightforward! We base it on the `microsoft/azure-functions-dotnet-core2.0` image with `v2~2` tag (as it is the current version) and we copy the output of the `bin\<build>\netstandard2.0` to the `wwwroot` of the image.
 
 ### Docker Images
 
@@ -1501,7 +1512,7 @@ properties:
         - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
           "value": "<your-own>"
         - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
+          "value": "~2"
         - "name": "AzureWebJobsDashboard"
           "value": "<your-own>"
         - "name": "AzureWebJobsStorage"
@@ -1660,7 +1671,7 @@ spec:
         - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
           "value": "<your-own>"
         - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
+          "value": "~2"
         - "name": "AzureWebJobsDashboard"
           "value": "<your-own>"
         - "name": "AzureWebJobsStorage"
@@ -1721,7 +1732,7 @@ spec:
         - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
           "value": "<your-own>"
         - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
+          "value": "~2"
         - "name": "AzureWebJobsDashboard"
           "value": "<your-own>"
         - "name": "AzureWebJobsStorage"
@@ -1786,7 +1797,7 @@ spec:
         - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
           "value": "<your-own>"
         - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
+          "value": "~2"
         - "name": "AzureWebJobsDashboard"
           "value": "<your-own>"
         - "name": "AzureWebJobsStorage"
@@ -1846,7 +1857,7 @@ spec:
         - "name": "APPINSIGHTS_INSTRUMENTATIONKEY"
           "value": "<your-own>"
         - "name": "FUNCTIONS_EXTENSION_VERSION"
-          "value": "2.0.11961-alpha"
+          "value": "~2"
         - "name": "AzureWebJobsDashboard"
           "value": "<your-own>"
         - "name": "AzureWebJobsStorage"

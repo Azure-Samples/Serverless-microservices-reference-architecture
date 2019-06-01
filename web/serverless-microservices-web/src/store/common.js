@@ -1,7 +1,7 @@
 export default {
   namespaced: true,
 
-  state() {
+  state () {
     return {
       user: null,
       notificationSystem: {
@@ -60,7 +60,7 @@ export default {
           longitude: -122.1356409
         }
       ]
-    };
+    }
   },
 
   getters: {
@@ -71,23 +71,23 @@ export default {
   },
 
   mutations: {
-    user(state, value) {
-      state.user = value;
+    user (state, value) {
+      state.user = value
     },
-    notificationSystem(state, value) {
-      state.notificationSystem = value;
+    notificationSystem (state, value) {
+      state.notificationSystem = value
     },
-    pickUpLocations(state, value) {
-      state.pickUpLocations = value;
+    pickUpLocations (state, value) {
+      state.pickUpLocations = value
     },
-    destinationLocations(state, value) {
-      state.destinationLocations = value;
+    destinationLocations (state, value) {
+      state.destinationLocations = value
     }
   },
 
   actions: {
-    setUser({ commit }, value) {
-      commit('user', value);
+    setUser ({ commit }, value) {
+      commit('user', value)
     }
   }
-};
+}

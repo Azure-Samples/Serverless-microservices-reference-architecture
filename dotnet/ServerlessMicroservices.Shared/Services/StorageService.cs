@@ -114,7 +114,7 @@ namespace ServerlessMicroservices.Shared.Services
                     if (!string.IsNullOrEmpty(tripDriversQueueName))
                     {
                         _tripDriversQueue = queueClient.GetQueueReference(tripDriversQueueName);
-                        await _tripDemosQueue.CreateIfNotExistsAsync();
+                        await _tripDriversQueue.CreateIfNotExistsAsync();
                     }
                     else
                         _loggerService.Log("tripDriversQueueName is empty");

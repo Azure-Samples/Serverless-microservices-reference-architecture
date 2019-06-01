@@ -58,7 +58,7 @@ namespace ServerlessMicroservices.Shared.Services
                 // NOTE: ReadDocumentAsync is really fast in Cosmos as it bypasses all indexing...but it requires the doc ID
                 var docId = $"{code.ToUpper()}-{ItemCollectionTypes.Driver}";
                 RequestOptions options = new RequestOptions() { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<DriverItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId)/*, options*/);
+                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<DriverItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId), options);
                 cost = request.Result.RequestCharge;
                 return request.Result;
             }
@@ -92,7 +92,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
 
                 var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
                                 UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -139,7 +139,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
 
                 var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
                                 UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -181,7 +181,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1 };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true };
 
                 return await(await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
                             UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -301,7 +301,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
 
                 var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
                                 UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -346,8 +346,8 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception($"Unable to locate a driver with code {code}");
 
                 var link = (string)driver.Self;
-                //RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(driver.Code.ToUpper()) };
-                var response = await(await GetDocDBClient(_settingService)).DeleteDocumentAsync(link /*,requestOptions*/);
+                RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                var response = await(await GetDocDBClient(_settingService)).DeleteDocumentAsync(link, requestOptions);
                 cost += response.RequestCharge;
 
                 //TODO: Also delete the associated driver location items
@@ -380,7 +380,7 @@ namespace ServerlessMicroservices.Shared.Services
                 // NOTE: ReadDocumentAsync is really fast in Cosmos as it bypasses all indexing...but it requires the doc ID
                 var docId = $"{code.ToUpper()}-{ItemCollectionTypes.Trip}";
                 RequestOptions options = new RequestOptions() { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<TripItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId)/*, options*/);
+                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<TripItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId), options);
                 cost = request.Result.RequestCharge;
                 return request.Result;
             }
@@ -414,7 +414,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
 
                 var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
                                 UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -461,7 +461,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
 
                 var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
                                 UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -503,7 +503,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1 };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true };
 
                 return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
                             UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -533,7 +533,7 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception("No Digital Main collection defined!");
 
                 //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1 };
+                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true };
 
                 return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
                             UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
@@ -612,8 +612,8 @@ namespace ServerlessMicroservices.Shared.Services
                     throw new Exception($"Unable to locate a trip with code {code}");
 
                 var link = (string)trip.Self;
-                //RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(driver.Code.ToUpper()) };
-                var response = await (await GetDocDBClient(_settingService)).DeleteDocumentAsync(link /*,requestOptions*/);
+                RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
+                var response = await (await GetDocDBClient(_settingService)).DeleteDocumentAsync(link, requestOptions);
                 cost += response.RequestCharge;
 
                 await _changeNotifierService.TripDeleted(trip);
