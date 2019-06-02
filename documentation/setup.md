@@ -58,8 +58,8 @@ The following is a summary of all Azure resources required to deploy the solutio
 |---|---|---|:---:|
 | serverless-microservices | serverless-microservices-dev | Resource Group | Auto | 
 | rideshare | rideshare | Cosmos DB Account | Auto |
-| Main | Main | Cosmos DB Collection | Auto |
-| Archive | Archive | Cosmos DB Collection | Auto |
+| Main | Main | Cosmos DB Container | Auto |
+| Archive | Archive | Cosmos DB Container | Auto |
 | ridesharefunctionstore | ridesharefunctiondev | Storage Account | Auto |
 | RideShareFunctionAppPlan | RideShareFunctionAppPlan | Consumption Plan | Auto |
 | RideShareDriversFunctionApp | RideShareDriversFunctionAppDev | Function App | Auto |
@@ -77,6 +77,7 @@ The following is a summary of all Azure resources required to deploy the solutio
 | ProcessTripExternalization | ProcessTripExternalizationDev | Logic App | Manual |
 | rideshare | N/A | API Management Service | Manual |
 | rideshare | rideshare-dev | SignalR Service | Manual |
+| RideshareVault | RideshareVaultDev | Azure Key Vault | Manual |
 | relecloudrideshare.onmicrosoft.com | N/A | B2C Tenant | Manual |
 
 :eight_spoked_asterisk: **Please note** that, in some cases, the resource names must be unique globally. We suggest you append an identifier to the above resource names so they become unique i.e. `ridesharefunctionstore-xyzw`, `rideshare-xyzw`, etc.
@@ -117,30 +118,34 @@ Log in to the [Azure portal](https://portal.azure.com).
 
 3.  Complete the resource group creation form with the following:
 
-    1. **ID**: Enter a unique ID for the **Cosmos DB Account** i.e. `rideshare`.
-    2. **API**: Select `SQL`.
     3. **Subscription**: Select your Azure subscription.
-    4. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
-    5. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    6. Un-check the `geo-redundancy`
+    4. **Resource Group**: Select the Resource Group you created above, such as `serverless-microservices`.
+    5. **Account Name**: Enter a unique ID for the **Cosmos DB Account**, such as `ridesharedata`.
+    6. **API**: Select `Core (SQL)`.
+    7. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    8. **Geo-Redundancy**: Disable.
+    9. **Multi-region Writes**: Disable.
 
-    ![Screenshot of the cosmos DB form](media/comos-creation.png)
+    ![Screenshot of the Cosmos DB form](media/comos-creation.png)
 
-    **Please note** that this process of creating a Cosmos DB Account might take about 5 minutes. 
+4.  Select **Review + Create**, then select **Create** on the review screen.
 
-4.  Once the DB is online, select it and click `Data Explorer` and `Add Database`:
-    1. **Database ID**: add `rideshare`
-    2. Click `New Container`
-        1. **Database ID**: Use existing and select the **Cosmos DB Account** you created i.e. `rideshare`.
-        2. **Collection Id**: Type `Main`.
-        3. **Storage capacity**: Select `Fixed`.
-        4. **Throughput**: Select 400.
+    **Please note** that this process of creating a Cosmos DB Account can take between 5-10 minutes.
 
-    ![Screenshot of the cosmos DB collection](media/comos-creation1.png)
+5.  Once Cosmos Database is online, open it and select **Data Explorer** on the left-hand menu.
 
-5.  Repeat step 4 -> 2 for a new container called `Archiver`
+6.  Select **New Container** on the toolbar. In the Add Container form that appears, enter the following:
 
-6.  Take note of the DB Account keys:
+    1. **Database ID**: Select **Create new** and enter `RideShare`.
+    2. **Container Id**: Enter `Main`.
+    3. **Partition key**: Enter `/code`.
+    4. **Throughput**: Select 400.
+
+    ![Screenshot of the Cosmos DB container](media/comos-creation1.png)
+
+7.  Repeat step 4 -> 2 for a new container called `Archiver`
+
+8.  Take note of the DB Account keys:
 
     ![Screenshot of the cosmos DB account](media/comos-creation2.png)
 
@@ -157,7 +162,7 @@ Log in to the [Azure portal](https://portal.azure.com).
     3. **Account Kind**: Select ``Storage V2``.
     4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
     5. **Subscription**: Select your Azure subscription.
-    6. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    6. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
 
     ![Screenshot of the storage creation](media/storage-creation.png)
 
@@ -181,25 +186,28 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **App name**: Enter a unique value for the **Drivers** function app.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     4. **OS**: Select Windows.
     5. **Hosting Plan**: Select Consumption Plan.
     6. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    7. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
-    8. **Application Insights**: Set to Off. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
+    7. **Runtime Stack**: Select .NET.
+    8. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
+    9. **Application Insights**: Set to Disabled. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
 
     ![Screenshot of the Function App creation form](media/new-function-app-form.png 'Create Function App form')
 
 4.  Repeat the steps above to create the **Trips** function app.
 
-    1. Enter a unique value for the App name, ensuring it has the word **Trips** within the name so you can easily identify it.
-    2. Make sure you enter the same remaining settings and select the storage account you created in the previous step.
+    - Enter a unique value for the App name, ensuring it has the word **Trips** within the name so you can easily identify it.
+    - Make sure you enter the same remaining settings and select the storage account you created in the previous step.
 
 5.  Repeat the steps above to create the **Orchestrators** function app.
 
 6.  Repeat the steps above to create the **Passengers** function app.
 
 7.  Repeat the steps above to create the **TripArchiver** function app.
+
+    - **Important**: Select **JavaScript** for the Runtime Stack, since this Function App will use Node.js.
 
 #### Create the Web App Service Plan
 
@@ -211,7 +219,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **App Service Plan**: Enter a unique value for the **App Service Plan** i.e. `RideShareAppServicePlan`.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     3. **Operating system**: Select `Windows`
     4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
     5. **Pricing Tier**: Select `Free`.
@@ -228,7 +236,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **App Name**: Enter a unique value for the **App Name** i.e. `RelecloudRideShare`.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     3. **Operating system**: Select `Windows`
     4. **App Service PLan**: Select the pan you created in the previous step.
     5. **Application Insights**: Select `Off`.
@@ -245,7 +253,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **Name**: Enter a unique value for the **Database** i.e. `RideShare`.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     4. **Source**: Select `Blank Database`.
     5. **Server**: Select and Create a new server.
     6. **Elastic Pool**: Select `Not Now`.
@@ -279,7 +287,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **Name**: Enter a unique value for the Event Grid **Topic** i.e. `RideShareExternalizations`.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
 
     ![Screenshot of the Event Grid Topic form](media/event-grid-topic-creation.png)
@@ -303,7 +311,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     1. **Name**: Enter a unique value for the application Insights i.e. `rideshare`.
     2. **Application Type**: Select `General`. This is required by Function Apps.
     3. **Subscription**: Select your Azure subscription.
-    4. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    4. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     5. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
 
     ![Screenshot of the Application Insights form](media/application-insights-creation.png)
@@ -322,7 +330,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **Name**: Enter a unique value for the APIM Service i.e. `rideshare`.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     3. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
     5. **Organization name**: Type in your organization name.
     6. **Administrator email**: Type in an admin email.
@@ -340,7 +348,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
     1. **Resource Name**: Enter a unique value for the SignalR Service i.e. `rideshare`.
     2. **Subscription**: Select your Azure subscription.
-    3. **Resource Group**: Either select an existing Resource Group or create a new one such as `serverless-microservices`.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
     5. **Pricing tier**: Select `Free`.
     6. **ServiceMode**: Select `Serverless`.
@@ -350,6 +358,26 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 4. Take note of the newly-created resource connection string:
 
     ![Screenshot of the SignalR service connection string](media/signalr-creation1.png)
+
+#### Create Azure Key Vault
+
+Azure Key Vault is used to securely store all secrets, such as database connection strings and keys. It is accessible by all Function Apps, which helps prevent storing duplicate values.
+
+1.  Click **Create a resource** and type **Key Vault** into the Search box, then select **Key Vault** from the search results.
+
+2.  Click the **Create** button to create a new Key Vault.
+
+3.  Complete the Key Vault service creation form with the following:
+
+    1. **Resource Name**: Enter a unique value for Key Vault, such as `RideshareVault`.
+    2. **Subscription**: Select your Azure subscription.
+    3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
+    4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Pricing tier**: Select `Standard`.
+    6. **Access policies**: Leave as default.
+    7. **Virtual Network Access**: Leave as default (all networks can access).
+
+    ![Screenshot of the Key Vault form](media/key-vault-creation.png)
 
 #### Create the Azure AD B2C tenant
 
@@ -591,6 +619,7 @@ Unfortunately, the Cake script cannot provision the following resources because 
 - [Logic App](#create-the-logic-app)
 - [API Management Service](#create-the-api-management-service)
 - [SignalR Service](#create-the-signalr-service)
+- [Azure Key Vault](#create-azure-key-vault)
 - [B2C Tenant](#create-the-b2c-tenant)
 
 Once completed, please jump to the [setup](#setup) section to continue.
@@ -604,6 +633,7 @@ Unfortunately, the ARM template cannot provision the following resources. Please
 - [Logic App](#create-the-logic-app)
 - [API Management Service](#create-the-api-management-service)
 - [B2C Tenant](#create-the-b2c-tenant)
+- [Azure Key Vault](#create-azure-key-vault)
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
@@ -642,64 +672,35 @@ Therefore we want to create a new product and add to it several APIs.
 
     ![Screenshot of the API Management product form](media/apim-product-creation.png)
 
-3.  Re-select the API Management Service to go to detail and click on `APIs`. Click the **Add a new API** and select the `Blank API`. 
+5.  Re-select the API Management Service to go to detail and click on `APIs`. Click the **Add a new API** and select **Function App**.
 
-**Please note** that, normally the Function App can produce a Swagger file that can be imported directly. But unfortunately for V2 (at the time of this writing), the `API Definitions` feature is not available.
+6.  On the Create from Function App form, select **Browse** next to Function App.
 
-4.  Complete the API Management API creation form for `Drivers` with the following:
+    ![Screenshot of the Browse button on the Create from Function App form.](media/apim-browse.png)
+
+7.  On the Import Azure Functions form, select **Configure required settings** under Function App.
+
+    ![Screenshot the Configure required settings option.](media/apim-config-required-settings.png)
+
+8.  Select the **Drivers** Function App you created. Make sure all the functions are selected, then click **Select**.
+
+    ![Screenshot of all the Drivers functions selected.](media/apim-driver-functions.png)
+
+9.  Complete the API Management API creation form for `Drivers` with the following:
 
     1. **Display Name**: Enter a name i.e. `RideShare Drivers API`.
     2. **Name**: Enter an identifier `rideshare-drivers`.
-    3. **Description**: Enter an optional description.
-    4. **Web Service URL**: Enter the Drivers Function App base url `https://ridesharedriversfunctionapp.azurewebsites.net/api/`.
-    5. **URL Scheme**: HTTPS.
-    6. **API URL Suffix**: d (or any character...just to make it unique)
-    7. **Product**: Select `RideShare` product you created earlier. This is how the API is linked to the product.
+    3. **API URL Suffix**: Enter `d`.
+    4. **Product**: Select the `RideShare` product you created earlier. This is how the API is linked to the product.
 
     ![Screenshot of the API Management API form](media/apim-api-creation.png)
 
-5.  Repeat step 4 for the `Trips` and `Passengers` Function Apps. The `Orchestrators` are not exposed to the outside world and hence they should not be added to APIM.
+10.  **Repeat steps 5-9** for the `Trips` and `Passengers` Function Apps. The `Orchestrators` are not exposed to the outside world and hence they should not be added to APIM.
 
-6. For each API we created, we need to design its operations. As noted above, this step will have to be done manually for V2. Select `Design` and click on **Add operation** for each operation (**please note** that the API operations are listed below so they can be added manually). Complete the operation form as shown here for a sample operation:
+     - For the `Trips` API, enter `t` for the **API URL Suffix**.
+     - For the `Passengers` API, enter `p` for the **API URL Suffix**.
 
-    1. **Display Name**: Enter a name i.e. `Get Driver Locations`.
-    2. **Name**: Enter an identifier `get-driver-locations`.
-    3. **URL**: `GET`/driverlocations/{code}
-    4. **Description**: Enter optional description
-    5. **Template**: The URL slug may contain replaceable parameters such as `/driverlocations/{code}`. The `{code}` needs to be defined in the template:
-        - *Name*: code
-        - *Description*: Driver Code
-        - *Type*: string
-        - *Required*: yes 
-    6. **Inbound Policy**: Add an inbound policy to automatically inject the `Function Auth Code` as a query parameter (if it does not exist) so it can be passed to the actual Function API. The inbound policy may look something like this:
-
-    ```xml
-    <policies>
-        <inbound>
-            <base />
-            <set-query-parameter name="code" exists-action="skip">
-                <value>--function code--</value>
-            </set-query-parameter>
-        </inbound>
-        <backend>
-            <base />
-        </backend>
-        <outbound>
-            <base />
-        </outbound>
-        <on-error>
-            <base />
-        </on-error>
-    </policies>
-    ```
-
-    ![Screenshot of the API Management operation form](media/apim-operation-creation.png)
-
-    7. **Function URL and the Auth Code**: Select the Function App and select the function you are interested in. The portal shows the `function.json` and a button to `Get function URL`. If you click it, it will expose the function URL with the code:
-
-    ![Screenshot of the API function URL](media/apim-function.png)
-
-For each API, please add a new operation as defined below. Once completed, please `publish` the `RideShare` product.
+The following APIs should have been created when you imported the functions:
 
 #### Drivers API
 
@@ -770,7 +771,7 @@ When accessing APIs hosted by APIM, you are required to pass an `Ocp-Apim-Subscr
 
 3. Expand the Functions (Read Only) tree leaf:
 
-![Trips Function App Functions](media/trips-function-app-functions.png)
+  ![Trips Function App Functions](media/trips-function-app-functions.png)
 
 4. Select the `EVGH_TripExternalizations2PowerBI` Function and click on **Add Event Grid Subscription**. This will show a dialog to allow you to make this function a listener for the Event Grid Topic: 
 
@@ -785,7 +786,7 @@ When accessing APIs hosted by APIM, you are required to pass an `Ocp-Apim-Subscr
 
 5. Repeat step 4 for the `EVGH_TripExternalizations2SignalR` Function.
 
-6. Repeat step 5 for the `EVGH_TripExternalizations2CosmosDB` Function.
+6. Repeat step 5 for the `EVGH_TripExternalizations2CosmosDB` Function. This is located in the Trip Archiver Node.js Function App.
 
 ### Connect Event Grid to Logic App
 
@@ -892,118 +893,222 @@ Connect to the SQL database and run the following script to create the `TripFact
     CREATE INDEX IX_TRIP_DRIVER_CODE ON dbo.TripFact(DriverCode);
 ```
 
-## Setting Files
+## Add secrets to Key Vault
 
-The reference implementation solution requires several settings for each function app. The `settings` directory contains the setting file for each function app. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each function app. The Cake deployment script can auto-import these files into the `Application Settings`.
+In this step, you will add all of your secrets to Key Vault. These secrets will be referred to by the App Settings within your Function Apps.
+
+1. Open your Key Vault instance in the portal.
+
+2. Select **Secrets** under Settings in the left-hand menu.
+
+3. Select **Generate/Import** to add a new key.
+
+    ![The Secrets setting is selected in Key Vault, and the Generate/Import button is highlighted.](media/key-vault-generate.png)
+
+4. Use the table below as a guide to add each new **Name** and **Value** pair:
+
+    | Name | Value |  
+    |---|---|
+    | AppInsightsInstrumentation | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it |
+    | DocDbApiKey | The Cosmos DB API Key |
+    | DocDbEndpointUri | The Cosmos DB Endpoint URI |
+    | DocDbRideShareDatabaseName | The Cosmos DB database i.e. `RideShare` |
+    | DocDbRideShareMainCollectionName | The Cosmos DB Main container i.e. `Main` |
+    | DocDbThroughput | The provisioned container RUs i.e. 400  |
+    | AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 |
+    | ApiApplicationId | The B2C Client ID |
+    | ApiScopeName | The Scope Name i.e. rideshare |
+    | GraphTenantId| Azure Tenant ID |
+    | GraphClientId| Azure Graph client ID |
+    | GraphClientSecret| Azure Graph secret |
+    | TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
+    | SqlConnectionString | The connection string to the Azure SQL Database where `TripFact` is provisioned |
+    | AzureSignalRConnectionString | The connection string to the SignalR Service |
+
+    When you are finished creating the secrets, your list should look similar to the following:
+
+    ![List of Key Vault secrets.](media/key-vault-secrets.png)
+
+### Retrieving a secret's URI
+
+When you set the App Settings for each of your Function App in the next section below, you will need to reference the URI of a secret in Key Vault, including the version number. To do this, perform the following steps for each secret.
+
+1. Open your Key Vault instance in the portal.
+
+2. Select **Secrets** under Settings in the left-hand menu.
+
+3. Select the secret whose URI value you wish to obtain.
+
+4. Select the **Current Version** of the secret.
+
+    ![The secret's current version is highlighted.](media/key-vault-secret-current-version.png)
+
+5. Copy the **Secret Identifier**.
+
+    ![The Secret Identifier is highlighted.](media/key-vault-secret-identifier.png)
+
+When you add the Key Vault reference to this secret within a Function App's App Settings, you will use the following format: `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is replaced by the Secret Identifier (URI) value above.
+
+For example, a complete reference would look like the following:
+
+`@Microsoft.KeyVault(SecretUri=https://ridesharevault.vault.azure.net/secrets/ApiApplicationId/b520d8c3f0124f9a82d88b7064d9715e)`
+
+## Function App Application Settings
+
+The reference implementation solution requires several settings for each Function App. The `settings` directory contains the setting file for each Function App. The files are a collection of `KEY` and `VALUE` delimited by a `|`. They need to be imported as `Application Settings` for each Function App. The Cake deployment script can auto-import these files into the `Application Settings`.
+
+**Note**: If you are manually adding the Application Settings for your Function Apps, use the tables below as a guide. To get to Application Settings, open you Function App, then select **Configuration**.
+
+![Configuration is highlighted.](media/function-app-configuration.png)
 
 ### Drivers Function App
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
-| DocDbApiKey | The Cosmos DB API Key | 
-| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
-| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
-| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
-| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
-| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
-| AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 | 
-| ApiApplicationId | The B2C Client ID | 
-| ApiScopeName | The Scope Name i.e. rideshare | 
-| EnableAuth | if set to true, the JWT token validation will be enforced | 
+| APPINSIGHTS_INSTRUMENTATIONKEY | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AppInsightsInstrumentation** Key Vault secret |
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 |
+| DocDbApiKey | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbApiKey** Key Vault secret |
+| DocDbEndpointUri | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbEndpointUri** Key Vault secret |
+| DocDbRideShareDatabaseName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareDatabaseName** Key Vault secret |
+| DocDbRideShareMainCollectionName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareMainCollectionName** Key Vault secret |
+| DocDbThroughput | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbThroughput** Key Vault secret |
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  |
+| AuthorityUrl | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AuthorityUrl** Key Vault secret |
+| ApiApplicationId | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ApiApplicationId** Key Vault secret |
+| ApiScopeName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ApiScopeName** Key Vault secret |
+| EnableAuth | if set to true, the JWT token validation will be enforced |
 
 ### Passengers Function App
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
-| AzureWebJobsDashboard | The Storage Account Connection String | 
-| AzureWebJobsStorage | The Storage Account Connection String | 
-| DocDbApiKey | The Cosmos DB API Key | 
-| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
-| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
-| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
-| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
-| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
-| AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 | 
-| ApiApplicationId | The B2C Client ID | 
-| ApiScopeName | The Scope Name i.e. rideshare | 
-| EnableAuth | if set to true, the JWT token validation will be enforced | 
-| GraphTenantId| Azure Tenant ID |
-| GraphClientId| Azure Graph client ID |
-| GraphClientSecret| Azure Graph secret |
+| APPINSIGHTS_INSTRUMENTATIONKEY | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AppInsightsInstrumentation** Key Vault secret |
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 |
+| AzureWebJobsDashboard | The Storage Account Connection String |
+| AzureWebJobsStorage | The Storage Account Connection String |
+| DocDbApiKey |  Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbApiKey** Key Vault secret |
+| DocDbEndpointUri | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbEndpointUri** Key Vault secret | 
+| DocDbRideShareDatabaseName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareDatabaseName** Key Vault secret |
+| DocDbRideShareMainCollectionName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareMainCollectionName** Key Vault secret |
+| DocDbThroughput | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbThroughput** Key Vault secret |
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  |
+| AuthorityUrl | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AuthorityUrl** Key Vault secret |
+| ApiApplicationId | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ApiApplicationId** Key Vault secret |
+| ApiScopeName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ApiScopeName** Key Vault secret |
+| EnableAuth | if set to true, the JWT token validation will be enforced |
+| GraphTenantId| Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **GraphTenantId** Key Vault secret |
+| GraphClientId| Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **GraphClientId** Key Vault secret |
+| GraphClientSecret| Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **GraphClientSecret** Key Vault secret |
 
 ### Orchestrators Function App
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
-| AzureWebJobsDashboard | The Storage Account Connection String | 
-| AzureWebJobsStorage | The Storage Account Connection String | 
-| DocDbApiKey | The Cosmos DB API Key | 
-| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
-| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
-| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
-| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
-| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
+| APPINSIGHTS_INSTRUMENTATIONKEY | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AppInsightsInstrumentation** Key Vault secret |
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 |
+| AzureWebJobsDashboard | The Storage Account Connection String |
+| AzureWebJobsStorage | The Storage Account Connection String |
+| DocDbApiKey |  Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbApiKey** Key Vault secret |
+| DocDbEndpointUri | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbEndpointUri** Key Vault secret | 
+| DocDbRideShareDatabaseName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareDatabaseName** Key Vault secret |
+| DocDbRideShareMainCollectionName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareMainCollectionName** Key Vault secret |
+| DocDbThroughput | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbThroughput** Key Vault secret |
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  |
 | DriversAcknowledgeMaxWaitPeriodInSeconds |The number of seconds to wait before the solution times out waiting for drivers to accept a trip i.e. 120|
 | DriversLocationRadiusInMiles |The miles radius that the solution locates available drivers within i.e. 15|
 | TripMonitorIntervalInSeconds | The number of seconds the `TripMonitor` waits in its monitoring loop i.e. 10 |
 | TripMonitorMaxIterations |The number of maximum iterations the `TripMonitor` loops before it aborts the trip i.e. 20|
 | IsPersistDirectly| If true, the orchestrators access the data storage layer directly. Default to true |
-| TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
-| TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
-| TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
+| TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` |
+| TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` |
+| TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` |
 | TripDriversQueue | The `TripDrivers` queue name i.e. `trip-drivers` |
 | TripExternalizationsEventGridTopicUrl| The URL of the event grid topic i.e. https://ridesharetripexternalizations.eastus-1.eventgrid.azure.net/api/events|
-| TripExternalizationsEventGridTopicApiKey|The API Key of the event grid topic |
+| TripExternalizationsEventGridTopicApiKey| Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **TripExternalizationsEventGridTopicApiKey** Key Vault secret |
 
 ### Trips Function App
 
 | KEY | DESCRIPTION |
 |---|---|
-| APPINSIGHTS_INSTRUMENTATIONKEY | The Application Insights Resource Instrumentation Key. This key is required by the Function App so it knows there is an application insights resource associated with it | 
-| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 | 
-| AzureWebJobsDashboard | The Storage Account Connection String | 
-| AzureWebJobsStorage | The Storage Account Connection String | 
-| DocDbApiKey | The Cosmos DB API Key | 
-| DocDbEndpointUri | The Cosmos DB Endpoint URI | 
-| DocDbRideShareDatabaseName | The Cosmos Database i.e. `RideShare` | 
-| DocDbRideShareMainCollectionName | The Cosmos Main Collection i.e. `Main` | 
-| DocDbThroughput | The provisioned collection RUs i.e. 400  | 
-| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  | 
-| IsEnqueueToOrchestrators | Trigger Orchestrators via queues instead of HTTP i.e. true  | 
-| TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` | 
-| TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` | 
-| TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` | 
-| AuthorityUrl | The B2C Authority URL i.e. https://relecloudrideshare.b2clogin.com/tfp/relecloudrideshare.onmicrosoft.com/b2c_1_default-signin/v2.0 | 
-| ApiApplicationId | The B2C Client ID | 
-| ApiScopeName | The Scope Name i.e. rideshare | 
-| EnableAuth | if set to true, the JWT token validation will be enforced | 
-| SqlConnectionString | The connection string to the Azure SQL Database where `TripFact` is provisioned  | 
-| AzureSignalRConnectionString  | The connection string to the SignalR Service  | 
-| StartTripManagerOrchestratorApiKey|The Start Trip Manager Orchestrator trigger endpoint function code key |
-| StartTripManagerOrchestratorBaseUrl|The Start Trip Manager Orchestrator trigger endpoint function base url |
-| StartTripDemoOrchestratorApiKey|The Trip Start Demo Orchestrator trigger endpoint function code key |
-| StartTripDemoOrchestratorBaseUrl|The Trip Start Demo Orchestrator trigger endpoint function base url |
-| TerminateTripManagerOrchestratorApiKey|The Terminate Trip Manager Orchestrator trigger endpoint function code key |
-| TerminateTripManagerOrchestratorBaseUrl|The Trip Manager Orchestrator trigger endpoint function base url |
-| TerminateTripMonitorOrchestratorApiKey|The Terminate Trip Demo Orchestrator trigger endpoint function code key |
-| TerminateTripMonitorOrchestratorBaseUrl|The Trip Terminate Demo Orchestrator trigger endpoint function base url |
+| APPINSIGHTS_INSTRUMENTATIONKEY | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AppInsightsInstrumentation** Key Vault secret |
+| FUNCTIONS_EXTENSION_VERSION | Must be set to `~2` since the solution uses V2 |
+| AzureWebJobsDashboard | The Storage Account Connection String |
+| AzureWebJobsStorage | The Storage Account Connection String |
+| DocDbApiKey |  Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbApiKey** Key Vault secret |
+| DocDbEndpointUri | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbEndpointUri** Key Vault secret | 
+| DocDbRideShareDatabaseName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareDatabaseName** Key Vault secret |
+| DocDbRideShareMainCollectionName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbRideShareMainCollectionName** Key Vault secret |
+| DocDbThroughput | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **DocDbThroughput** Key Vault secret |
+| InsightsInstrumentationKey | Same value as APPINSIGHTS_INSTRUMENTATIONKEY. This value is used by the Function App while the other is used by the Function framework  |
+| IsEnqueueToOrchestrators | Trigger Orchestrators via queues instead of HTTP. Default and recommended value is **true** |
+| TripManagersQueue | The `TripManagers` queue name i.e. `trip-managers` |
+| TripMonitorsQueue | The `TripMonitors` queue name i.e. `trip-monitors` |
+| TripDemosQueue | The `TripDemos` queue name i.e. `trip-demos` |
+| AuthorityUrl | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AuthorityUrl** Key Vault secret |
+| ApiApplicationId | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ApiApplicationId** Key Vault secret |
+| ApiScopeName | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **ApiScopeName** Key Vault secret |
+| EnableAuth | if set to true, the JWT token validation will be enforced |
+| SqlConnectionString | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **SqlConnectionString** Key Vault secret |
+| AzureSignalRConnectionString  | Enter `@Microsoft.KeyVault(SecretUri={referenceString})`, where `{referenceString}` is the URI for the **AzureSignalRConnectionString** Key Vault secret |
+| StartTripManagerOrchestratorApiKey| (**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Start Trip Manager Orchestrator trigger endpoint function code key |
+| StartTripManagerOrchestratorBaseUrl|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Start Trip Manager Orchestrator trigger endpoint function base url |
+| StartTripDemoOrchestratorApiKey|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Trip Start Demo Orchestrator trigger endpoint function code key |
+| StartTripDemoOrchestratorBaseUrl|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Trip Start Demo Orchestrator trigger endpoint function base url |
+| TerminateTripManagerOrchestratorApiKey|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Terminate Trip Manager Orchestrator trigger endpoint function code key |
+| TerminateTripManagerOrchestratorBaseUrl|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Trip Manager Orchestrator trigger endpoint function base url |
+| TerminateTripMonitorOrchestratorApiKey|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Terminate Trip Demo Orchestrator trigger endpoint function code key |
+| TerminateTripMonitorOrchestratorBaseUrl|(**Optional**: only needed if `IsEnqueueToOrchestrators` is `false`) The Trip Terminate Demo Orchestrator trigger endpoint function base url |
 
 ### Trip Archiver Function App
 
 | KEY | DESCRIPTION |
 |---|---|
 | FUNCTIONS_EXTENSION_VERSION | Must be set to `~1` since this Function App uses 1.0.11959.0 |
-| AzureWebJobsDashboard | The Storage Account Connection String |
-| AzureWebJobsStorage | The Storage Account Connection String |
 | DocDbConnectionStringKey | The Cosmos DB Connection String |
-| WEBSITE_CONTENTAZUREFILECONNECTIONSTRING | Storage account Connection String where function app code and configuration are stored |
-| WEBSITE_CONTENTSHARE | Storage account File Path where function app code and configuration are stored |
+
+## Configure your Function Apps to connect to Key Vault
+
+In order for your Function Apps to be able to access Key Vault to read the secrets, you must [create a system-assigned managed identity](https://docs.microsoft.com/azure/app-service/overview-managed-identity#adding-a-system-assigned-identity) for each Function App, and [create an access policy in Key Vault](https://docs.microsoft.com/azure/key-vault/key-vault-secure-your-key-vault#key-vault-access-policies) for each application identity.
+
+### Create a system-assigned managed identity
+
+Perform these steps for **each of your Function Apps** (Drivers, Passengers, Orchestrators, and Trips):
+
+1. Open the Function App and navigate to **Platform features**.
+
+2. Select **Identity**.
+
+3. Within the **System assigned** tab, switch **Status** to **On**. Select **Save**.
+
+    ![The Function App Identity value is set to On.](media/function-app-identity.png)
+
+### Add Function Apps to Key Vault access policy
+
+Perform these steps for **each of your Function Apps** to create an access policy that enables the "Get" secret permission:
+
+1. Open your Key Vault service.
+
+2. Select **Access policies**.
+
+3. Select **+ Add new**.
+
+4. Select the **Select principal** section on the Add access policy form.
+
+    ![Select principal is highlighted.](media/key-vault-add-access-policy-select-principal.png)
+
+5. In the Principal blade, search for your Rideshare Function App's service principal, select it, then click the **Select** button.
+
+    ![The Rideshare Function App's principal is selected.](media/key-vault-principal.png)
+
+6. Expand the **Secret permissions** and check **Get** under Secret Management Operations.
+
+    ![The Get checkbox is checked under the Secret permissions dropdown.](media/key-vault-get-secret-policy.png)
+
+7. Select **OK** to add the new access policy. **Repeat** these steps for each Function App identity.
+
+8. When you are done, you should have an access policy for each Function App's managed identity. Select **Save** to finish the process.
+
+    ![Key Vault access policies.](media/key-vault-access-policies.png)
 
 ## Build the solution
 

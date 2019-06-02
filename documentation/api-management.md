@@ -1,6 +1,7 @@
 # Gateway using API Management
 
-- [Next steps](#next-steps)
+- [Gateway using API Management](#gateway-using-api-management)
+  - [Next steps](#next-steps)
 
 There are many benefits to using an API manager. In the case the Rideshare solution, there are really four major benefits:
 
@@ -112,7 +113,7 @@ public static async Task<IActionResult> GetDrivers([HttpTrigger(AuthorizationLev
 
 4. **Rate Limiting**: the API manager can be configured to rate limit APIs based on IP origin, access, etc. This can be useful to prevent DOD attacks or provide different tiers of access based on users.
 
-**Please note** that, in the case of Azure Functions, while the APIs are front-ended with an API manager (and hence shielded, protected, and rate limited), the APIs are still publicly available. This means that a DDOS attack or other attacks can still happen against the bare APIs if someone discovers them in the wild.
+**Please note** that, in the case of Azure Functions, while the APIs are front-ended with an API manager (and hence shielded, protected, and rate limited), the APIs are still publicly available. This means that a DDOS attack or other attacks can still happen against the bare APIs if someone discovers them in the wild. However, you can restrict access to your Function Apps by [only allowing access to your API Management's static IP](https://docs.microsoft.com/azure/app-service/app-service-ip-restrictions) address. When you do this, only traffic that flows through API Management will be able to access your functions.
 
 ## Next steps
 
