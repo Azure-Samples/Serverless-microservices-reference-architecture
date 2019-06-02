@@ -1,12 +1,14 @@
 # Services intercommunication using Event Grid
 
-- [Logic App handler](#logic-app-handler)
-- [SignalR handler](#signalr-handler)
-  - [DOTNET SignalR client](#dotnet-signalr-client)
-  - [JavaScript SignalR client](#javascript-signalr-client)
-- [Power BI handler](#power-bi-handler)
-- [Trip Archiver handler](#trip-archiver-handler)
-- [Next steps](#next-steps)
+- [Services intercommunication using Event Grid](#services-intercommunication-using-event-grid)
+  - [Event Grid](#event-grid)
+        - [Logic App handler](#logic-app-handler)
+        - [SignalR handler](#signalr-handler)
+          - [DOTNET SignalR client](#dotnet-signalr-client)
+          - [JavaScript SignalR client](#javascript-signalr-client)
+        - [Power BI handler](#power-bi-handler)
+        - [Trip Archiver handler](#trip-archiver-handler)
+  - [Next steps](#next-steps)
 
 ## Event Grid
 
@@ -149,6 +151,7 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
         log.LogInformation($"ProcessTripExternalizations2SignalR firing SignalR `{clientMethod}` client method!");
         await signalRMessages.AddAsync(new SignalRMessage()
         {
+            UserId = trip.Passenger.Code,
             Target = clientMethod,
             Arguments = new object[] { trip}
         });
@@ -164,7 +167,7 @@ public static async Task ProcessTripExternalizations2SignalR([EventGridTrigger] 
 
 **Please note** that, in the reference implementation, `EVGH_` is added to the function name that handles an Event Grid event i.e. `EVGH_TripExternalizations2SignalR`.
 
-When an Event Grid Topic event arrives at the SignalR processor, it extracts the `TripItem` from the event data and calls different client methods based on the event subject to notify SignalR clients, in real-time, of trip state changes.
+When an Event Grid Topic event arrives at the SignalR processor, it extracts the `TripItem` from the event data and calls different client methods based on the event subject to notify SignalR clients, in real-time, of trip state changes. The `UserId` value tells the SignalR Service which client should receive the message so it will not be sent to every connected user.
 
 In this reference implementation, the SignalR client is the Web App SPA. But a Xamarin Mobile App or .NET client can also receive SignalR messages. When a client receives a SignalR message, they change the trip state so passengers and drivers become aware of the latest trip status.
 
@@ -235,12 +238,12 @@ Console.WriteLine("SignalR client started....waiting for messages from server. T
 Console.ReadLine();
 ```
 
-Where `GetSignalRInfo` retrieves via a `Get` operation the `SignalR Info` from a Function also defined in the `Trips Function App`:
+Where `GetSignalRInfo` retrieves via a `Get` operation the `SignalR Info` from a Function also defined in the `Trips Function App`. Notice that the `SignalRConnectionInfo` binding contains a `HubName` parameter to define the SignalR hub, and a `UserId` parameter that defines the request header value used to retrieve the requestor's User ID value. When you pass a User ID to this method, then you are able to target messages just to that user so it doesn't appear for all users. This is useful when sending trip-related messages, as you would not want those to display on every user's screen.
 
 ```csharp
 [FunctionName("GetSignalRInfo")]
 public static IActionResult GetSignalRInfo([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "signalrinfo")] HttpRequest req,
-    [SignalRConnectionInfo(HubName = "trips")] AzureSignalRConnectionInfo info,
+    [SignalRConnectionInfo(HubName = "trips", UserId = "{headers.x-ms-signalr-userid}")] AzureSignalRConnectionInfo info,
     ILogger log)
 {
     log.LogInformation("GetSignalRInfo triggered....");
