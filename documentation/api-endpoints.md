@@ -1,8 +1,9 @@
 # API endpoints using Azure Functions
 
-- [RideShare APIs](#rideshare-apis)
-- [Durable Orchestrators](#durable-orchestrators)
-- [Next steps](#next-steps)
+- [API endpoints using Azure Functions](#api-endpoints-using-azure-functions)
+    - [RideShare APIs](#rideshare-apis)
+    - [Durable Orchestrators](#durable-orchestrators)
+  - [Next steps](#next-steps)
 
 ### RideShare APIs
 
@@ -194,7 +195,7 @@ It is still probably a good idea to store the instance ids and their status in a
 Create your Azure Function Apps, then perform the steps to configure and deploy your functions:
 
 - [Create the Azure Function Apps](setup.md#create-the-azure-function-apps)
-- [Setting files](setup.md#setting-files)
+- [Function App Application Settings](setup.md#function-app-application-settings)
   - [Drivers Function App](setup.md#drivers-function-app)
   - [Passengers Function App](setup.md#passengers-function-app)
   - [Orchestrators Function App](setup.md#orchestrators-function-app)
