@@ -1,5 +1,7 @@
 ---
-languages: []
+languages:
+- csharp
+- javascript
 products:
 - azure
 - azure-functions
