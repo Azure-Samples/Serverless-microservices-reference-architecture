@@ -1,7 +1,15 @@
 ---
-services: functions, logic-apps, event-grid, cosmos-db, sql-database, storage, app-service
-platforms: nodejs, dotnet
-author: gk-8
+languages: []
+products:
+- azure
+- azure-functions
+- azure-logic-apps
+- azure-event-grid
+- azure-cosmos-db
+- azure-sql-database
+- azure-storage
+- azure-app-service
+topic: sample
 ---
 
 # Serverless Microservices reference architecture
