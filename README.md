@@ -11,7 +11,8 @@ products:
 - azure-sql-database
 - azure-storage
 - azure-app-service
-topic: sample
+page_type: sample
+description: "This architecture walks you through the process involved in developing the Rideshare by Relecloud application (a fictitious company)."
 ---
 
 # Serverless Microservices reference architecture
