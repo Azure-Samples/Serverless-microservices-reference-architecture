@@ -2,6 +2,7 @@
 languages:
 - csharp
 - javascript
+- nodejs
 products:
 - azure
 - azure-functions
@@ -12,7 +13,7 @@ products:
 - azure-storage
 - azure-app-service
 page_type: sample
-description: "This architecture walks you through the process involved in developing the Rideshare by Relecloud application (a fictitious company)."
+description: "This architecture walks you through the process involved in developing the Rideshare by Relecloud application."
 ---
 
 # Serverless Microservices reference architecture
