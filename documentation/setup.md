@@ -512,12 +512,12 @@ Your new Azure AD B2C tenant must be configured before it can be used from the w
     | http://localhost:8080/trips |
     | http://localhost:8080/login |
     | http://localhost:8080 |
-    | http://YOUR-WEB-APP.azurewebsites.net/no-auth |
-    | http://YOUR-WEB-APP.azurewebsites.net/drivers |
-    | http://YOUR-WEB-APP.azurewebsites.net/passengers |
-    | http://YOUR-WEB-APP.azurewebsites.net/trips |
-    | http://YOUR-WEB-APP.azurewebsites.net/login |
-    | http://YOUR-WEB-APP.azurewebsites.net |
+    | https://YOUR-WEB-APP.azurewebsites.net/no-auth |
+    | https://YOUR-WEB-APP.azurewebsites.net/drivers |
+    | https://YOUR-WEB-APP.azurewebsites.net/passengers |
+    | https://YOUR-WEB-APP.azurewebsites.net/trips |
+    | https://YOUR-WEB-APP.azurewebsites.net/login |
+    | https://YOUR-WEB-APP.azurewebsites.net |
 
     ![Add all required Reply URLs and the App ID URI values](media/azure-ad-b2c-reply-urls.png)
 
