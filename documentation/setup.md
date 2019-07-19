@@ -224,7 +224,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
 7.  Repeat the steps above to create the **TripArchiver** function app.
 
-    - **Important**: Select **JavaScript** for the Runtime Stack, since this Function App will use Node.js.
+    - **Important**: Select **Node.js** for the Runtime Stack, since this Function App will use Node.js.
 
 #### Create the Web App Service Plan
 
