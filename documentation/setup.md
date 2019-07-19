@@ -207,7 +207,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     4. **OS**: Select Windows.
     5. **Hosting Plan**: Select Consumption Plan.
     6. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    7. **Runtime Stack**: Select .NET.
+    7. **Runtime Stack**: Select .NET Core.
     8. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
     9. **Application Insights**: Set to Disabled. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
 
