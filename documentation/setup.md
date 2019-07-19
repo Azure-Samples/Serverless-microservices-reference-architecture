@@ -306,6 +306,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     2. **Subscription**: Select your Azure subscription.
     3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Event Schema**: Select `Event Grid Schema`.
 
     ![Screenshot of the Event Grid Topic form](media/event-grid-topic-creation.png)
 
