@@ -301,153 +301,153 @@ namespace ServerlessMicroservices.AI
             // day (such as a slow weekend). They can also exceed 100 if you want a spike in activity.
             var schedule = new List<PickupSchedule>()
             {
-                new PickupSchedule() { Date = new DateTime(2018, 7, 29), PickupLocation1Percentage = 25, PickupLocation2Percentage = 35, PickupLocation3Percentage = 15 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 7, 30), PickupLocation1Percentage = 60, PickupLocation2Percentage = 28, PickupLocation3Percentage = 10 },
-                new PickupSchedule() { Date = new DateTime(2018, 7, 31), PickupLocation1Percentage = 37, PickupLocation2Percentage = 18, PickupLocation3Percentage = 42 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 1), PickupLocation1Percentage = 20, PickupLocation2Percentage = 65, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 2), PickupLocation1Percentage = 45, PickupLocation2Percentage = 22, PickupLocation3Percentage = 33 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 3), PickupLocation1Percentage = 16, PickupLocation2Percentage = 27, PickupLocation3Percentage = 65 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 4), PickupLocation1Percentage = 12, PickupLocation2Percentage = 18, PickupLocation3Percentage = 33 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 3), PickupLocation1Percentage = 25, PickupLocation2Percentage = 35, PickupLocation3Percentage = 15 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 2, 4), PickupLocation1Percentage = 60, PickupLocation2Percentage = 28, PickupLocation3Percentage = 10 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 5), PickupLocation1Percentage = 37, PickupLocation2Percentage = 18, PickupLocation3Percentage = 42 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 6), PickupLocation1Percentage = 20, PickupLocation2Percentage = 65, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 7), PickupLocation1Percentage = 45, PickupLocation2Percentage = 22, PickupLocation3Percentage = 33 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 8), PickupLocation1Percentage = 16, PickupLocation2Percentage = 27, PickupLocation3Percentage = 65 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 9), PickupLocation1Percentage = 12, PickupLocation2Percentage = 18, PickupLocation3Percentage = 33 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 8, 5), PickupLocation1Percentage = 21, PickupLocation2Percentage = 39, PickupLocation3Percentage = 17 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 8, 6), PickupLocation1Percentage = 56, PickupLocation2Percentage = 31, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 7), PickupLocation1Percentage = 30, PickupLocation2Percentage = 22, PickupLocation3Percentage = 40 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 8), PickupLocation1Percentage = 18, PickupLocation2Percentage = 67, PickupLocation3Percentage = 16 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 9), PickupLocation1Percentage = 52, PickupLocation2Percentage = 19, PickupLocation3Percentage = 28 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 10), PickupLocation1Percentage = 14, PickupLocation2Percentage = 24, PickupLocation3Percentage = 51 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 11), PickupLocation1Percentage = 10, PickupLocation2Percentage = 16, PickupLocation3Percentage = 37 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 10), PickupLocation1Percentage = 21, PickupLocation2Percentage = 39, PickupLocation3Percentage = 17 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 2, 11), PickupLocation1Percentage = 56, PickupLocation2Percentage = 31, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 12), PickupLocation1Percentage = 30, PickupLocation2Percentage = 22, PickupLocation3Percentage = 40 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 13), PickupLocation1Percentage = 18, PickupLocation2Percentage = 67, PickupLocation3Percentage = 16 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 14), PickupLocation1Percentage = 52, PickupLocation2Percentage = 19, PickupLocation3Percentage = 28 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 15), PickupLocation1Percentage = 14, PickupLocation2Percentage = 24, PickupLocation3Percentage = 51 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 16), PickupLocation1Percentage = 10, PickupLocation2Percentage = 16, PickupLocation3Percentage = 37 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 8, 12), PickupLocation1Percentage = 29, PickupLocation2Percentage = 31, PickupLocation3Percentage = 13 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 8, 13), PickupLocation1Percentage = 63, PickupLocation2Percentage = 26, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 14), PickupLocation1Percentage = 35, PickupLocation2Percentage = 21, PickupLocation3Percentage = 39 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 15), PickupLocation1Percentage = 19, PickupLocation2Percentage = 63, PickupLocation3Percentage = 14 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 16), PickupLocation1Percentage = 47, PickupLocation2Percentage = 19, PickupLocation3Percentage = 35 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 17), PickupLocation1Percentage = 18, PickupLocation2Percentage = 25, PickupLocation3Percentage = 64 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 18), PickupLocation1Percentage = 15, PickupLocation2Percentage = 18, PickupLocation3Percentage = 28 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 17), PickupLocation1Percentage = 29, PickupLocation2Percentage = 31, PickupLocation3Percentage = 13 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 2, 18), PickupLocation1Percentage = 63, PickupLocation2Percentage = 26, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 19), PickupLocation1Percentage = 35, PickupLocation2Percentage = 21, PickupLocation3Percentage = 39 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 20), PickupLocation1Percentage = 19, PickupLocation2Percentage = 63, PickupLocation3Percentage = 14 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 21), PickupLocation1Percentage = 47, PickupLocation2Percentage = 19, PickupLocation3Percentage = 35 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 22), PickupLocation1Percentage = 18, PickupLocation2Percentage = 25, PickupLocation3Percentage = 64 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 23), PickupLocation1Percentage = 15, PickupLocation2Percentage = 18, PickupLocation3Percentage = 28 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 8, 19), PickupLocation1Percentage = 26, PickupLocation2Percentage = 34, PickupLocation3Percentage = 14 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 8, 20), PickupLocation1Percentage = 59, PickupLocation2Percentage = 22, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 21), PickupLocation1Percentage = 33, PickupLocation2Percentage = 20, PickupLocation3Percentage = 44 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 22), PickupLocation1Percentage = 23, PickupLocation2Percentage = 54, PickupLocation3Percentage = 19 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 23), PickupLocation1Percentage = 40, PickupLocation2Percentage = 19, PickupLocation3Percentage = 38 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 24), PickupLocation1Percentage = 15, PickupLocation2Percentage = 21, PickupLocation3Percentage = 60 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 25), PickupLocation1Percentage = 13, PickupLocation2Percentage = 20, PickupLocation3Percentage = 35 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 24), PickupLocation1Percentage = 26, PickupLocation2Percentage = 34, PickupLocation3Percentage = 14 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 2, 25), PickupLocation1Percentage = 59, PickupLocation2Percentage = 22, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 26), PickupLocation1Percentage = 33, PickupLocation2Percentage = 20, PickupLocation3Percentage = 44 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 27), PickupLocation1Percentage = 23, PickupLocation2Percentage = 54, PickupLocation3Percentage = 19 },
+                new PickupSchedule() { Date = new DateTime(2019, 2, 28), PickupLocation1Percentage = 40, PickupLocation2Percentage = 19, PickupLocation3Percentage = 38 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 1), PickupLocation1Percentage = 15, PickupLocation2Percentage = 21, PickupLocation3Percentage = 60 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 2), PickupLocation1Percentage = 13, PickupLocation2Percentage = 20, PickupLocation3Percentage = 35 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 8, 26), PickupLocation1Percentage = 30, PickupLocation2Percentage = 30, PickupLocation3Percentage = 12 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 8, 27), PickupLocation1Percentage = 65, PickupLocation2Percentage = 32, PickupLocation3Percentage = 17 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 28), PickupLocation1Percentage = 43, PickupLocation2Percentage = 25, PickupLocation3Percentage = 50 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 29), PickupLocation1Percentage = 26, PickupLocation2Percentage = 70, PickupLocation3Percentage = 16 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 30), PickupLocation1Percentage = 52, PickupLocation2Percentage = 28, PickupLocation3Percentage = 39 },
-                new PickupSchedule() { Date = new DateTime(2018, 8, 31), PickupLocation1Percentage = 22, PickupLocation2Percentage = 33, PickupLocation3Percentage = 77 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 1), PickupLocation1Percentage = 18, PickupLocation2Percentage = 26, PickupLocation3Percentage = 39 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 3), PickupLocation1Percentage = 30, PickupLocation2Percentage = 30, PickupLocation3Percentage = 12 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 3, 4), PickupLocation1Percentage = 65, PickupLocation2Percentage = 32, PickupLocation3Percentage = 17 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 5), PickupLocation1Percentage = 43, PickupLocation2Percentage = 25, PickupLocation3Percentage = 50 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 6), PickupLocation1Percentage = 26, PickupLocation2Percentage = 70, PickupLocation3Percentage = 16 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 7), PickupLocation1Percentage = 52, PickupLocation2Percentage = 28, PickupLocation3Percentage = 39 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 8), PickupLocation1Percentage = 22, PickupLocation2Percentage = 33, PickupLocation3Percentage = 77 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 9), PickupLocation1Percentage = 18, PickupLocation2Percentage = 26, PickupLocation3Percentage = 39 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 9, 2), PickupLocation1Percentage = 20, PickupLocation2Percentage = 32, PickupLocation3Percentage = 12 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 9, 3), PickupLocation1Percentage = 53, PickupLocation2Percentage = 25, PickupLocation3Percentage = 13 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 4), PickupLocation1Percentage = 36, PickupLocation2Percentage = 19, PickupLocation3Percentage = 46 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 5), PickupLocation1Percentage = 23, PickupLocation2Percentage = 60, PickupLocation3Percentage = 16 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 6), PickupLocation1Percentage = 44, PickupLocation2Percentage = 20, PickupLocation3Percentage = 30 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 7), PickupLocation1Percentage = 15, PickupLocation2Percentage = 25, PickupLocation3Percentage = 63 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 8), PickupLocation1Percentage = 15, PickupLocation2Percentage = 16, PickupLocation3Percentage = 36 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 10), PickupLocation1Percentage = 20, PickupLocation2Percentage = 32, PickupLocation3Percentage = 12 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 3, 11), PickupLocation1Percentage = 53, PickupLocation2Percentage = 25, PickupLocation3Percentage = 13 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 12), PickupLocation1Percentage = 36, PickupLocation2Percentage = 19, PickupLocation3Percentage = 46 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 13), PickupLocation1Percentage = 23, PickupLocation2Percentage = 60, PickupLocation3Percentage = 16 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 14), PickupLocation1Percentage = 44, PickupLocation2Percentage = 20, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 15), PickupLocation1Percentage = 15, PickupLocation2Percentage = 25, PickupLocation3Percentage = 63 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 16), PickupLocation1Percentage = 15, PickupLocation2Percentage = 16, PickupLocation3Percentage = 36 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 9, 9), PickupLocation1Percentage = 24, PickupLocation2Percentage = 37, PickupLocation3Percentage = 17 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 9, 10), PickupLocation1Percentage = 58, PickupLocation2Percentage = 27, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 11), PickupLocation1Percentage = 40, PickupLocation2Percentage = 22, PickupLocation3Percentage = 49 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 12), PickupLocation1Percentage = 22, PickupLocation2Percentage = 58, PickupLocation3Percentage = 14 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 13), PickupLocation1Percentage = 48, PickupLocation2Percentage = 20, PickupLocation3Percentage = 30 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 14), PickupLocation1Percentage = 17, PickupLocation2Percentage = 25, PickupLocation3Percentage = 53 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 15), PickupLocation1Percentage = 9, PickupLocation2Percentage = 17, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 17), PickupLocation1Percentage = 24, PickupLocation2Percentage = 37, PickupLocation3Percentage = 17 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 3, 18), PickupLocation1Percentage = 58, PickupLocation2Percentage = 27, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 19), PickupLocation1Percentage = 40, PickupLocation2Percentage = 22, PickupLocation3Percentage = 49 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 20), PickupLocation1Percentage = 22, PickupLocation2Percentage = 58, PickupLocation3Percentage = 14 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 21), PickupLocation1Percentage = 48, PickupLocation2Percentage = 20, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 22), PickupLocation1Percentage = 17, PickupLocation2Percentage = 25, PickupLocation3Percentage = 53 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 23), PickupLocation1Percentage = 9, PickupLocation2Percentage = 17, PickupLocation3Percentage = 30 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 9, 16), PickupLocation1Percentage = 23, PickupLocation2Percentage = 37, PickupLocation3Percentage = 13 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 9, 17), PickupLocation1Percentage = 58, PickupLocation2Percentage = 31, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 18), PickupLocation1Percentage = 35, PickupLocation2Percentage = 17, PickupLocation3Percentage = 53 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 19), PickupLocation1Percentage = 22, PickupLocation2Percentage = 60, PickupLocation3Percentage = 19 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 20), PickupLocation1Percentage = 46, PickupLocation2Percentage = 19, PickupLocation3Percentage = 37 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 21), PickupLocation1Percentage = 18, PickupLocation2Percentage = 30, PickupLocation3Percentage = 42 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 22), PickupLocation1Percentage = 18, PickupLocation2Percentage = 19, PickupLocation3Percentage = 27 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 24), PickupLocation1Percentage = 23, PickupLocation2Percentage = 37, PickupLocation3Percentage = 13 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 3, 25), PickupLocation1Percentage = 58, PickupLocation2Percentage = 31, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 26), PickupLocation1Percentage = 35, PickupLocation2Percentage = 17, PickupLocation3Percentage = 53 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 27), PickupLocation1Percentage = 22, PickupLocation2Percentage = 60, PickupLocation3Percentage = 19 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 28), PickupLocation1Percentage = 46, PickupLocation2Percentage = 19, PickupLocation3Percentage = 37 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 29), PickupLocation1Percentage = 18, PickupLocation2Percentage = 30, PickupLocation3Percentage = 42 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 30), PickupLocation1Percentage = 18, PickupLocation2Percentage = 19, PickupLocation3Percentage = 27 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 9, 23), PickupLocation1Percentage = 22, PickupLocation2Percentage = 30, PickupLocation3Percentage = 20 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 9, 24), PickupLocation1Percentage = 62, PickupLocation2Percentage = 25, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 25), PickupLocation1Percentage = 39, PickupLocation2Percentage = 24, PickupLocation3Percentage = 49 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 26), PickupLocation1Percentage = 23, PickupLocation2Percentage = 66, PickupLocation3Percentage = 19 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 27), PickupLocation1Percentage = 50, PickupLocation2Percentage = 26, PickupLocation3Percentage = 40 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 28), PickupLocation1Percentage = 20, PickupLocation2Percentage = 31, PickupLocation3Percentage = 69 },
-                new PickupSchedule() { Date = new DateTime(2018, 9, 29), PickupLocation1Percentage = 18, PickupLocation2Percentage = 25, PickupLocation3Percentage = 38 },
+                new PickupSchedule() { Date = new DateTime(2019, 3, 31), PickupLocation1Percentage = 22, PickupLocation2Percentage = 30, PickupLocation3Percentage = 20 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 4, 1), PickupLocation1Percentage = 62, PickupLocation2Percentage = 25, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 2), PickupLocation1Percentage = 39, PickupLocation2Percentage = 24, PickupLocation3Percentage = 49 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 3), PickupLocation1Percentage = 23, PickupLocation2Percentage = 66, PickupLocation3Percentage = 19 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 4), PickupLocation1Percentage = 50, PickupLocation2Percentage = 26, PickupLocation3Percentage = 40 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 5), PickupLocation1Percentage = 20, PickupLocation2Percentage = 31, PickupLocation3Percentage = 69 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 6), PickupLocation1Percentage = 18, PickupLocation2Percentage = 25, PickupLocation3Percentage = 38 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 9, 30), PickupLocation1Percentage = 29, PickupLocation2Percentage = 41, PickupLocation3Percentage = 16 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 10, 1), PickupLocation1Percentage = 54, PickupLocation2Percentage = 24, PickupLocation3Percentage = 14 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 2), PickupLocation1Percentage = 34, PickupLocation2Percentage = 14, PickupLocation3Percentage = 40 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 3), PickupLocation1Percentage = 23, PickupLocation2Percentage = 61, PickupLocation3Percentage = 14 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 4), PickupLocation1Percentage = 47, PickupLocation2Percentage = 30, PickupLocation3Percentage = 30 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 5), PickupLocation1Percentage = 18, PickupLocation2Percentage = 25, PickupLocation3Percentage = 62 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 6), PickupLocation1Percentage = 10, PickupLocation2Percentage = 17, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 7), PickupLocation1Percentage = 29, PickupLocation2Percentage = 41, PickupLocation3Percentage = 16 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 4, 8), PickupLocation1Percentage = 54, PickupLocation2Percentage = 24, PickupLocation3Percentage = 14 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 9), PickupLocation1Percentage = 34, PickupLocation2Percentage = 14, PickupLocation3Percentage = 40 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 10), PickupLocation1Percentage = 23, PickupLocation2Percentage = 61, PickupLocation3Percentage = 14 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 11), PickupLocation1Percentage = 47, PickupLocation2Percentage = 30, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 12), PickupLocation1Percentage = 18, PickupLocation2Percentage = 25, PickupLocation3Percentage = 62 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 13), PickupLocation1Percentage = 10, PickupLocation2Percentage = 17, PickupLocation3Percentage = 30 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 10, 7), PickupLocation1Percentage = 25, PickupLocation2Percentage = 35, PickupLocation3Percentage = 15 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 10, 8), PickupLocation1Percentage = 56, PickupLocation2Percentage = 33, PickupLocation3Percentage = 16 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 9), PickupLocation1Percentage = 35, PickupLocation2Percentage = 15, PickupLocation3Percentage = 44 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 10), PickupLocation1Percentage = 29, PickupLocation2Percentage = 59, PickupLocation3Percentage = 22 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 11), PickupLocation1Percentage = 46, PickupLocation2Percentage = 21, PickupLocation3Percentage = 32 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 12), PickupLocation1Percentage = 17, PickupLocation2Percentage = 28, PickupLocation3Percentage = 64 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 13), PickupLocation1Percentage = 13, PickupLocation2Percentage = 19, PickupLocation3Percentage = 31 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 14), PickupLocation1Percentage = 25, PickupLocation2Percentage = 35, PickupLocation3Percentage = 15 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 4, 15), PickupLocation1Percentage = 56, PickupLocation2Percentage = 33, PickupLocation3Percentage = 16 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 16), PickupLocation1Percentage = 35, PickupLocation2Percentage = 15, PickupLocation3Percentage = 44 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 17), PickupLocation1Percentage = 29, PickupLocation2Percentage = 59, PickupLocation3Percentage = 22 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 18), PickupLocation1Percentage = 46, PickupLocation2Percentage = 21, PickupLocation3Percentage = 32 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 19), PickupLocation1Percentage = 17, PickupLocation2Percentage = 28, PickupLocation3Percentage = 64 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 20), PickupLocation1Percentage = 13, PickupLocation2Percentage = 19, PickupLocation3Percentage = 31 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 10, 14), PickupLocation1Percentage = 20, PickupLocation2Percentage = 30, PickupLocation3Percentage = 19 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 10, 15), PickupLocation1Percentage = 59, PickupLocation2Percentage = 31, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 16), PickupLocation1Percentage = 35, PickupLocation2Percentage = 16, PickupLocation3Percentage = 40 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 17), PickupLocation1Percentage = 20, PickupLocation2Percentage = 64, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 18), PickupLocation1Percentage = 44, PickupLocation2Percentage = 19, PickupLocation3Percentage = 31 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 19), PickupLocation1Percentage = 12, PickupLocation2Percentage = 31, PickupLocation3Percentage = 53 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 20), PickupLocation1Percentage = 18, PickupLocation2Percentage = 18, PickupLocation3Percentage = 35 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 21), PickupLocation1Percentage = 20, PickupLocation2Percentage = 30, PickupLocation3Percentage = 19 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 4, 22), PickupLocation1Percentage = 59, PickupLocation2Percentage = 31, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 23), PickupLocation1Percentage = 35, PickupLocation2Percentage = 16, PickupLocation3Percentage = 40 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 24), PickupLocation1Percentage = 20, PickupLocation2Percentage = 64, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 25), PickupLocation1Percentage = 44, PickupLocation2Percentage = 19, PickupLocation3Percentage = 31 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 26), PickupLocation1Percentage = 12, PickupLocation2Percentage = 31, PickupLocation3Percentage = 53 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 27), PickupLocation1Percentage = 18, PickupLocation2Percentage = 18, PickupLocation3Percentage = 35 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 10, 21), PickupLocation1Percentage = 19, PickupLocation2Percentage = 34, PickupLocation3Percentage = 12 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 10, 22), PickupLocation1Percentage = 55, PickupLocation2Percentage = 26, PickupLocation3Percentage = 25 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 23), PickupLocation1Percentage = 35, PickupLocation2Percentage = 22, PickupLocation3Percentage = 38 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 24), PickupLocation1Percentage = 21, PickupLocation2Percentage = 61, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 25), PickupLocation1Percentage = 49, PickupLocation2Percentage = 24, PickupLocation3Percentage = 34 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 26), PickupLocation1Percentage = 15, PickupLocation2Percentage = 24, PickupLocation3Percentage = 60 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 27), PickupLocation1Percentage = 16, PickupLocation2Percentage = 24, PickupLocation3Percentage = 37 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 28), PickupLocation1Percentage = 19, PickupLocation2Percentage = 34, PickupLocation3Percentage = 12 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 4, 29), PickupLocation1Percentage = 55, PickupLocation2Percentage = 26, PickupLocation3Percentage = 25 },
+                new PickupSchedule() { Date = new DateTime(2019, 4, 30), PickupLocation1Percentage = 35, PickupLocation2Percentage = 22, PickupLocation3Percentage = 38 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 1), PickupLocation1Percentage = 21, PickupLocation2Percentage = 61, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 2), PickupLocation1Percentage = 49, PickupLocation2Percentage = 24, PickupLocation3Percentage = 34 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 3), PickupLocation1Percentage = 15, PickupLocation2Percentage = 24, PickupLocation3Percentage = 60 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 4), PickupLocation1Percentage = 16, PickupLocation2Percentage = 24, PickupLocation3Percentage = 37 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 10, 28), PickupLocation1Percentage = 27, PickupLocation2Percentage = 37, PickupLocation3Percentage = 18 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 10, 29), PickupLocation1Percentage = 66, PickupLocation2Percentage = 35, PickupLocation3Percentage = 20 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 30), PickupLocation1Percentage = 42, PickupLocation2Percentage = 24, PickupLocation3Percentage = 49 },
-                new PickupSchedule() { Date = new DateTime(2018, 10, 31), PickupLocation1Percentage = 25, PickupLocation2Percentage = 69, PickupLocation3Percentage = 19 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 1), PickupLocation1Percentage = 40, PickupLocation2Percentage = 26, PickupLocation3Percentage = 39 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 2), PickupLocation1Percentage = 15, PickupLocation2Percentage = 26, PickupLocation3Percentage = 57 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 3), PickupLocation1Percentage = 10, PickupLocation2Percentage = 17, PickupLocation3Percentage = 26 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 5), PickupLocation1Percentage = 27, PickupLocation2Percentage = 37, PickupLocation3Percentage = 18 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 5, 6), PickupLocation1Percentage = 66, PickupLocation2Percentage = 35, PickupLocation3Percentage = 20 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 7), PickupLocation1Percentage = 42, PickupLocation2Percentage = 24, PickupLocation3Percentage = 49 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 8), PickupLocation1Percentage = 25, PickupLocation2Percentage = 69, PickupLocation3Percentage = 19 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 9), PickupLocation1Percentage = 40, PickupLocation2Percentage = 26, PickupLocation3Percentage = 39 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 10), PickupLocation1Percentage = 15, PickupLocation2Percentage = 26, PickupLocation3Percentage = 57 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 11), PickupLocation1Percentage = 10, PickupLocation2Percentage = 17, PickupLocation3Percentage = 26 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 11, 4), PickupLocation1Percentage = 27, PickupLocation2Percentage = 36, PickupLocation3Percentage = 14 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 11, 5), PickupLocation1Percentage = 61, PickupLocation2Percentage = 25, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 6), PickupLocation1Percentage = 35, PickupLocation2Percentage = 22, PickupLocation3Percentage = 46 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 7), PickupLocation1Percentage = 23, PickupLocation2Percentage = 61, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 8), PickupLocation1Percentage = 47, PickupLocation2Percentage = 18, PickupLocation3Percentage = 30 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 9), PickupLocation1Percentage = 22, PickupLocation2Percentage = 22, PickupLocation3Percentage = 59 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 10), PickupLocation1Percentage = 14, PickupLocation2Percentage = 19, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 12), PickupLocation1Percentage = 27, PickupLocation2Percentage = 36, PickupLocation3Percentage = 14 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 5, 13), PickupLocation1Percentage = 61, PickupLocation2Percentage = 25, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 14), PickupLocation1Percentage = 35, PickupLocation2Percentage = 22, PickupLocation3Percentage = 46 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 15), PickupLocation1Percentage = 23, PickupLocation2Percentage = 61, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 16), PickupLocation1Percentage = 47, PickupLocation2Percentage = 18, PickupLocation3Percentage = 30 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 17), PickupLocation1Percentage = 22, PickupLocation2Percentage = 22, PickupLocation3Percentage = 59 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 18), PickupLocation1Percentage = 14, PickupLocation2Percentage = 19, PickupLocation3Percentage = 30 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 11, 11), PickupLocation1Percentage = 25, PickupLocation2Percentage = 35, PickupLocation3Percentage = 15 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 11, 12), PickupLocation1Percentage = 58, PickupLocation2Percentage = 28, PickupLocation3Percentage = 11 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 13), PickupLocation1Percentage = 37, PickupLocation2Percentage = 18, PickupLocation3Percentage = 42 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 14), PickupLocation1Percentage = 18, PickupLocation2Percentage = 62, PickupLocation3Percentage = 12 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 15), PickupLocation1Percentage = 42, PickupLocation2Percentage = 25, PickupLocation3Percentage = 31 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 16), PickupLocation1Percentage = 15, PickupLocation2Percentage = 35, PickupLocation3Percentage = 59 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 17), PickupLocation1Percentage = 11, PickupLocation2Percentage = 17, PickupLocation3Percentage = 31 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 19), PickupLocation1Percentage = 25, PickupLocation2Percentage = 35, PickupLocation3Percentage = 15 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 5, 20), PickupLocation1Percentage = 58, PickupLocation2Percentage = 28, PickupLocation3Percentage = 11 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 21), PickupLocation1Percentage = 37, PickupLocation2Percentage = 18, PickupLocation3Percentage = 42 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 22), PickupLocation1Percentage = 18, PickupLocation2Percentage = 62, PickupLocation3Percentage = 12 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 23), PickupLocation1Percentage = 42, PickupLocation2Percentage = 25, PickupLocation3Percentage = 31 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 24), PickupLocation1Percentage = 15, PickupLocation2Percentage = 35, PickupLocation3Percentage = 59 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 25), PickupLocation1Percentage = 11, PickupLocation2Percentage = 17, PickupLocation3Percentage = 31 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 11, 18), PickupLocation1Percentage = 28, PickupLocation2Percentage = 32, PickupLocation3Percentage = 16 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 11, 19), PickupLocation1Percentage = 61, PickupLocation2Percentage = 23, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 20), PickupLocation1Percentage = 34, PickupLocation2Percentage = 19, PickupLocation3Percentage = 45 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 21), PickupLocation1Percentage = 24, PickupLocation2Percentage = 52, PickupLocation3Percentage = 20 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 22), PickupLocation1Percentage = 41, PickupLocation2Percentage = 18, PickupLocation3Percentage = 37 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 23), PickupLocation1Percentage = 16, PickupLocation2Percentage = 24, PickupLocation3Percentage = 58 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 24), PickupLocation1Percentage = 12, PickupLocation2Percentage = 19, PickupLocation3Percentage = 36 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 26), PickupLocation1Percentage = 28, PickupLocation2Percentage = 32, PickupLocation3Percentage = 16 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 5, 27), PickupLocation1Percentage = 61, PickupLocation2Percentage = 23, PickupLocation3Percentage = 15 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 28), PickupLocation1Percentage = 34, PickupLocation2Percentage = 19, PickupLocation3Percentage = 45 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 29), PickupLocation1Percentage = 24, PickupLocation2Percentage = 52, PickupLocation3Percentage = 20 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 30), PickupLocation1Percentage = 41, PickupLocation2Percentage = 18, PickupLocation3Percentage = 37 },
+                new PickupSchedule() { Date = new DateTime(2019, 5, 31), PickupLocation1Percentage = 16, PickupLocation2Percentage = 24, PickupLocation3Percentage = 58 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 1), PickupLocation1Percentage = 12, PickupLocation2Percentage = 19, PickupLocation3Percentage = 36 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 11, 25), PickupLocation1Percentage = 32, PickupLocation2Percentage = 29, PickupLocation3Percentage = 11 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 11, 26), PickupLocation1Percentage = 68, PickupLocation2Percentage = 29, PickupLocation3Percentage = 21 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 27), PickupLocation1Percentage = 44, PickupLocation2Percentage = 26, PickupLocation3Percentage = 51 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 28), PickupLocation1Percentage = 28, PickupLocation2Percentage = 69, PickupLocation3Percentage = 17 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 29), PickupLocation1Percentage = 54, PickupLocation2Percentage = 30, PickupLocation3Percentage = 38 },
-                new PickupSchedule() { Date = new DateTime(2018, 11, 30), PickupLocation1Percentage = 24, PickupLocation2Percentage = 30, PickupLocation3Percentage = 79 },
-                new PickupSchedule() { Date = new DateTime(2018, 12, 1), PickupLocation1Percentage = 20, PickupLocation2Percentage = 25, PickupLocation3Percentage = 38 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 2), PickupLocation1Percentage = 32, PickupLocation2Percentage = 29, PickupLocation3Percentage = 11 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 6, 3), PickupLocation1Percentage = 68, PickupLocation2Percentage = 29, PickupLocation3Percentage = 21 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 4), PickupLocation1Percentage = 44, PickupLocation2Percentage = 26, PickupLocation3Percentage = 51 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 5), PickupLocation1Percentage = 28, PickupLocation2Percentage = 69, PickupLocation3Percentage = 17 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 6), PickupLocation1Percentage = 54, PickupLocation2Percentage = 30, PickupLocation3Percentage = 38 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 7), PickupLocation1Percentage = 24, PickupLocation2Percentage = 30, PickupLocation3Percentage = 79 },
+                new PickupSchedule() { Date = new DateTime(2019, 6, 8), PickupLocation1Percentage = 20, PickupLocation2Percentage = 25, PickupLocation3Percentage = 38 },
 
-                new PickupSchedule() { Date = new DateTime(2018, 12, 2), PickupLocation1Percentage = 20, PickupLocation2Percentage = 28, PickupLocation3Percentage = 17 }, // Sunday
-                new PickupSchedule() { Date = new DateTime(2018, 12, 3), PickupLocation1Percentage = 55, PickupLocation2Percentage = 28, PickupLocation3Percentage = 15 },
-                new PickupSchedule() { Date = new DateTime(2018, 12, 4), PickupLocation1Percentage = 34, PickupLocation2Percentage = 20, PickupLocation3Percentage = 45 }
+                new PickupSchedule() { Date = new DateTime(2019, 6, 9), PickupLocation1Percentage = 20, PickupLocation2Percentage = 28, PickupLocation3Percentage = 17 }, // Sunday
+                new PickupSchedule() { Date = new DateTime(2019, 6, 10), PickupLocation1Percentage = 55, PickupLocation2Percentage = 28, PickupLocation3Percentage = 15 }
+                //new PickupSchedule() { Date = new DateTime(2019, 6, 11), PickupLocation1Percentage = 34, PickupLocation2Percentage = 20, PickupLocation3Percentage = 45 }
             };
             #endregion
 
