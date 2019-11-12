@@ -1,7 +1,19 @@
 ---
-services: functions, logic-apps, event-grid, cosmos-db, sql-database, storage, app-service
-platforms: nodejs, dotnet
-author: gk-8
+languages:
+- csharp
+- javascript
+- nodejs
+products:
+- azure
+- azure-functions
+- azure-logic-apps
+- azure-event-grid
+- azure-cosmos-db
+- azure-sql-database
+- azure-storage
+- azure-app-service
+page_type: sample
+description: "This architecture walks you through the process involved in developing the Rideshare by Relecloud application."
 ---
 
 # Serverless Microservices reference architecture

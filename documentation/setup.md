@@ -207,7 +207,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     4. **OS**: Select Windows.
     5. **Hosting Plan**: Select Consumption Plan.
     6. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
-    7. **Runtime Stack**: Select .NET.
+    7. **Runtime Stack**: Select .NET Core.
     8. **Storage**: Select Create new and supply a unique name. You will use this storage account for the remaining function apps.
     9. **Application Insights**: Set to Disabled. We will create an Application Insights instance later that will be associated with all of the Function Apps and other services.
 
@@ -224,7 +224,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
 
 7.  Repeat the steps above to create the **TripArchiver** function app.
 
-    - **Important**: Select **JavaScript** for the Runtime Stack, since this Function App will use Node.js.
+    - **Important**: Select **Node.js** for the Runtime Stack, since this Function App will use Node.js.
 
 #### Create the Web App Service Plan
 
@@ -306,6 +306,7 @@ Each of these Function Apps act as a hosting platform for one or more functions.
     2. **Subscription**: Select your Azure subscription.
     3. **Resource Group**: Select the resource group to which you have added your other services, such as `serverless-microservices`.
     4. **Location**: Select a region closest to you. Make sure you select the same region for the rest of your resources.
+    5. **Event Schema**: Select `Event Grid Schema`.
 
     ![Screenshot of the Event Grid Topic form](media/event-grid-topic-creation.png)
 
@@ -512,12 +513,12 @@ Your new Azure AD B2C tenant must be configured before it can be used from the w
     | http://localhost:8080/trips |
     | http://localhost:8080/login |
     | http://localhost:8080 |
-    | http://YOUR-WEB-APP.azurewebsites.net/no-auth |
-    | http://YOUR-WEB-APP.azurewebsites.net/drivers |
-    | http://YOUR-WEB-APP.azurewebsites.net/passengers |
-    | http://YOUR-WEB-APP.azurewebsites.net/trips |
-    | http://YOUR-WEB-APP.azurewebsites.net/login |
-    | http://YOUR-WEB-APP.azurewebsites.net |
+    | https://YOUR-WEB-APP.azurewebsites.net/no-auth |
+    | https://YOUR-WEB-APP.azurewebsites.net/drivers |
+    | https://YOUR-WEB-APP.azurewebsites.net/passengers |
+    | https://YOUR-WEB-APP.azurewebsites.net/trips |
+    | https://YOUR-WEB-APP.azurewebsites.net/login |
+    | https://YOUR-WEB-APP.azurewebsites.net |
 
     ![Add all required Reply URLs and the App ID URI values](media/azure-ad-b2c-reply-urls.png)
 
