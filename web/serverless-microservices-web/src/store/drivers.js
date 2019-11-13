@@ -1,4 +1,4 @@
-import { getDrivers, predict } from '@/api/drivers';
+import { getDrivers, predict, predictBattery } from '@/api/drivers';
 
 export default {
   namespaced: true,
@@ -51,6 +51,24 @@ export default {
         commit('contentLoading', true);
         let drivers = await predict(payload);
         return drivers.data;
+      } catch (e) {
+        throw e;
+      } finally {
+        commit('contentLoading', false);
+      }
+    },
+
+    async predictBattery({ commit }, payload) {
+      try {
+        commit('contentLoading', true);
+        let data = {
+          batteryAgeDays: payload.car.batteryAgeDays,
+          batteryRatedCycles: payload.car.batteryRatedCycles,
+          lifetimeBatteryCyclesUsed: payload.car.lifetimeBatteryCyclesUsed,
+          dailyTripDuration: payload.car.dailyTripDuration
+        };
+        let prediction = await predictBattery(data);
+        return prediction.data;
       } catch (e) {
         throw e;
       } finally {

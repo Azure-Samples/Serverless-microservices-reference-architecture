@@ -10,8 +10,18 @@ from .scoring_service import predict_battery_failure
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    req_body = req.get_json()
-    data = req_body
+    if req.method.lower() == 'options':
+        headers = {
+            "Access-Control-Allow-Headers": "authorization,cache-control,content-type,ocp-apim-subscription-key,ocp-apim-trace",
+            "Access-Control-Allow-Methods": "POST",
+            "Access-Control-Allow-Origin": "*"
+        }
+        return func.HttpResponse(
+             "Received", headers = headers
+        )
+    else:
+        req_body = req.get_json()
+        data = req_body
 
     if data:
         batteryAgeDays = data["batteryAgeDays"]

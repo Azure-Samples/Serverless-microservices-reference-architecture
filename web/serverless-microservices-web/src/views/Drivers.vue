@@ -10,7 +10,7 @@
             <div class="mx-auto header-content">
               <h1 class="mb-5">
                 DRIVERS
-                <img class="float-right" src="../assets/img/driver-icon.png" alt="Drivers">
+                <img class="float-right" src="../assets/img/driver-icon.png" alt="Drivers" />
               </h1>
             </div>
           </div>
@@ -23,7 +23,7 @@
         <div class="section-heading text-center" style="margin-bottom:50px;">
           <h2>View driver information</h2>
           <p class="text-muted">View all drivers and driver profile information</p>
-          <hr>
+          <hr />
           <div class="card border-danger">
             <div class="card-body">
               <h4 class="card-title">All Drivers</h4>
@@ -67,7 +67,7 @@
               <div class="device-container">
                 <div class="device-container">
                   <div class="text-center">
-                    <img class="img-fluid" src="../assets/img/calendar.png" alt="Calendar">
+                    <img class="img-fluid" src="../assets/img/calendar.png" alt="Calendar" />
                   </div>
                 </div>
                 <p class="text-muted" style="margin-top:28px;font-size:16px;">
@@ -94,7 +94,7 @@
                           <b-form-input type="date" v-model="predictionDate"></b-form-input>
                         </b-col>
                       </b-form-row>
-                      <hr>
+                      <hr />
                       <div class="card text-white bg-secondary" v-if="prediction">
                         <div class="card-header">PREDICTION</div>
                         <div class="card-body">
@@ -198,7 +198,7 @@
           </b-col>
           <b-col>{{selectedDriver.isAcceptingRides?'Yes':'No'}}</b-col>
         </b-form-row>
-        <hr>
+        <hr />
         <div class="card text-white bg-secondary">
           <div class="card-header">CAR</div>
           <div class="card-body">
@@ -234,6 +234,45 @@
               </b-col>
               <b-col>{{selectedDriver.car.licensePlate}}</b-col>
             </b-form-row>
+            <!--Battery information for prediction-->
+            <hr />
+            <b-form-row>
+              <b-col>
+                <em>
+                  <strong>Battery rated cycles</strong>
+                </em>
+              </b-col>
+              <b-col>{{selectedDriver.car.batteryRatedCycles}}</b-col>
+            </b-form-row>
+            <b-form-row>
+              <b-col>
+                <em>
+                  <strong>Battery age (days)</strong>
+                </em>
+              </b-col>
+              <b-col>{{selectedDriver.car.batteryAgeDays}}</b-col>
+            </b-form-row>
+            <b-form-row>
+              <b-col>
+                <em>
+                  <strong>Lifetime battery cycles</strong>
+                </em>
+              </b-col>
+              <b-col>{{selectedDriver.car.lifetimeBatteryCyclesUsed}}</b-col>
+            </b-form-row>
+            <b-form-row>
+              <b-col>
+                <em>
+                  <strong>Avg daily trip distance</strong>
+                </em>
+              </b-col>
+              <b-col>{{selectedDriver.car.dailyTripDuration}}</b-col>
+            </b-form-row>
+            <b-btn
+              size="sm"
+              class="float-right mr-1"
+              @click="requestBatteryPrediction()"
+            >Predict battery failure</b-btn>
           </div>
         </div>
       </b-container>
@@ -246,45 +285,45 @@
 </template>
 
 <script>
-import { createNamespacedHelpers } from "vuex";
-import moment from "moment";
-const { mapGetters: commonGetters } = createNamespacedHelpers("common");
+import { createNamespacedHelpers } from 'vuex';
+import moment from 'moment';
+const { mapGetters: commonGetters } = createNamespacedHelpers('common');
 const {
   mapGetters: driverGetters,
   mapActions: driverActions
-} = createNamespacedHelpers("drivers");
+} = createNamespacedHelpers('drivers');
 
 export default {
-  name: "Drivers",
-  props: ["authenticated"],
+  name: 'Drivers',
+  props: ['authenticated'],
   data() {
     return {
       drivers: [],
       driverInfo: null,
-      predictionDate: moment().format("YYYY-MM-DD"),
+      predictionDate: moment().format('YYYY-MM-DD'),
       prediction: null,
       html: '<i class="fas fa-cog fa-spin fa-3x fa-fw"></i>',
       fields: [
-        { key: "code", label: "Code", sortable: true },
-        { key: "firstName", label: "First Name", sortable: true },
+        { key: 'code', label: 'Code', sortable: true },
+        { key: 'firstName', label: 'First Name', sortable: true },
         {
-          key: "lastName",
-          label: "Last Name",
+          key: 'lastName',
+          label: 'Last Name',
           sortable: true
         },
-        { key: "latitude", label: "Latitude", class: "text-right" },
-        { key: "longitude", label: "Longitude", class: "text-right" },
+        { key: 'latitude', label: 'Latitude', class: 'text-right' },
+        { key: 'longitude', label: 'Longitude', class: 'text-right' },
         {
-          key: "isAcceptingRides",
-          label: "Accepting rides?",
-          class: "text-right"
+          key: 'isAcceptingRides',
+          label: 'Accepting rides?',
+          class: 'text-right'
         },
-        { key: "actions", label: "" }
+        { key: 'actions', label: '' }
       ],
       currentPage: 1,
       perPage: 10,
       pageOptions: [5, 10, 15],
-      infoContent: "",
+      infoContent: '',
       infoWindowPos: null,
       infoWinOpen: false,
       currentMidx: null,
@@ -300,11 +339,16 @@ export default {
     };
   },
   computed: {
-    ...commonGetters(["notificationSystem", "pickUpLocations"]),
-    ...driverGetters(["selectedDriver", "contentLoading"])
+    ...commonGetters(['notificationSystem', 'pickUpLocations']),
+    ...driverGetters(['selectedDriver', 'contentLoading'])
   },
   methods: {
-    ...driverActions(["getDrivers", "setSelectedDriver", "predict"]),
+    ...driverActions([
+      'getDrivers',
+      'setSelectedDriver',
+      'predict',
+      'predictBattery'
+    ]),
     retrieveDrivers() {
       this.getDrivers()
         .then(response => {
@@ -313,7 +357,7 @@ export default {
         .catch(err => {
           this.$toast.error(
             err.response ? err.response : err.message ? err.message : err,
-            "Error",
+            'Error',
             this.notificationSystem.options.error
           );
         });
@@ -324,6 +368,32 @@ export default {
     },
     hideModal() {
       this.$refs.modalRef.hide();
+    },
+    requestBatteryPrediction() {
+      this.predictBattery(this.selectedDriver)
+        .then(response => {
+          let question = 'Will I need to replace my battery this month?';
+          if (response == false) {
+            this.$toast.success(
+              "No! You're good for now",
+              question,
+              this.notificationSystem.options.success
+            );
+          } else {
+            this.$toast.error(
+              'Yes! Schedule maintenance now!',
+              question,
+              this.notificationSystem.options.error
+            );
+          }
+        })
+        .catch(err => {
+          this.$toast.error(
+            err.response ? err.response : err.message ? err.message : err,
+            'Error',
+            this.notificationSystem.options.error
+          );
+        });
     },
     requestPrediction() {
       this.predict(this.predictionDate)
@@ -341,7 +411,7 @@ export default {
               if (known) {
                 this.prediction.locationFriendlyName = known[0].name;
               } else {
-                this.prediction.locationFriendlyName = "Here";
+                this.prediction.locationFriendlyName = 'Here';
               }
             }
           }
@@ -383,7 +453,7 @@ export default {
         .catch(err => {
           this.$toast.error(
             err.response ? err.response : err.message ? err.message : err,
-            "Error",
+            'Error',
             this.notificationSystem.options.error
           );
         });

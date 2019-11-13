@@ -1,6 +1,7 @@
 import { checkResponse, post, get, put } from '@/utils/http';
 //const baseUrl = 'http://localhost:7071/api';
 const baseUrl = window.apiDriversBaseUrl;
+const baseAIUrl = window.apiAIBaseUrl;
 const apiKey = window.apiKey;
 
 // GET methods
@@ -39,6 +40,10 @@ export function predict(date) {
 // POST methods
 export function createDriver(driver) {
   return post(`${baseUrl}/drivers`, driver, apiKey).then(checkResponse);
+}
+
+export function predictBattery(payload) {
+  return post(`${baseAIUrl}/scoring`, payload).then(checkResponse);
 }
 
 // PUT methods
