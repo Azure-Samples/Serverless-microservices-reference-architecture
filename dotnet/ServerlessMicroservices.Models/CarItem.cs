@@ -21,5 +21,17 @@ namespace ServerlessMicroservices.Models
 
         [JsonProperty(PropertyName = "licensePlate")]
         public string LicensePlate { get; set; } = "";
+
+        [JsonProperty(PropertyName = "dailyTripDuration")]
+        public double DailyTripDuration { get; set; } = 0;
+
+        [JsonProperty(PropertyName = "lifetimeBatteryCyclesUsed")]
+        public double LifetimeBatteryCyclesUsed { get; set; } = 0;
+
+        [JsonProperty(PropertyName = "batteryRatedCycles")]
+        public int BatteryRatedCycles { get; set; } = 200;
+
+        [JsonProperty(PropertyName = "batteryAgeDays")]
+        public int BatteryAgeDays { get; set; } = 0;
     }
 }
