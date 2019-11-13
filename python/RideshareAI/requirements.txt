@@ -1,0 +1,8 @@
+azure-functions
+sklearn
+inference_schema
+idna==2.5
+numpy==1.17.1
+pandas==0.24.2
+azureml-sdk==1.0.62
+azureml-train-automl==1.0.62

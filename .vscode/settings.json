@@ -2,5 +2,7 @@
   "azureFunctions.projectRuntime": "~1",
   "azureFunctions.projectLanguage": "JavaScript",
   "appService.zipIgnorePattern": ["node_modules{,/**}"],
-  "appService.deploySubpath": "serverless-microservices-web"
+  "appService.deploySubpath": "serverless-microservices-web",
+  "python.formatting.provider": "yapf",
+  "python.pythonPath": "C:\\Users\\joel\\AppData\\Local\\Programs\\Python\\Python36\\python.exe"
 }
