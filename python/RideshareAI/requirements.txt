@@ -1,5 +1,5 @@
 azure-functions
-sklearn
+scikit-learn==0.21.3
 inference_schema
 idna==2.5
 numpy==1.17.1
