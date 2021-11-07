@@ -11,3 +11,9 @@
 ~$*.ppt*
 # Visio autosave temporary files
 *.~vsd*
+
+# Funcpack
+.funcpack
+
+# Build temp package lock
+pipelines/package-lock.json

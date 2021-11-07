@@ -20,4 +20,4 @@ jobs:
         dotnet-version: 5.0.x
     - name: Build, restore, test
       shell: pwsh
-      run: ./pipelines/build.ps1
+      run: ./pipelines/build-dotnet.ps1
