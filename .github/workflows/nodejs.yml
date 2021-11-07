@@ -24,6 +24,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
-    - name: Build and pack Nodejs
-      shell: bash
-      run: ./pipelines/build-nodejs.sh
+        working-directory: nodejs/serverless-microservices-functionapp-triparchiver
+    - run: npm install
+    - run: npm run pack
