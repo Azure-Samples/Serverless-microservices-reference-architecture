@@ -18,6 +18,10 @@ description: "This architecture walks you through the process involved in develo
 
 # Serverless Microservices reference architecture
 
+[![.NET](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/dotnet.yml/badge.svg)](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/dotnet.yml) 
+[![Node.js CI](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/nodejs.yml/badge.svg)](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/nodejs.yml) 
+[![spa build](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/spa.yml/badge.svg)](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/spa.yml)
+
 ## The reference architecture
 
 ![RideShare Macro Architecture](documentation/media/macro-architecture.png)
