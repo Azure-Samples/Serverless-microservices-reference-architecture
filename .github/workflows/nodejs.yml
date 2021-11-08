@@ -13,12 +13,12 @@ jobs:
     runs-on: ubuntu-latest
     defaults:
       run:
-        shell: bash
-        working-directory: nodejs/serverless-microservices-functionapp-triparchiver    
+        working-directory: ./nodejs/serverless-microservices-functionapp-triparchiver
+
     strategy:
       matrix:
-        node-version: [12.x, 14.x, 16.x]
-        # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
+        # https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions?tabs=csharp%2Cv4#languages
+        node-version: [14.x, 12.x, 10.x]
 
     steps:
     - uses: actions/checkout@v2
@@ -27,5 +27,6 @@ jobs:
       with:
         node-version: ${{ matrix.node-version }}
         cache: 'npm'
+        cache-dependency-path: ./nodejs/serverless-microservices-functionapp-triparchiver
     - run: npm install
     - run: npm run pack
