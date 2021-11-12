@@ -644,7 +644,7 @@ Once completed, please jump to the [setup](#setup) section to continue.
 
 ### Deploy from Bicep
 
-You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4-bicep%2Fbicep%2Fmain.json).
+You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4%2Fbicep%2Fmain.json).
 
 Unfortunately, the Bicep cannot provision the following resources. Please provision these manually as described in the steps above:
 
