@@ -7,13 +7,13 @@
   <ItemGroup>
     <PackageReference Include="Azure.Storage.Queues" Version="12.8.0" />
     <PackageReference Include="Dapper" Version="1.50.5" />
-    <PackageReference Include="IdentityModel" Version="3.9.0" />
+    <PackageReference Include="IdentityModel" Version="5.2.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.19.0" />
     <PackageReference Include="Microsoft.AspNetCore.Http.Abstractions" Version="2.2.0" />
     <PackageReference Include="Microsoft.Azure.DocumentDB.Core" Version="1.9.1" />
     <PackageReference Include="Microsoft.Azure.WebJobs" Version="3.0.30" />
-    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="3.19.8" />
-    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="5.2.4" />
+    <PackageReference Include="Microsoft.IdentityModel.Clients.ActiveDirectory" Version="5.2.9" />
+    <PackageReference Include="System.IdentityModel.Tokens.Jwt" Version="6.14.1" />
   </ItemGroup>
 
   <ItemGroup>
