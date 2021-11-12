@@ -5,7 +5,7 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "9512897756145069549"
+      "templateHash": "11502990375743521381"
     }
   },
   "parameters": {
@@ -13,24 +13,36 @@
       "type": "string",
       "defaultValue": "Rideshare"
     },
-    "resourceTags": {
-      "type": "object",
-      "defaultValue": {
-        "ProjectType": "Azure Serverless Microservices",
-        "Purpose": "Sample"
-      }
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
+    },
+    "staticWebAppLocation": {
+      "type": "string",
+      "allowedValues": [
+        "centralus",
+        "eastus2",
+        "eastasia",
+        "westeurope",
+        "westus2"
+      ]
     },
     "sqlAdminLogin": {
       "type": "string"
     },
     "sqlAdminPassword": {
       "type": "secureString"
+    },
+    "resourceTags": {
+      "type": "object",
+      "defaultValue": {
+        "ProjectType": "Azure Serverless Microservices",
+        "Purpose": "Sample"
+      }
     }
   },
   "functions": [],
   "variables": {
-    "primaryLocation": "westus2",
-    "alternateLocation": "westus",
     "functionAppServicePlanName": "[format('{0}Plan', parameters('applicationName'))]",
     "keyVaultName": "[format('{0}KeyVault', parameters('applicationName'))]",
     "cosmosdbName": "[format('{0}Cosmos', parameters('applicationName'))]",
@@ -64,7 +76,7 @@
             "value": "[variables('cosmosdbName')]"
           },
           "location": {
-            "value": "[variables('primaryLocation')]"
+            "value": "[parameters('location')]"
           },
           "databaseName": {
             "value": "[parameters('applicationName')]"
@@ -218,7 +230,7 @@
             "value": "[parameters('sqlAdminPassword')]"
           },
           "location": {
-            "value": "[variables('primaryLocation')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -306,7 +318,7 @@
             "value": "[variables('eventGridName')]"
           },
           "location": {
-            "value": "[variables('primaryLocation')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -370,7 +382,7 @@
             "value": "[variables('signalRName')]"
           },
           "location": {
-            "value": "[variables('primaryLocation')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -433,7 +445,7 @@
             "value": "[variables('applicationInsightsName')]"
           },
           "location": {
-            "value": "[variables('alternateLocation')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -648,7 +660,7 @@
             "value": "[variables('staticWebAppName')]"
           },
           "location": {
-            "value": "[variables('primaryLocation')]"
+            "value": "[parameters('staticWebAppLocation')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -729,7 +741,7 @@
             "value": "[variables('functionAppServicePlanName')]"
           },
           "location": {
-            "value": "[variables('primaryLocation')]"
+            "value": "[parameters('location')]"
           },
           "staticWebAppURL": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName')), '2020-06-01').outputs.staticWebAppURL.value]"

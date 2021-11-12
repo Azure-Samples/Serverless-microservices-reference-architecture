@@ -1,14 +1,22 @@
 param applicationName string = 'Rideshare'
+param location string = resourceGroup().location
+
+@allowed([
+  'centralus'
+  'eastus2'
+  'eastasia'
+  'westeurope'
+  'westus2'
+])
+param staticWebAppLocation string
+param sqlAdminLogin string
+
+@secure()
+param sqlAdminPassword string
 param resourceTags object = {
   ProjectType: 'Azure Serverless Microservices'
   Purpose: 'Sample'
 }
-param sqlAdminLogin string
-@secure()
-param sqlAdminPassword string
-
-var primaryLocation = 'westus2'
-var alternateLocation = 'westus'
 
 var functionAppServicePlanName = '${applicationName}Plan'
 var keyVaultName = '${applicationName}KeyVault'
@@ -32,7 +40,7 @@ module cosmos 'modules/cosmosdb.bicep' = {
   name: cosmosdbName
   params: {
     accountName: cosmosdbName
-    location: primaryLocation
+    location: location
     databaseName: applicationName
     resourceTags: resourceTags
   }
@@ -45,7 +53,7 @@ module sqlDb 'modules/sqldb.bicep' = {
     sqlDatabaeName: applicationName
     administratorLogin: sqlAdminLogin
     administratorPassword: sqlAdminPassword
-    location: primaryLocation
+    location: location
     resourceTags: resourceTags
   }
 }
@@ -54,7 +62,7 @@ module eventGrid 'modules/eventgrid.bicep' = {
   name: eventGridName
   params: {
     eventGridTopicName: eventGridName
-    location: primaryLocation
+    location: location
     resourceTags: resourceTags
   } 
 }
@@ -63,7 +71,7 @@ module signalR 'modules/signalr.bicep' = {
   name: signalRName
   params: {
     signalRName: signalRName
-    location: primaryLocation
+    location: location
     resourceTags: resourceTags
   } 
 }
@@ -72,7 +80,7 @@ module applicationInsights 'modules/applicationInsights.bicep' = {
   name: applicationInsightsName
   params: {
     applicationInsightsName: applicationInsightsName
-    location: alternateLocation
+    location: location
     resourceTags: resourceTags
   }
 }
@@ -91,7 +99,7 @@ module staticeWebApp 'modules/staticwebapp.bicep' = {
   name: staticWebAppName
   params: {
     staticWebAppName: staticWebAppName
-    location: primaryLocation
+    location: staticWebAppLocation
     resourceTags: resourceTags
   }
 }
@@ -103,7 +111,7 @@ module functions 'modules/functions.bicep' = {
     functionAppPrefix: applicationName
     functionApps: functionsApps
     appServicePlanName: functionAppServicePlanName
-    location: primaryLocation
+    location: location
     staticWebAppURL: staticeWebApp.outputs.staticWebAppURL
     appInsightsInstrumentationKey: applicationInsights.outputs.appInsightsInstrumentationKey
     resourceTags: resourceTags
