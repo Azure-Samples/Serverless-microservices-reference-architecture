@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using System.Text.Json.Serialization;
 
 namespace ServerlessMicroservices.Models
 {
@@ -12,77 +12,77 @@ namespace ServerlessMicroservices.Models
 
     public class TripItem : BaseItem
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; } = "";
 
         // Included here ...just in case the passenger state changed ...this captures the passenger state at the time of the trip
-        [JsonProperty(PropertyName = "passenger")]
+        [JsonPropertyName("passenger")]
         public PassengerItem Passenger { get; set; } = new PassengerItem();
 
         // Included here ...just in case the driver state changed ...this captures the driver state at the time of the trip
-        [JsonProperty(PropertyName = "driver")]
+        [JsonPropertyName("driver")]
         public DriverItem Driver { get; set; } = null;
 
         // Included here ...just in case the driver state changed ...this captures the available drivers state at the time of the trip
-        [JsonProperty(PropertyName = "availableDrivers")]
+        [JsonPropertyName("availableDrivers")]
         public List<DriverItem> AvailableDrivers { get; set; } = new List<DriverItem>();
         
-        [JsonProperty(PropertyName = "source")]
+        [JsonPropertyName("source")]
         public TripLocation Source { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "destination")]
+        [JsonPropertyName("destination")]
         public TripLocation Destination { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "acceptDate")]
+        [JsonPropertyName("acceptDate")]
         public DateTime? AcceptDate { get; set; } = null;
 
-        [JsonProperty(PropertyName = "startDate")]
+        [JsonPropertyName("startDate")]
         public DateTime StartDate  { get; set; } = DateTime.Now;
 
-        [JsonProperty(PropertyName = "endDate")]
+        [JsonPropertyName("endDate")]
         public DateTime? EndDate { get; set; } = null;
 
         // Computed values
-        [JsonProperty(PropertyName = "duration")]
+        [JsonPropertyName("duration")]
         public double Duration { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "monitorIterations")]
+        [JsonPropertyName("monitorIterations")]
         public int MonitorIterations { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "isAborted")]
+        [JsonPropertyName("isAborted")]
         public bool IsAborted { get; set; } = false;
 
-        [JsonProperty(PropertyName = "error")]
+        [JsonPropertyName("error")]
         public string Error { get; set; } = "";
 
-        [JsonProperty(PropertyName = "type")]
+        [JsonPropertyName("type")]
         public TripTypes Type { get; set; } = TripTypes.Normal;
     }
 
     public class TripLocation
     {
-        [JsonProperty(PropertyName = "latitude")]
+        [JsonPropertyName("latitude")]
         public double Latitude { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "longitude")]
+        [JsonPropertyName("longitude")]
         public double Longitude { get; set; } = 0;
     }
 
     public class TripDemoState
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; } = "";
 
-        [JsonProperty(PropertyName = "source")]
+        [JsonPropertyName("source")]
         public TripLocation Source { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "destination")]
+        [JsonPropertyName("destination")]
         public TripLocation Destination { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "routeLocations")]
+        [JsonPropertyName("routeLocations")]
         public List<TripLocation> RouteLocations { get; set; } = new List<TripLocation>();
 
-        [JsonProperty(PropertyName = "currentRouteIndex")]
+        [JsonPropertyName("currentRouteIndex")]
         public int CurrentRouteIndex { get; set; } = 0;
     }
 

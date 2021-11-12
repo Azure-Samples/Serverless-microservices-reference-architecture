@@ -1,40 +1,40 @@
-﻿using Newtonsoft.Json;
+﻿using System.Text.Json.Serialization;
 
 namespace ServerlessMicroservices.Models
 {
     public class DriverItem : BaseItem
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonPropertyName("code")]
         public string Code { get; set; } = "";
 
-        [JsonProperty(PropertyName = "firstName")]
+        [JsonPropertyName("firstName")]
         public string FirstName { get; set; } = "";
 
-        [JsonProperty(PropertyName = "lastName")]
+        [JsonPropertyName("lastName")]
         public string LastName { get; set; } = "";
 
-        [JsonProperty(PropertyName = "latitude")]
+        [JsonPropertyName("latitude")]
         public double Latitude { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "longitude")]
+        [JsonPropertyName("longitude")]
         public double Longitude { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "car")]
+        [JsonPropertyName("car")]
         public CarItem Car { get; set; } = new CarItem();
 
-        [JsonProperty(PropertyName = "isAcceptingRides")]
+        [JsonPropertyName("isAcceptingRides")]
         public bool IsAcceptingRides { get; set; } = true;
     }
 
     public class DriverLocationItem : BaseItem
     {
-        [JsonProperty(PropertyName = "driverCode")]
+        [JsonPropertyName("driverCode")]
         public string DriverCode { get; set; } = "";
 
-        [JsonProperty(PropertyName = "latitude")]
+        [JsonPropertyName("latitude")]
         public double Latitude { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "longitude")]
+        [JsonPropertyName("longitude")]
         public double Longitude { get; set; } = 0;
     }
 }
