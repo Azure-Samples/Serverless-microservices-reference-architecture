@@ -642,16 +642,14 @@ Unfortunately, the Cake script cannot provision the following resources because 
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
-### Deploy from ARM template
+### Deploy from Bicep file
 
-You can provision most of the services required through the supplied [ARM (Azure Resource Manager) template](../arm/template.json). The Azure portal provides a nice user interface for deploying resources when using an ARM template. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fserverless-microservices%2Fmaster%2Farm%2Ftemplate.json).
+You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fwviriya%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4-bicep%2Fbicep%2Fmain.json).
 
-Unfortunately, the ARM template cannot provision the following resources. Please provision these manually as described in the steps above:
+Unfortunately, the Bicep cannot provision the following resources. Please provision these manually as described in the steps above:
 
 - [Logic App](#create-the-logic-app)
-- [API Management Service](#create-the-api-management-service)
 - [B2C Tenant](#create-the-b2c-tenant)
-- [Azure Key Vault](#create-azure-key-vault)
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
