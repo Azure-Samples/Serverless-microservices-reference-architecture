@@ -23,7 +23,7 @@ In this document:
       - [Configure Azure AD B2C tenant](#configure-azure-ad-b2c-tenant)
       - [Create a sign-up or sign-in policy](#create-a-sign-up-or-sign-in-policy)
     - [Cake Provision](#cake-provision)
-    - [Deploy from ARM template](#deploy-from-arm-template)
+    - [Deploy from Bicep](#deploy-from-bicep)
   - [Setup](#setup)
     - [Add APIM Products and APIs](#add-apim-products-and-apis)
       - [Drivers API](#drivers-api)
@@ -642,16 +642,14 @@ Unfortunately, the Cake script cannot provision the following resources because 
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
-### Deploy from ARM template
+### Deploy from Bicep
 
-You can provision most of the services required through the supplied [ARM (Azure Resource Manager) template](../arm/template.json). The Azure portal provides a nice user interface for deploying resources when using an ARM template. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fserverless-microservices%2Fmaster%2Farm%2Ftemplate.json).
+You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep) with command-line using [Azure PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-powershell#deploy-local-bicep-file) or [Azure CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-cli#deploy-local-bicep-file). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4%2Fbicep%2Fmain.json).
 
-Unfortunately, the ARM template cannot provision the following resources. Please provision these manually as described in the steps above:
+Unfortunately, the Bicep cannot provision the following resources. Please provision these manually as described in the steps above:
 
 - [Logic App](#create-the-logic-app)
-- [API Management Service](#create-the-api-management-service)
 - [B2C Tenant](#create-the-b2c-tenant)
-- [Azure Key Vault](#create-azure-key-vault)
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
@@ -661,7 +659,7 @@ After you have provisioned all your resources, there are some manual steps that 
 
 - [Add APIM Products and APIs](#Add-APIM-Products-and-APIs)
 - [Connect Event Grid to Function Apps](#connect-event-grid-to-functions-apps)
-- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app) 
+- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
 - [Run a script to create the TripFact table](#create-tripfact-table)
 
 ### Add APIM Products and APIs
