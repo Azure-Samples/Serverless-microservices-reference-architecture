@@ -5,6 +5,7 @@
   </PropertyGroup>
 
   <ItemGroup>
+    <PackageReference Include="Azure.Storage.Queues" Version="12.8.0" />
     <PackageReference Include="Dapper" Version="1.50.5" />
     <PackageReference Include="IdentityModel" Version="3.9.0" />
     <PackageReference Include="Microsoft.ApplicationInsights" Version="2.19.0" />
