@@ -644,7 +644,7 @@ Once completed, please jump to the [setup](#setup) section to continue.
 
 ### Deploy from Bicep
 
-You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4%2Fbicep%2Fmain.json).
+You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep) with command-line using [Azure PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-powershell#deploy-local-bicep-file) or [Azure CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-cli#deploy-local-bicep-file). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4%2Fbicep%2Fmain.json).
 
 Unfortunately, the Bicep cannot provision the following resources. Please provision these manually as described in the steps above:
 
@@ -659,7 +659,7 @@ After you have provisioned all your resources, there are some manual steps that 
 
 - [Add APIM Products and APIs](#Add-APIM-Products-and-APIs)
 - [Connect Event Grid to Function Apps](#connect-event-grid-to-functions-apps)
-- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app) 
+- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
 - [Run a script to create the TripFact table](#create-tripfact-table)
 
 ### Add APIM Products and APIs
