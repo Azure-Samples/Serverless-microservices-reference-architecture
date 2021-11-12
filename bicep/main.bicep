@@ -1,5 +1,4 @@
 param applicationName string = 'Rideshare'
-param location string = resourceGroup().location
 
 @allowed([
   'centralus'
@@ -18,6 +17,7 @@ param resourceTags object = {
   Purpose: 'Sample'
 }
 
+var location = resourceGroup().location
 var functionAppServicePlanName = '${applicationName}Plan'
 var keyVaultName = '${applicationName}KeyVault'
 var cosmosdbName = '${applicationName}Cosmos'
