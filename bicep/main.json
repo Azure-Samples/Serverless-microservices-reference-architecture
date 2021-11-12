@@ -5,17 +5,13 @@
     "_generator": {
       "name": "bicep",
       "version": "0.4.1008.15138",
-      "templateHash": "11502990375743521381"
+      "templateHash": "9570357947747340552"
     }
   },
   "parameters": {
     "applicationName": {
       "type": "string",
       "defaultValue": "Rideshare"
-    },
-    "location": {
-      "type": "string",
-      "defaultValue": "[resourceGroup().location]"
     },
     "staticWebAppLocation": {
       "type": "string",
@@ -43,6 +39,7 @@
   },
   "functions": [],
   "variables": {
+    "location": "[resourceGroup().location]",
     "functionAppServicePlanName": "[format('{0}Plan', parameters('applicationName'))]",
     "keyVaultName": "[format('{0}KeyVault', parameters('applicationName'))]",
     "cosmosdbName": "[format('{0}Cosmos', parameters('applicationName'))]",
@@ -76,7 +73,7 @@
             "value": "[variables('cosmosdbName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "databaseName": {
             "value": "[parameters('applicationName')]"
@@ -230,7 +227,7 @@
             "value": "[parameters('sqlAdminPassword')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -318,7 +315,7 @@
             "value": "[variables('eventGridName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -382,7 +379,7 @@
             "value": "[variables('signalRName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -445,7 +442,7 @@
             "value": "[variables('applicationInsightsName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -741,7 +738,7 @@
             "value": "[variables('functionAppServicePlanName')]"
           },
           "location": {
-            "value": "[parameters('location')]"
+            "value": "[variables('location')]"
           },
           "staticWebAppURL": {
             "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName')), '2020-06-01').outputs.staticWebAppURL.value]"
