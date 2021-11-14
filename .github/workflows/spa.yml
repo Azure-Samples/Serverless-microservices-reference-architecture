@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - '*'
+    paths: [ web/serverless-microservices-web ]
   pull_request:
     branches: [ main ]
 
