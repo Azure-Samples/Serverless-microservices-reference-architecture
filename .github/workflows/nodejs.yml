@@ -4,6 +4,7 @@ on:
   push:
     branches: 
       - '*'
+    paths: [ nodejs ]
   pull_request:
     branches: [ main ]
 
