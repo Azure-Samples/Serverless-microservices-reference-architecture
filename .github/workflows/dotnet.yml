@@ -4,7 +4,7 @@ on:
   push:
     branches: 
       - '*'
-    paths: [ dotnet ]
+    paths: [ 'dotnet/**' ]
   pull_request:
     branches: [ main ]
 
