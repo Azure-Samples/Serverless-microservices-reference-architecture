@@ -1,0 +1,32 @@
+name: Node.js CI
+
+on:
+  push:
+    branches: 
+      - '*'
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+    defaults:
+      run:
+        working-directory: ./nodejs/serverless-microservices-functionapp-triparchiver
+
+    strategy:
+      matrix:
+        # https://docs.microsoft.com/en-us/azure/azure-functions/functions-versions?tabs=csharp%2Cv4#languages
+        node-version: [14.x, 12.x, 10.x]
+
+    steps:
+    - uses: actions/checkout@v2
+    - name: Use Node.js ${{ matrix.node-version }}
+      uses: actions/setup-node@v2
+      with:
+        node-version: ${{ matrix.node-version }}
+        cache: 'npm'
+        cache-dependency-path: ./nodejs/serverless-microservices-functionapp-triparchiver
+    - run: npm install
+    - run: npm run pack

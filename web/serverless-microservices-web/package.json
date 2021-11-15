@@ -13,7 +13,7 @@
     "@aspnet/signalr": "^1.0.3",
     "EventEmitter": "^1.0.0",
     "axios": "^0.21.1",
-    "bootstrap-vue": "^2.0.0-rc.11",
+    "bootstrap-vue": "^2.0.0-rc.12",
     "msal": "^0.2.2",
     "vue": "^2.5.17",
     "vue-blockui": "^1.1.7",
