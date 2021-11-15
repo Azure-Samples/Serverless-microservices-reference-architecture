@@ -209,6 +209,7 @@ namespace ServerlessMicroservices.Shared.Services
 
         public int GetDocDbThroughput()
         {
+            //TODO: Let's default to null here
             return GetEnvironmentVariable(DocDbThroughput) != null ? Int32.Parse(GetEnvironmentVariable(DocDbThroughput)) : 400;
         }
 
