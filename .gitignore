@@ -1,5 +1,5 @@
 /Docs/*
-#.vscode/
+.vscode/
 
 # Exclude temporary files:
 *.tmp
