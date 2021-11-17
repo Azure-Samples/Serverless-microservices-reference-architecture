@@ -1,0 +1,2 @@
+## Uses REST Client extension https://marketplace.visualstudio.com/items?itemName=humao.rest-client 
+GET http://localhost:7071/api/activedrivers

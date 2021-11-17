@@ -103,11 +103,12 @@ The following is a summary of all Azure resources required to deploy the solutio
 
 ## Provision
 
-There are 3 ways to provision the required resources:
+There are 4 ways to provision the required resources:
 
 - [Manual via the Portal](#manual-via-the-portal)
 - [ARM Template](#deploy-from-arm-template)
 - [Cake](#cake-provision)
+- [Bicep](#deploy-from-bicep) (recommended)
 
 ### Manual via the Portal
 
