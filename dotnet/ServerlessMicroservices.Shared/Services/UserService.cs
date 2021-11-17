@@ -26,6 +26,8 @@ namespace ServerlessMicroservices.Shared.Services
 
         public UserService(string tenantId, string clientId, string clientSecret)
         {
+            if (string.IsNullOrEmpty(tenantId)) throw new ArgumentNullException(nameof(tenantId), "GraphTenantId environment variable must be set before instantiating UserService.");
+
             _graphUrl = GraphBaseUrl + tenantId;
 
             var authority = "https://login.microsoftonline.com/" + tenantId;

@@ -67,6 +67,32 @@ In this document:
     - [Running in ACI](#running-in-aci)
     - [Running in AKS](#running-in-aks)
 
+## Getting Started
+
+In your local development environment you will need latest versions of:
+
+* Visual Studio or VSCode
+* git
+* `func` CLI
+* `az` CLI
+* Powershell
+
+Deploy Azure resources:
+
+```powershell
+copy bicep/parameters.json bicep/parameters.local.json
+# Change params in @bicep/parameters.local.json to suit
+az group create -n serverless-microservices-dev -l westus2
+az deployment group create -g serverless-microservices-dev -f bicep/main.bicep -p @bicep/parameters.local.json
+```
+
+Build and run local:
+
+```powershell
+cd scripts
+./run-local.ps1
+```
+
 ## Resources
 
 The following is a summary of all Azure resources required to deploy the solution:

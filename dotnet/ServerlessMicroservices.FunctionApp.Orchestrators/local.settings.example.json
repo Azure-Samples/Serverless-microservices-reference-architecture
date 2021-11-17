@@ -1,0 +1,15 @@
+{
+  "IsEncrypted": false,
+  "Values": {
+    "AzureWebJobsStorage": "UseDevelopmentStorage=true",
+    "FUNCTIONS_WORKER_RUNTIME": "dotnet",
+    "DocDbEndpointUri": "",
+    "DocDbApiKey": "",
+    "DocDbRideShareDatabaseName": "",
+    "DocDbRideShareMainCollectionName": "",
+    "TripMonitorsQueue": "trip-monitors",
+    "TripManagersQueue": "trip-managers",
+    "TripDemosQueue": "trip-demos",
+    "TripDriversQueue": "trip-drivers"
+  }
+}

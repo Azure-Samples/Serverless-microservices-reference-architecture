@@ -1,2 +1,10 @@
-## Uses REST Client extension https://marketplace.visualstudio.com/items?itemName=humao.rest-client 
+### Use REST Client extension https://marketplace.visualstudio.com/items?itemName=humao.rest-client 
+
+### Get Active Drivers
 GET http://localhost:7071/api/activedrivers
+
+### Get Active Trips
+GET http://localhost:7071/api/activetrips
+
+### Get Passengers
+GET http://localhost:7071/api/passengers

@@ -17,3 +17,7 @@
 
 # Build temp package lock
 pipelines/package-lock.json
+
+bicep/parameters.local.json
+local.settings.json
+
