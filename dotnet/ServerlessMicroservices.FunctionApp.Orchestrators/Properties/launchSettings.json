@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ServerlessMicroservices.FunctionApp.Orchestrators": {
+      "commandName": "Project",
+      "commandLineArgs": "start --port 7074"
+    }
+  }
+}

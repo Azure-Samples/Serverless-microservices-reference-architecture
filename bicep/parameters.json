@@ -21,6 +21,9 @@
         },
         "secretName": "sqlAdminPassword"
       }
+    },
+    "staticWebAppLocation": {
+      "value": "westus2"
     }
   }
 }

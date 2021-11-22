@@ -86,6 +86,17 @@ az group create -n serverless-microservices-dev -l westus2
 az deployment group create -g serverless-microservices-dev -f bicep/main.bicep -p @bicep/parameters.local.json
 ```
 
+Create local settings:
+
+``` powershell
+cd dotnet
+copy ServerlessMicroservices.FunctionApp.Drivers\local.settings.example.json ServerlessMicroservices.FunctionApp.Drivers\local.settings.json
+copy ServerlessMicroservices.FunctionApp.Orchestrators\local.settings.example.json ServerlessMicroservices.FunctionApp.Orchestrators\local.settings.json
+copy ServerlessMicroservices.FunctionApp.Passengers\local.settings.example.json ServerlessMicroservices.FunctionApp.Passengers\local.settings.json
+copy ServerlessMicroservices.FunctionApp.Trips\local.settings.example.json ServerlessMicroservices.FunctionApp.Trips\local.settings.json
+# Update local settings with your environment's values
+```
+
 Build and run local:
 
 ```powershell
@@ -1503,16 +1514,27 @@ From a PowerShell command, use the following commands for the `Prod` environment
 
 ## Seeding
 
-The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs`, respectively.
+The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` using the `Drivers APIs`.
 
-**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.
+**Please note** that the `seed` command will seed drivers only if there are no drivers.
 
 > You must set the **EnableAuth** App Setting on the **Drivers** and **Passengers** Function Apps to `false` for the seeder to work.
 
-The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net --seedpassengersurl https://ridesharepassengers.azurewebsites.net`
+```
+> ServerlessMicroservices.Seeder.exe seed --help
 
-- Drivers Function Base URL  
-- Passengers Function Base URL
+Usage:  seed [options]
+
+Options:
+  --help               Show help information
+  -t|--seeddriversurl  Set seed drivers url
+  -t|--testurl         Set test url
+  -i|--testiterations  Set test iterations
+  -s|--testseconds     Set test seconds
+  -v|--signalrinfourl  Set SignalR Info URL
+
+> ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net
+```
 
 ## Containers
 

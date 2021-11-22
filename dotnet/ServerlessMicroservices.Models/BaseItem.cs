@@ -1,5 +1,5 @@
-﻿using System;
-using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
+using System;
 
 namespace ServerlessMicroservices.Models
 {
@@ -15,19 +15,19 @@ namespace ServerlessMicroservices.Models
 
     public class BaseItem
     {
-        [JsonPropertyName("id")]
+        [JsonProperty("id")]
         public string Id { get; set; } = "";
 
-        [JsonPropertyName("_self")]
+        [JsonProperty("self")]
         public string Self { get; set; } = "";
 
-        [JsonPropertyName("correlationId")]
+        [JsonProperty("correlationId")]
         public string CorrelationId { get; set; } = "";
 
-        [JsonPropertyName("upsertDate")]
+        [JsonProperty("upsertDate")]
         public DateTime UpsertDate { get; set; } = DateTime.Now;
 
-        [JsonPropertyName("collectionType")]
+        [JsonProperty("collectionType")]
         public ItemCollectionTypes CollectionType { get; set; }
     }
 }

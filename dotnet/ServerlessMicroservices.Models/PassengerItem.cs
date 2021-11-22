@@ -1,22 +1,22 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace ServerlessMicroservices.Models
 {
     public class PassengerItem : BaseItem
     {
-        [JsonPropertyName("code")]
+        [JsonProperty("code")]
         public string Code { get; set; } = "";
 
-        [JsonPropertyName("firstName")]
+        [JsonProperty("firstName")]
         public string FirstName { get; set; } = "";
 
-        [JsonPropertyName("lastName")]
+        [JsonProperty("lastName")]
         public string LastName { get; set; } = "";
 
-        [JsonPropertyName("mobileNumber")]
+        [JsonProperty("mobileNumber")]
         public string MobileNumber { get; set; } = "";
 
-        [JsonPropertyName("email")]
+        [JsonProperty("email")]
         public string Email { get; set; } = "";
 
     }

@@ -45,7 +45,8 @@ namespace ServerlessMicroservices.Shared.Services
             {
                 var cosmos = new CosmosClient(setting.GetDocDbEndpointUri(), setting.GetDocDbApiKey());
                 var db = cosmos.GetDatabase(setting.GetDocDbRideShareDatabaseName());
-                return await db.CreateContainerIfNotExistsAsync(setting.GetDocDbMainCollectionName(), "/id", throughput: setting.GetDocDbThroughput());
+                //TODO: Hardcoded partition key field here
+                return await db.CreateContainerIfNotExistsAsync(setting.GetDocDbMainCollectionName(), "/code", throughput: setting.GetDocDbThroughput());
             });
         }
 
@@ -78,7 +79,7 @@ namespace ServerlessMicroservices.Shared.Services
                 else
                 {
                     error = ex.Message;
-                    throw ex;
+                    throw new Exception(ex.Message, ex);
                 }
             }
             finally
@@ -117,7 +118,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -161,7 +162,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -187,7 +188,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -217,7 +218,7 @@ namespace ServerlessMicroservices.Shared.Services
                     driver.Id = $"{driver.Code}-{driver.CollectionType}";
                 }
 
-                var response = await (await GetCosmosContainer()).UpsertItemAsync(driver);
+                var response = await (await GetCosmosContainer()).UpsertItemAsync(driver, new PartitionKey(driver.Code.ToUpper()));
 
                 if (!isIgnoreChangeFeed)
                 {
@@ -229,7 +230,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -258,6 +259,7 @@ namespace ServerlessMicroservices.Shared.Services
                 if (location.Id == "")
                     location.Id = $"{location.DriverCode}-{location.CollectionType}-{Guid.NewGuid().ToString()}";
 
+                //TODO: DriverLocationItem has no Code property, which is the PK 😬
                 var response = await (await GetCosmosContainer()).UpsertItemAsync(location);
 
                 // Also update the driver latest location
@@ -273,7 +275,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -314,7 +316,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -342,7 +344,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -377,7 +379,7 @@ namespace ServerlessMicroservices.Shared.Services
                 else
                 {
                     error = ex.Message;
-                    throw ex;
+                    throw new Exception(ex.Message, ex);
                 }
             }
             finally
@@ -415,7 +417,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -458,7 +460,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -482,7 +484,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -505,7 +507,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -537,7 +539,7 @@ namespace ServerlessMicroservices.Shared.Services
                 if (trip.EndDate != null)
                     trip.Duration = ((DateTime)trip.EndDate - trip.StartDate).TotalSeconds;
 
-                var response = await (await GetCosmosContainer()).UpsertItemAsync(trip);
+                var response = await (await GetCosmosContainer()).UpsertItemAsync(trip, new PartitionKey(trip.Code.ToUpper()));
 
                 if (!isIgnoreChangeFeed && blInsert)
                 {
@@ -549,7 +551,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -576,7 +578,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -599,7 +601,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -628,7 +630,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -653,7 +655,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -682,7 +684,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -713,7 +715,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {

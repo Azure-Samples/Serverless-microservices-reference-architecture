@@ -207,10 +207,10 @@ namespace ServerlessMicroservices.Shared.Services
             return GetEnvironmentVariable(DocDbRideShareMainCollectionNameKey);
         }
 
-        public int GetDocDbThroughput()
+        public int? GetDocDbThroughput()
         {
-            //TODO: Let's default to null here
-            return GetEnvironmentVariable(DocDbThroughput) != null ? Int32.Parse(GetEnvironmentVariable(DocDbThroughput)) : 400;
+            if (int.TryParse(GetEnvironmentVariable(DocDbThroughput), out int throughput)) return throughput;
+            return null;
         }
 
         // Sql

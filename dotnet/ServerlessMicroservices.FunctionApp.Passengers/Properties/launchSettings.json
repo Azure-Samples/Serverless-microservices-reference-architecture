@@ -1,0 +1,8 @@
+{
+  "profiles": {
+    "ServerlessMicroservices.FunctionApp.Passengers": {
+      "commandName": "Project",
+      "commandLineArgs": "start --port 7073"
+    }
+  }
+}

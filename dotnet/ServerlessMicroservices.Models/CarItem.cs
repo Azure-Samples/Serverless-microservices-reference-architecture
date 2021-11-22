@@ -1,25 +1,25 @@
-﻿using System.Text.Json.Serialization;
+﻿using Newtonsoft.Json;
 
 namespace ServerlessMicroservices.Models
 {
     public class CarItem : BaseItem
     {
-        [JsonPropertyName("driverCode")]
+        [JsonProperty("driverCode")]
         public string DriverCode { get; set; } = "";
 
-        [JsonPropertyName("make")]
+        [JsonProperty("make")]
         public string Make { get; set; } = "";
 
-        [JsonPropertyName("model")]
+        [JsonProperty("model")]
         public string Model { get; set; } = "";
 
-        [JsonPropertyName("year")]
+        [JsonProperty("year")]
         public string Year { get; set; } = "";
 
-        [JsonPropertyName("color")]
+        [JsonProperty("color")]
         public string Color { get; set; } = "";
 
-        [JsonPropertyName("licensePlate")]
+        [JsonProperty("licensePlate")]
         public string LicensePlate { get; set; } = "";
     }
 }
