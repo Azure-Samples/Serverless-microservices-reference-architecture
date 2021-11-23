@@ -10,6 +10,8 @@ try {
     
     dotnet run testTrips --seeddriversurl http://localhost:7071 --testurl http://localhost:7072/api/triptestparameters
 
+    start 'http://localhost:7072/api/activetrips'
+    
 }
 finally {
     Pop-Location
