@@ -3,6 +3,7 @@
 In this document:
 
 - [Serverless Microservices reference architecture](#serverless-microservices-reference-architecture)
+  - [Getting Started](#getting-started)
   - [Resources](#resources)
   - [Provision](#provision)
     - [Manual via the Portal](#manual-via-the-portal)
@@ -102,6 +103,13 @@ Build and run local:
 ```powershell
 cd scripts
 ./run-local.ps1
+```
+
+Integration test:
+
+```powershell
+cd scripts
+./test-local.ps1
 ```
 
 ## Resources
