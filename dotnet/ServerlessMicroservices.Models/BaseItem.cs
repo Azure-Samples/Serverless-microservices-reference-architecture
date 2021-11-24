@@ -15,19 +15,19 @@ namespace ServerlessMicroservices.Models
 
     public class BaseItem
     {
-        [JsonProperty(PropertyName = "id")]
+        [JsonProperty("id")]
         public string Id { get; set; } = "";
 
-        [JsonProperty(PropertyName = "_self")]
+        [JsonProperty("self")]
         public string Self { get; set; } = "";
 
-        [JsonProperty(PropertyName = "correlationId")]
+        [JsonProperty("correlationId")]
         public string CorrelationId { get; set; } = "";
 
-        [JsonProperty(PropertyName = "upsertDate")]
+        [JsonProperty("upsertDate")]
         public DateTime UpsertDate { get; set; } = DateTime.Now;
 
-        [JsonProperty(PropertyName = "collectionType")]
+        [JsonProperty("collectionType")]
         public ItemCollectionTypes CollectionType { get; set; }
     }
 }

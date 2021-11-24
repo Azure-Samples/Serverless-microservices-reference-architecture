@@ -4,22 +4,22 @@ namespace ServerlessMicroservices.Models
 {
     public class CarItem : BaseItem
     {
-        [JsonProperty(PropertyName = "driverCode")]
+        [JsonProperty("driverCode")]
         public string DriverCode { get; set; } = "";
 
-        [JsonProperty(PropertyName = "make")]
+        [JsonProperty("make")]
         public string Make { get; set; } = "";
 
-        [JsonProperty(PropertyName = "model")]
+        [JsonProperty("model")]
         public string Model { get; set; } = "";
 
-        [JsonProperty(PropertyName = "year")]
+        [JsonProperty("year")]
         public string Year { get; set; } = "";
 
-        [JsonProperty(PropertyName = "color")]
+        [JsonProperty("color")]
         public string Color { get; set; } = "";
 
-        [JsonProperty(PropertyName = "licensePlate")]
+        [JsonProperty("licensePlate")]
         public string LicensePlate { get; set; } = "";
     }
 }

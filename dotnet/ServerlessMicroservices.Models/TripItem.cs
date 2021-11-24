@@ -1,6 +1,6 @@
-﻿using Newtonsoft.Json;
-using System;
+﻿using System;
 using System.Collections.Generic;
+using Newtonsoft.Json;
 
 namespace ServerlessMicroservices.Models
 {
@@ -12,77 +12,77 @@ namespace ServerlessMicroservices.Models
 
     public class TripItem : BaseItem
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonProperty("code")]
         public string Code { get; set; } = "";
 
         // Included here ...just in case the passenger state changed ...this captures the passenger state at the time of the trip
-        [JsonProperty(PropertyName = "passenger")]
+        [JsonProperty("passenger")]
         public PassengerItem Passenger { get; set; } = new PassengerItem();
 
         // Included here ...just in case the driver state changed ...this captures the driver state at the time of the trip
-        [JsonProperty(PropertyName = "driver")]
+        [JsonProperty("driver")]
         public DriverItem Driver { get; set; } = null;
 
         // Included here ...just in case the driver state changed ...this captures the available drivers state at the time of the trip
-        [JsonProperty(PropertyName = "availableDrivers")]
+        [JsonProperty("availableDrivers")]
         public List<DriverItem> AvailableDrivers { get; set; } = new List<DriverItem>();
         
-        [JsonProperty(PropertyName = "source")]
+        [JsonProperty("source")]
         public TripLocation Source { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "destination")]
+        [JsonProperty("destination")]
         public TripLocation Destination { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "acceptDate")]
+        [JsonProperty("acceptDate")]
         public DateTime? AcceptDate { get; set; } = null;
 
-        [JsonProperty(PropertyName = "startDate")]
+        [JsonProperty("startDate")]
         public DateTime StartDate  { get; set; } = DateTime.Now;
 
-        [JsonProperty(PropertyName = "endDate")]
+        [JsonProperty("endDate")]
         public DateTime? EndDate { get; set; } = null;
 
         // Computed values
-        [JsonProperty(PropertyName = "duration")]
+        [JsonProperty("duration")]
         public double Duration { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "monitorIterations")]
+        [JsonProperty("monitorIterations")]
         public int MonitorIterations { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "isAborted")]
+        [JsonProperty("isAborted")]
         public bool IsAborted { get; set; } = false;
 
-        [JsonProperty(PropertyName = "error")]
+        [JsonProperty("error")]
         public string Error { get; set; } = "";
 
-        [JsonProperty(PropertyName = "type")]
+        [JsonProperty("type")]
         public TripTypes Type { get; set; } = TripTypes.Normal;
     }
 
     public class TripLocation
     {
-        [JsonProperty(PropertyName = "latitude")]
+        [JsonProperty("latitude")]
         public double Latitude { get; set; } = 0;
 
-        [JsonProperty(PropertyName = "longitude")]
+        [JsonProperty("longitude")]
         public double Longitude { get; set; } = 0;
     }
 
     public class TripDemoState
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonProperty("code")]
         public string Code { get; set; } = "";
 
-        [JsonProperty(PropertyName = "source")]
+        [JsonProperty("source")]
         public TripLocation Source { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "destination")]
+        [JsonProperty("destination")]
         public TripLocation Destination { get; set; } = new TripLocation();
 
-        [JsonProperty(PropertyName = "routeLocations")]
+        [JsonProperty("routeLocations")]
         public List<TripLocation> RouteLocations { get; set; } = new List<TripLocation>();
 
-        [JsonProperty(PropertyName = "currentRouteIndex")]
+        [JsonProperty("currentRouteIndex")]
         public int CurrentRouteIndex { get; set; } = 0;
     }
 

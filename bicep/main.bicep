@@ -27,7 +27,7 @@ var applicationInsightsName = '${applicationName}Insights'
 var apimName = '${applicationName}Apim'
 var sqlServerName = '${applicationName}-db'
 var staticWebAppName = '${applicationName}Web'
-var storageAccountName = toLower('${applicationName}functionstore')
+var storageAccountName = take(toLower(replace('${applicationName}func', '-', '')), 24)
 var functionsApps = [
   'Trips'
   'Drivers'

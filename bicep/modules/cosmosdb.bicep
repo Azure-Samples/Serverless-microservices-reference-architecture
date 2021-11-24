@@ -9,6 +9,8 @@ param location string = resourceGroup().location
 param databaseName string
 param resourceTags object
 
+param throughput int = 400
+
 var containerNames = [
   'main'
   'archiver'
@@ -24,11 +26,6 @@ resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' = {
     consistencyPolicy: {
       defaultConsistencyLevel: 'Session'
     }
-    capabilities: [
-      {
-        name: 'EnableServerless'
-      }
-    ]
     enableFreeTier: false
     locations: [
       {
@@ -52,6 +49,9 @@ resource cosmosDB 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-06-15
   properties: {
     resource: {
       id: '${toLower(databaseName)}'
+    }
+    options: {
+      throughput: throughput
     }
   }
 }
