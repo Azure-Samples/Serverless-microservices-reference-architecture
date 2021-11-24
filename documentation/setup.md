@@ -91,10 +91,13 @@ Create local settings:
 
 ``` powershell
 cd dotnet
-copy ServerlessMicroservices.FunctionApp.Drivers\local.settings.example.json ServerlessMicroservices.FunctionApp.Drivers\local.settings.json
-copy ServerlessMicroservices.FunctionApp.Orchestrators\local.settings.example.json ServerlessMicroservices.FunctionApp.Orchestrators\local.settings.json
-copy ServerlessMicroservices.FunctionApp.Passengers\local.settings.example.json ServerlessMicroservices.FunctionApp.Passengers\local.settings.json
-copy ServerlessMicroservices.FunctionApp.Trips\local.settings.example.json ServerlessMicroservices.FunctionApp.Trips\local.settings.json
+copy ServerlessMicroservices.FunctionApp.Drivers/local.settings.example.json ServerlessMicroservices.FunctionApp.Drivers/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.example.json ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Passengers/local.settings.example.json ServerlessMicroservices.FunctionApp.Passengers/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Trips/local.settings.example.json ServerlessMicroservices.FunctionApp.Trips/local.settings.json
+
+cd ../nodejs
+copy serverless-microservices-functionapp-triparchiver/local.settings.example.json serverless-microservices-functionapp-triparchiver/local.settings.json
 # Update local settings with your environment's values
 ```
 

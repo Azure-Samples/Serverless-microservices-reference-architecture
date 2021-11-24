@@ -6,13 +6,13 @@
    "direction": "in"
   },
   {
-   "type": "documentDB",
-   "name": "document",
+   "type": "cosmosDB",
+   "direction": "out",
+   "name": "outputDocument",
    "databaseName": "RideShare",
    "collectionName": "Archive",
    "createIfNotExists": false,
-   "connection": "DocDbConnectionStringKey",
-   "direction": "out"
+   "connectionStringSetting": "DocDbConnectionStringKey"
   }
  ],
  "disabled": false,
