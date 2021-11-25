@@ -1,7 +1,7 @@
 <template></template>
 
 <script>
-import * as signalR from "@aspnet/signalr";
+import * as signalR from "@microsoft/signalr";
 import { createNamespacedHelpers } from "vuex";
 import { getPassenger } from "@/api/passengers";
 const { mapGetters: commonGetters } = createNamespacedHelpers("common");

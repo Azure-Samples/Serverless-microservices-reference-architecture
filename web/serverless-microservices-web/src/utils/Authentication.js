@@ -1,48 +1,62 @@
-import { UserAgentApplication, Logger } from 'msal';
+import { LogLevel, PublicClientApplication } from '@azure/msal-browser';
 
 const ACCESS_TOKEN = 'rideshare_access_token';
-const ID_TOKEN = 'rideshare_id_token';
-const EXPIRES_AT = 'rideshare_expires_at';
 const USER_DETAILS = 'rideshare_user_details';
+let _user = null;
+let _account = null;
+let _loginRequest;
 
-let logger = new Logger((level, message, containsPii) => {
-  console.log(message);
-});
+
+
 
 export class Authentication {
   constructor() {
     // The window values below should by set by public/js/settings.js
-    this._scopes = window.authScopes;
-    this._clientId = window.authClientId;
-    this._authority = window.authAuthority;
-
-    var cb = this._tokenCallback.bind(this);
-    var opts = {
-      validateAuthority: false
+    const msalConfig = {
+      auth: {
+        clientId: window.authClientId,
+        authority: window.authAuthority
+      },
+      cache: {
+        cacheLocation: 'localStorage'
+      },
+      system: {
+        loggerOptions: {
+            loggerCallback: (level, message, containsPii) => {
+                if (containsPii) {	
+                    return;	
+                }
+                switch (level) {	
+                    case LogLevel.Error:	
+                        console.error(message);	
+                        return;	
+                    case LogLevel.Info:	
+                        console.info(message);	
+                        return;	
+                    case LogLevel.Verbose:	
+                        console.debug(message);	
+                        return;	
+                    case LogLevel.Warning:	
+                        console.warn(message);	
+                        return;	
+                    default:
+                        return;
+                }
+            },
+          logLevel: LogLevel.Verbose
+        }
+      } 
     };
-    this._userAgentApplication = new UserAgentApplication(
-      this._clientId,
-      this._authority,
-      cb,
-      opts
-    );
-  }
 
-  _tokenCallback(errorDesc, token, error, tokenType) {
-    this._error = error;
-    if (tokenType === 'access_token') {
-      //localStorage.setItem(ACCESS_TOKEN, token);
-      // Please note: do NOT do this in production! Should grab this value from the auth service.
-      //let expiresAt = 60 * 1000 + new Date().getTime();
-      //localStorage.setItem(EXPIRES_AT, expiresAt);
-      this._token = token;
-    } else {
-      //localStorage.removeItem(ACCESS_TOKEN);
-    }
+    this._publicClientApplication = new PublicClientApplication(msalConfig);
+
+    _loginRequest = {
+      scopes: window.authScopes
+    };
   }
 
   getUser() {
-    return this._userAgentApplication.getUser();
+    return this._user;
   }
 
   getError() {
@@ -50,12 +64,12 @@ export class Authentication {
   }
 
   getAccessToken() {
-    return this._userAgentApplication.acquireTokenSilent(this._scopes).then(
+    return this._publicClientApplication.acquireTokenSilent(_loginRequest).then(
       accessToken => {
         return accessToken;
       },
       error => {
-        return this._userAgentApplication.acquireTokenPopup(this._scopes).then(
+        return this._publicClientApplication.acquireTokenPopup(_loginRequest).then(
           accessToken => {
             return accessToken;
           },
@@ -68,10 +82,11 @@ export class Authentication {
   }
 
   login() {
-    //this._userAgentApplication.loginRedirect(this._scopes);
-    return this._userAgentApplication.loginPopup(this._scopes).then(
+    return this._publicClientApplication.loginPopup(_loginRequest).then(
       idToken => {
-        const user = this._userAgentApplication.getUser();
+        _account = idToken.account;
+        const user = idToken.account.user;
+        _user = user;
         if (user) {
           return user;
         } else {
@@ -85,7 +100,10 @@ export class Authentication {
   }
 
   logout() {
-    this._userAgentApplication.logout();
+    const logoutRequest = {
+      account: _account.homeAccountId,
+    };
+    this._publicClientApplication.logoutPopup(logoutRequest);
   }
 
   isAuthenticated() {
@@ -93,11 +111,11 @@ export class Authentication {
   }
 
   getAccessTokenOrLoginWithPopup() {
-    return this._userAgentApplication
-      .acquireTokenSilent(this._scopes)
+    return this._publicClientApplication
+      .acquireTokenSilent(_loginRequest)
       .catch(err => {
-        return this._userAgentApplication.loginPopup().then(() => {
-          return this._userAgentApplication.acquireTokenSilent(this._scopes);
+        return this._publicClientApplication.loginPopup().then(() => {
+          return this._publicClientApplication.acquireTokenSilent(_loginRequest);
         });
       });
   }
