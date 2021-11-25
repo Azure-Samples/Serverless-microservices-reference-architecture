@@ -1,4 +1,6 @@
-<template></template>
+<template>
+  <div></div>
+</template>
 
 <script>
 import * as signalR from "@microsoft/signalr";
@@ -47,9 +49,6 @@ export default {
           return signalRInfo;
         } else {
           console.log(`getSignalRInfo Response status: ${rawResponse.status}`);
-          throw `Could not obtain SignalR info. Response was ${
-            rawResponse.status
-          }`;
           return null;
         }
       }
