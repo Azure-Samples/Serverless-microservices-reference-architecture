@@ -129,16 +129,10 @@ namespace ServerlessMicroservices.Shared.Services
 
         public bool IsEnqueueToOrchestrators()
         {
-            if (
-                GetEnvironmentVariable(IsEnqueueToOrchestratorsKey) != null &&
-                !string.IsNullOrEmpty(GetEnvironmentVariable(IsEnqueueToOrchestratorsKey).ToString()) &&
-                GetEnvironmentVariable(IsEnqueueToOrchestratorsKey).ToString().ToLower() == "true"
-                )
-            {
-                return true;
-            }
+            // defaults to true
+            if (string.IsNullOrEmpty(GetEnvironmentVariable(IsEnqueueToOrchestratorsKey))) return true;
 
-            return false;
+            return bool.Parse(GetEnvironmentVariable(IsEnqueueToOrchestratorsKey));
         }
 
         public bool IsPersistDirectly()
@@ -207,9 +201,10 @@ namespace ServerlessMicroservices.Shared.Services
             return GetEnvironmentVariable(DocDbRideShareMainCollectionNameKey);
         }
 
-        public int GetDocDbThroughput()
+        public int? GetDocDbThroughput()
         {
-            return GetEnvironmentVariable(DocDbThroughput) != null ? Int32.Parse(GetEnvironmentVariable(DocDbThroughput)) : 400;
+            if (int.TryParse(GetEnvironmentVariable(DocDbThroughput), out int throughput)) return throughput;
+            return null;
         }
 
         // Sql

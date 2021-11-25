@@ -1,0 +1,50 @@
+[
+    {
+        "url": "http://localhost:7072/api/trips",
+        "passengerCode": "bsam@gmail.com",
+        "passengerFirstName": "Bill",
+        "passengerLastName": "Sam",
+        "PassengerMobile": "50551000",
+        "PassengerEmail": "bsam@gmail.com",
+        "sourceLatitude": 31,
+        "sourceLongitude": 50,
+        "destinationLatitude": 32,
+        "destinationLongitude": 60
+    },
+    {
+        "url": "http://localhost:7072/api/trips",
+        "passengerCode": "krami@gmail.com",
+        "passengerFirstName": "Kurt",
+        "passengerLastName": "Ramo",
+        "PassengerMobile": "505551515",
+        "PassengerEmail": "krami@gmail.com",
+        "sourceLatitude": 28,
+        "sourceLongitude": 40,
+        "destinationLatitude": 33,
+        "destinationLongitude": 51
+    },
+    {
+        "url": "http://localhost:7072/api/trips",
+        "passengerCode": "sjones@gmail.com",
+        "passengerFirstName": "Smith",
+        "passengerLastName": "Jones",
+        "PassengerMobile": "50551102",
+        "PassengerEmail": "sjones@gmail.com",
+        "sourceLatitude": 31,
+        "sourceLongitude": 50,
+        "destinationLatitude": 32,
+        "destinationLongitude": 60
+    },
+    {
+        "url": "http://localhost:7072/api/trips",
+        "passengerCode": "rita_ghana@gmail.com",
+        "passengerFirstName": "Rita",
+        "passengerLastName": "Ghana",
+        "PassengerMobile": "505556156",
+        "PassengerEmail": "rita_ghana@gmail.com",
+        "sourceLatitude": 28,
+        "sourceLongitude": 40,
+        "destinationLatitude": 33,
+        "destinationLongitude": 51
+    }
+]

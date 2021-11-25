@@ -112,7 +112,7 @@ namespace ServerlessMicroservices.Seeder
 
             app.Execute(args);
 
-            Console.ReadLine();
+            //Console.ReadLine();
         }
 
         //*** Auxiliary Methods ***//
@@ -172,8 +172,8 @@ namespace ServerlessMicroservices.Seeder
             //else
             //    Console.WriteLine("No need to seed ...there are passengers in the solution!");
 
-            Console.WriteLine("Seed completed......press any key!");
-            Console.ReadLine();
+            Console.WriteLine("Seed completed.");
+            //Console.ReadLine();
         }
 
         /*

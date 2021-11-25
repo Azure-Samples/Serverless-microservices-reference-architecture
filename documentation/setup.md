@@ -3,6 +3,7 @@
 In this document:
 
 - [Serverless Microservices reference architecture](#serverless-microservices-reference-architecture)
+  - [Getting Started](#getting-started)
   - [Resources](#resources)
   - [Provision](#provision)
     - [Manual via the Portal](#manual-via-the-portal)
@@ -67,6 +68,53 @@ In this document:
     - [Running in ACI](#running-in-aci)
     - [Running in AKS](#running-in-aks)
 
+## Getting Started
+
+In your local development environment you will need latest versions of:
+
+* Visual Studio or VSCode
+* git
+* `func` CLI
+* `az` CLI
+* Powershell
+
+Deploy Azure resources:
+
+```powershell
+copy bicep/parameters.json bicep/parameters.local.json
+# Change params in @bicep/parameters.local.json to suit
+az group create -n serverless-microservices-dev -l westus2
+az deployment group create -g serverless-microservices-dev -f bicep/main.bicep -p @bicep/parameters.local.json
+```
+
+Create local settings:
+
+``` powershell
+cd dotnet
+copy ServerlessMicroservices.FunctionApp.Drivers/local.settings.example.json ServerlessMicroservices.FunctionApp.Drivers/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.example.json ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Passengers/local.settings.example.json ServerlessMicroservices.FunctionApp.Passengers/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Trips/local.settings.example.json ServerlessMicroservices.FunctionApp.Trips/local.settings.json
+
+cd ../nodejs
+copy serverless-microservices-functionapp-triparchiver/local.settings.example.json serverless-microservices-functionapp-triparchiver/local.settings.json
+# Update local settings with your environment's values
+```
+
+Build and run local:
+
+```powershell
+cd scripts
+./run-local.ps1
+```
+
+Integration test:
+
+```powershell
+cd scripts
+./test-local.ps1
+```
+
 ## Resources
 
 The following is a summary of all Azure resources required to deploy the solution:
@@ -103,11 +151,12 @@ The following is a summary of all Azure resources required to deploy the solutio
 
 ## Provision
 
-There are 3 ways to provision the required resources:
+There are 4 ways to provision the required resources:
 
 - [Manual via the Portal](#manual-via-the-portal)
 - [ARM Template](#deploy-from-arm-template)
 - [Cake](#cake-provision)
+- [Bicep](#deploy-from-bicep) (recommended)
 
 ### Manual via the Portal
 
@@ -1476,16 +1525,27 @@ From a PowerShell command, use the following commands for the `Prod` environment
 
 ## Seeding
 
-The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs`, respectively.
+The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` using the `Drivers APIs`.
 
-**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.
+**Please note** that the `seed` command will seed drivers only if there are no drivers.
 
 > You must set the **EnableAuth** App Setting on the **Drivers** and **Passengers** Function Apps to `false` for the seeder to work.
 
-The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net --seedpassengersurl https://ridesharepassengers.azurewebsites.net`
+```
+> ServerlessMicroservices.Seeder.exe seed --help
 
-- Drivers Function Base URL  
-- Passengers Function Base URL
+Usage:  seed [options]
+
+Options:
+  --help               Show help information
+  -t|--seeddriversurl  Set seed drivers url
+  -t|--testurl         Set test url
+  -i|--testiterations  Set test iterations
+  -s|--testseconds     Set test seconds
+  -v|--signalrinfourl  Set SignalR Info URL
+
+> ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net
+```
 
 ## Containers
 

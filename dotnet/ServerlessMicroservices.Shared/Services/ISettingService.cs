@@ -32,7 +32,7 @@
         string GetDocDbConnectionString();
         string GetDocDbRideShareDatabaseName();
         string GetDocDbMainCollectionName();
-        int GetDocDbThroughput();
+        int? GetDocDbThroughput();
 
         // Sql
         string GetSqlConnectionString();

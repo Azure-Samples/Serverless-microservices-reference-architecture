@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using System;
@@ -12,7 +13,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
     {
         [FunctionName("T_StartTripMonitorViaQueueTrigger")]
         public static async Task StartTripMonitorViaQueueTrigger(
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             [QueueTrigger("%TripMonitorsQueue%", Connection = "AzureWebJobsStorage")] string code,
             ILogger log)
         {
@@ -31,7 +32,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_StartTripMonitor")]
         public static async Task<IActionResult> StartTripMonitor([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmonitors/{code}")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             string code,
             ILogger log)
         {
@@ -58,7 +59,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_GetTripMonitor")]
         public static async Task<IActionResult> GetTripMonitor([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tripmonitors/{code}")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             string code,
             ILogger log)
         {
@@ -80,7 +81,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_TerminateTripMonitor")]
         public static async Task<IActionResult> TerminateTripMonitor([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmonitors/{code}/terminate")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             string code,
             ILogger log)
         {
@@ -100,7 +101,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         //TODO: Implement Get Trip Monitor Instances, Restart Trip Monitor Instances and Terminate Trip Monitor Instances if Persist to table storage if persist instances is activated
 
         /** PRIVATE **/
-        private static async Task StartInstance(DurableOrchestrationClient context, string code, string instanceId, ILogger log)
+        private static async Task StartInstance(IDurableClient context, string code, string instanceId, ILogger log)
         {
             try
             {
@@ -122,7 +123,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        private static async Task TeminateInstance(DurableOrchestrationClient context, string instanceId, ILogger log)
+        private static async Task TeminateInstance(IDurableClient context, string instanceId, ILogger log)
         {
             try
             {

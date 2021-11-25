@@ -1,7 +1,8 @@
 {
   "profiles": {
     "ServerlessMicroservices.FunctionApp.Trips": {
-      "commandName": "Project"
+      "commandName": "Project",
+      "commandLineArgs": "start --port 7072"
     }
   }
 }
