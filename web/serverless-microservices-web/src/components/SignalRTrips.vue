@@ -38,7 +38,7 @@ export default {
       "getSignalRInfo"
     ]),
     async getSignalRInformation() {
-      let passengerInfo = await getPassenger(this.user.idToken.oid);
+      let passengerInfo = await getPassenger(this.user.idTokenClaims.oid);
       if (passengerInfo && passengerInfo.data) {
         // Pass in the current user email so messages can be sent to just the user.
         let rawResponse = await this.getSignalRInfo(passengerInfo.data.email); // {url: '', status: 201};//await this.getSignalRInfo();
