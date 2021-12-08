@@ -29,8 +29,9 @@ try {
     # Build and start Orchestrators Function
     Start-Process pwsh { -c cd ServerlessMicroservices.FunctionApp.Orchestrators && func start --csharp -p 7074 }
 
+    Start-Sleep -Seconds 90
     # Open the browser
-    start 'http://127.0.0.1:8080/'
+    start 'http://localhost:4280/'
 
 }
 finally {
