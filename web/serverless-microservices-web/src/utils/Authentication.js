@@ -2,12 +2,9 @@ import { LogLevel, PublicClientApplication } from '@azure/msal-browser';
 
 const ACCESS_TOKEN = 'rideshare_access_token';
 const USER_DETAILS = 'rideshare_user_details';
-let _user = null;
-let _account = null;
+let _accountId = null;
 let _loginRequest;
-
-
-
+let _tokenRequest;
 
 export class Authentication {
   constructor() {
@@ -15,35 +12,35 @@ export class Authentication {
     const msalConfig = {
       auth: {
         clientId: window.authClientId,
-        authority: window.authAuthority
+        authority: window.authAuthority,
+        knownAuthorities: [window.knownAuthority],
+        redirectUri: window.redirectUri
       },
       cache: {
-        cacheLocation: 'localStorage'
+        cacheLocation: "sessionStorage", // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
+        storeAuthStateInCookie: false, // If you wish to store cache items in cookies as well as browser cache, set this to "true".
       },
       system: {
         loggerOptions: {
-            loggerCallback: (level, message, containsPii) => {
-                if (containsPii) {	
+          loggerCallback: (level, message, containsPii) => {
+            if (containsPii) {	
+                return;	
+            }
+            switch (level) {	
+                case LogLevel.Error:	
+                    console.error(message);	
                     return;	
-                }
-                switch (level) {	
-                    case LogLevel.Error:	
-                        console.error(message);	
-                        return;	
-                    case LogLevel.Info:	
-                        console.info(message);	
-                        return;	
-                    case LogLevel.Verbose:	
-                        console.debug(message);	
-                        return;	
-                    case LogLevel.Warning:	
-                        console.warn(message);	
-                        return;	
-                    default:
-                        return;
-                }
-            },
-          logLevel: LogLevel.Verbose
+                case LogLevel.Info:	
+                    console.info(message);	
+                    return;	
+                case LogLevel.Verbose:	
+                    console.debug(message);	
+                    return;	
+                case LogLevel.Warning:	
+                    console.warn(message);	
+                    return;
+            }
+          }
         }
       } 
     };
@@ -51,12 +48,22 @@ export class Authentication {
     this._publicClientApplication = new PublicClientApplication(msalConfig);
 
     _loginRequest = {
-      scopes: window.authScopes
+      scopes: window.loginScopes
     };
+
+    _tokenRequest = {
+      scopes: window.apiScopes,
+      forceRefresh: false // Set this to "true" to skip a cached token and go to the server to get a new token
+    }
   }
 
   getUser() {
-    return this._user;
+    // if _accountId is not null, then the user is already logged in
+    let user = null;
+    if (_accountId) {
+      user = this._publicClientApplication.getAccountByHomeId(_accountId);
+    }
+    return user;
   }
 
   getError() {
@@ -64,12 +71,13 @@ export class Authentication {
   }
 
   getAccessToken() {
-    return this._publicClientApplication.acquireTokenSilent(_loginRequest).then(
+    _loginRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
+    return this._publicClientApplication.acquireTokenSilent(_tokenRequest).then(
       accessToken => {
         return accessToken;
       },
       error => {
-        return this._publicClientApplication.acquireTokenPopup(_loginRequest).then(
+        return this._publicClientApplication.acquireTokenPopup(_tokenRequest).then(
           accessToken => {
             return accessToken;
           },
@@ -82,16 +90,11 @@ export class Authentication {
   }
 
   login() {
-    return this._publicClientApplication.loginPopup(_loginRequest).then(
-      idToken => {
-        _account = idToken.account;
-        const user = idToken.account.user;
-        _user = user;
-        if (user) {
-          return user;
-        } else {
-          return null;
-        }
+    return this._publicClientApplication.loginPopup(_loginRequest)
+    .then(
+      response => {
+        _accountId = response.account.homeAccountId;
+        return response.account;
       },
       () => {
         return null;
@@ -101,9 +104,12 @@ export class Authentication {
 
   logout() {
     const logoutRequest = {
-      account: _account.homeAccountId,
+      account: _accountId,
+      redirectUri: window.logoutURI
     };
-    this._publicClientApplication.logoutPopup(logoutRequest);
+    this._publicClientApplication.logoutPopup(logoutRequest).then(() => {
+      window.location.replace('/');
+    });
   }
 
   isAuthenticated() {
@@ -111,13 +117,12 @@ export class Authentication {
   }
 
   getAccessTokenOrLoginWithPopup() {
+    _loginRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
     return this._publicClientApplication
-      .acquireTokenSilent(_loginRequest)
+      .acquireTokenSilent(_tokenRequest)
       .catch(err => {
-        return this._publicClientApplication.loginPopup().then(() => {
-          return this._publicClientApplication.acquireTokenSilent(_loginRequest);
+        return this.login();
         });
-      });
   }
 }
 
