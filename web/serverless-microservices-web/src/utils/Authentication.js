@@ -71,7 +71,7 @@ export class Authentication {
   }
 
   getAccessToken() {
-    _loginRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
+    _tokenRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
     return this._publicClientApplication.acquireTokenSilent(_tokenRequest).then(
       accessToken => {
         return accessToken;
@@ -117,7 +117,7 @@ export class Authentication {
   }
 
   getAccessTokenOrLoginWithPopup() {
-    _loginRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
+    _tokenRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
     return this._publicClientApplication
       .acquireTokenSilent(_tokenRequest)
       .catch(err => {

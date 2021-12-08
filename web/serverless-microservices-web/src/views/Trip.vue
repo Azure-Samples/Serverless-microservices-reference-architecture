@@ -323,7 +323,7 @@ export default {
     },
     requestDriver() {
       if (this.user) {
-        getPassenger(this.user.idToken.oid)
+        getPassenger(this.user.idTokenClaims.oid)
           .then(response => {
             this.passengerInfo = response.data;
 
