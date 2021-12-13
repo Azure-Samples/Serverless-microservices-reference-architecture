@@ -1,5 +1,7 @@
 import { LogLevel, PublicClientApplication } from '@azure/msal-browser';
 
+// refer to https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/working-with-b2c.md
+
 const ACCESS_TOKEN = 'rideshare_access_token';
 const USER_DETAILS = 'rideshare_user_details';
 let _accountId = null;
@@ -74,17 +76,17 @@ export class Authentication {
     _tokenRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
     return this._publicClientApplication.acquireTokenSilent(_tokenRequest).then(
       accessToken => {
-        return accessToken;
-      },
-      error => {
-        return this._publicClientApplication.acquireTokenPopup(_tokenRequest).then(
+        if (accessToken.accessToken === null || accessToken.accessToken === "") {
+          return this._publicClientApplication.acquireTokenPopup(_tokenRequest).then(
           accessToken => {
-            return accessToken;
+            return accessToken.accessToken;
           },
           err => {
             console.error(err);
           }
         );
+        }
+        return accessToken.accessToken;
       }
     );
   }

@@ -4,15 +4,12 @@
 
 $ErrorActionPreference = 'Stop'
 
-try {
-    # Install lightweight HTTP server for local hosting of SPA
-    # npm install -g @azure/static-web-apps-cli
-      
+try {    
     # cd /dotnet
     Push-Location ( Join-Path $PSScriptRoot ../dotnet ) -StackName scripts
 
     # Build and host SPA at http://127.0.0.1:8080/
-    Start-Process pwsh { -c cd ../web/serverless-microservices-web && npm install && npm run build && copy ../../test/settings.example.js dist/js/settings.js && cd dist && swa start }
+    Start-Process pwsh { -c cd ../web/serverless-microservices-web && npm install && copy ../../test/settings.example.js ./public/js/settings.js && npm run serve -- --port 4280 }
 
     # Build and start Trip Archiver Nodejs Function
     Start-Process pwsh { -c cd ../nodejs/serverless-microservices-functionapp-triparchiver && npm install && npm run pack && func start --javascript -p 7075 --cors http://localhost:4280 }
