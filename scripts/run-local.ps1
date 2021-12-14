@@ -4,9 +4,13 @@
 
 $ErrorActionPreference = 'Stop'
 
-try {    
+try {
+
+    # Start the storage emulator
+    & "C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe" "start"
+
     # cd /dotnet
-    Push-Location ( Join-Path $PSScriptRoot ../dotnet ) -StackName scripts
+    Push-Location ( Join-Path $PSScriptRoot ../dotnet )
 
     # Build and host SPA at http://127.0.0.1:8080/
     Start-Process pwsh { -c cd ../web/serverless-microservices-web && npm install && copy ../../test/settings.example.js ./public/js/settings.js && npm run serve -- --port 4280 }
@@ -36,5 +40,5 @@ try {
 
 }
 finally {
-    Pop-Location -StackName scripts
+    Pop-Location
 }
