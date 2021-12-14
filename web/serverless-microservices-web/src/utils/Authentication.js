@@ -75,18 +75,18 @@ export class Authentication {
   getAccessToken() {
     _tokenRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
     return this._publicClientApplication.acquireTokenSilent(_tokenRequest).then(
-      accessToken => {
-        if (accessToken.accessToken === null || accessToken.accessToken === "") {
-          return this._publicClientApplication.acquireTokenPopup(_tokenRequest).then(
-          accessToken => {
-            return accessToken.accessToken;
+      response => {
+        return response.accessToken;
+      },
+      error => {
+        return this._publicClientApplication.acquireTokenPopup(_tokenRequest).then(
+          response => {
+            return response.accessToken;
           },
           err => {
             console.error(err);
           }
         );
-        }
-        return accessToken.accessToken;
       }
     );
   }
