@@ -12,7 +12,7 @@ try {
     # cd /dotnet
     Push-Location ( Join-Path $PSScriptRoot ../dotnet )
 
-    # Build and host SPA at http://127.0.0.1:8080/
+    # Build and host SPA at http://127.0.0.1:4280/
     Start-Process pwsh { -c cd ../web/serverless-microservices-web && npm install && copy ../../test/settings.example.js ./public/js/settings.js && npm run serve -- --port 4280 }
 
     # Build and start Trip Archiver Nodejs Function
