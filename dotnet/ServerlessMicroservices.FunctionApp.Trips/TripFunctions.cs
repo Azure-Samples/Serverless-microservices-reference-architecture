@@ -1,6 +1,6 @@
+using Azure.Messaging.EventGrid;
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.Azure.EventGrid.Models;
 using Microsoft.Azure.WebJobs;
 using Microsoft.Azure.WebJobs.Extensions.EventGrid;
 using Microsoft.Azure.WebJobs.Extensions.Http;
@@ -15,7 +15,6 @@ using System.Collections.Generic;
 using System.IO;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.WindowsAzure.Storage.Blob;
 
 namespace ServerlessMicroservices.FunctionApp.Trips
 {
@@ -199,7 +198,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                             $"\n\tTopic:{eventGridEvent.Topic}" +
                             $"\n\tSubject:{eventGridEvent.Subject}" +
                             $"\n\tType:{eventGridEvent.EventType}" +
-                            $"\n\tData:{eventGridEvent.Data}");
+                            $"\n\tData:{eventGridEvent.Data.ToString()}");
 
             try
             {
@@ -249,7 +248,7 @@ namespace ServerlessMicroservices.FunctionApp.Trips
                             $"\n\tTopic:{eventGridEvent.Topic}" +
                             $"\n\tSubject:{eventGridEvent.Subject}" +
                             $"\n\tType:{eventGridEvent.EventType}" +
-                            $"\n\tData:{eventGridEvent.Data}");
+                            $"\n\tData:{eventGridEvent.Data.ToString()}");
 
             try
             {

@@ -1,9 +1,8 @@
-﻿using Microsoft.WindowsAzure.Storage;
-using Microsoft.WindowsAzure.Storage.Queue;
-using Newtonsoft.Json;
+﻿using Newtonsoft.Json;
 using ServerlessMicroservices.Models;
 using System;
 using System.Threading.Tasks;
+using Azure.Storage.Queues;
 
 namespace ServerlessMicroservices.Shared.Services
 {
@@ -16,10 +15,10 @@ namespace ServerlessMicroservices.Shared.Services
         private ISettingService _settingService;
         private ILoggerService _loggerService;
 
-        private CloudQueue _tripManagersQueue;
-        private CloudQueue _tripMonitorsQueue;
-        private CloudQueue _tripDemosQueue;
-        private CloudQueue _tripDriversQueue;
+        private QueueClient _tripManagersQueue;
+        private QueueClient _tripMonitorsQueue;
+        private QueueClient _tripDemosQueue;
+        private QueueClient _tripDriversQueue;
 
         public StorageService(ISettingService setting, ILoggerService logger)
         {
@@ -33,8 +32,8 @@ namespace ServerlessMicroservices.Shared.Services
 
             if (_tripManagersQueue != null)
             {
-                var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(trip));
-                await _tripManagersQueue.AddMessageAsync(queueMessage);
+                var queueMessage = JsonConvert.SerializeObject(trip);
+                await _tripManagersQueue.SendMessageAsync(queueMessage);
             }
         }
 
@@ -44,8 +43,8 @@ namespace ServerlessMicroservices.Shared.Services
 
             if (_tripDemosQueue != null)
             {
-                var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(tripDemoState));
-                await _tripDemosQueue.AddMessageAsync(queueMessage);
+                var queueMessage = JsonConvert.SerializeObject(tripDemoState);
+                await _tripDemosQueue.SendMessageAsync(queueMessage);
             }
         }
 
@@ -55,12 +54,12 @@ namespace ServerlessMicroservices.Shared.Services
 
             if (_tripDriversQueue != null)
             {
-                var queueMessage = new CloudQueueMessage(JsonConvert.SerializeObject(new TripDriver
+                var queueMessage = JsonConvert.SerializeObject(new TripDriver
                 {
                     TripCode = tripCode,
                     DriverCode = driverCode
-                }));
-                await _tripDriversQueue.AddMessageAsync(queueMessage);
+                });
+                await _tripDriversQueue.SendMessageAsync(queueMessage);
             }
         }
 
@@ -77,16 +76,10 @@ namespace ServerlessMicroservices.Shared.Services
             {
                 if (!string.IsNullOrEmpty(_settingService.GetStorageAccount()))
                 {
-                    // Queues Initialization
-                    var queueStorageAccount = CloudStorageAccount.Parse(_settingService.GetStorageAccount());
-                    // Get context object for working with queues, and set a default retry policy appropriate for a web user interface.
-                    var queueClient = queueStorageAccount.CreateCloudQueueClient();
-                    //queueClient.DefaultRequestOptions.RetryPolicy = new LinearRetry(TimeSpan.FromSeconds(3), 3);
-
                     var tripManagersQueueName = _settingService.GetTripManagersQueueName();
                     if (!string.IsNullOrEmpty(tripManagersQueueName))
                     {
-                        _tripManagersQueue = queueClient.GetQueueReference(tripManagersQueueName);
+                        _tripManagersQueue = new QueueClient(_settingService.GetStorageAccount(), tripManagersQueueName);
                         await _tripManagersQueue.CreateIfNotExistsAsync();
                     }
                     else
@@ -95,7 +88,7 @@ namespace ServerlessMicroservices.Shared.Services
                     var tripMonitorsQueueName = _settingService.GetTripMonitorsQueueName();
                     if (!string.IsNullOrEmpty(tripMonitorsQueueName))
                     {
-                        _tripMonitorsQueue = queueClient.GetQueueReference(tripMonitorsQueueName);
+                        _tripMonitorsQueue = new QueueClient(_settingService.GetStorageAccount(), tripMonitorsQueueName);
                         await _tripMonitorsQueue.CreateIfNotExistsAsync();
                     }
                     else
@@ -104,7 +97,7 @@ namespace ServerlessMicroservices.Shared.Services
                     var tripDemosQueueName = _settingService.GetTripDemosQueueName();
                     if (!string.IsNullOrEmpty(tripDemosQueueName))
                     {
-                        _tripDemosQueue = queueClient.GetQueueReference(tripDemosQueueName);
+                        _tripDemosQueue = new QueueClient(_settingService.GetStorageAccount(), tripDemosQueueName);
                         await _tripDemosQueue.CreateIfNotExistsAsync();
                     }
                     else
@@ -113,7 +106,7 @@ namespace ServerlessMicroservices.Shared.Services
                     var tripDriversQueueName = _settingService.GetTripDriversQueueName();
                     if (!string.IsNullOrEmpty(tripDriversQueueName))
                     {
-                        _tripDriversQueue = queueClient.GetQueueReference(tripDriversQueueName);
+                        _tripDriversQueue = new QueueClient(_settingService.GetStorageAccount(), tripDriversQueueName);
                         await _tripDriversQueue.CreateIfNotExistsAsync();
                     }
                     else
