@@ -12,6 +12,22 @@ The .NET `ServerlessMicroservices.Seeder` project contains a multi-thread tester
 
 **Please note** that the test will usually run against a deployment environment where the `AuthEnabled` setting is set to false.
 
+```powershell
+> ServerlessMicroservices.Seeder.exe testTrips --help
+
+Usage:  testTrips [options]
+
+Options:
+  --help               Show help information
+  -t|--seeddriversurl  Set seed drivers url
+  -t|--testurl         Set test url
+  -i|--testiterations  Set test iterations
+  -s|--testseconds     Set test seconds
+  -v|--signalrinfourl  Set SignalR Info URL
+
+> ServerlessMicroservices.Seeder.exe testTrips --seeddriversurl http://localhost:7071 --testurl http://localhost:7072/api/triptestparameters
+```
+
 The `testTrips` command takes 1 mandatory argument and 2 optional arguments i.e. `ServerlessMicroservices.Seeder testTrips testUrl testiterations testseconds`
 
 - Test Parameters URL to read the test data from.

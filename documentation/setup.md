@@ -3,6 +3,7 @@
 In this document:
 
 - [Serverless Microservices reference architecture](#serverless-microservices-reference-architecture)
+  - [Getting Started](#getting-started)
   - [Resources](#resources)
   - [Provision](#provision)
     - [Manual via the Portal](#manual-via-the-portal)
@@ -23,7 +24,7 @@ In this document:
       - [Configure Azure AD B2C tenant](#configure-azure-ad-b2c-tenant)
       - [Create a sign-up or sign-in policy](#create-a-sign-up-or-sign-in-policy)
     - [Cake Provision](#cake-provision)
-    - [Deploy from ARM template](#deploy-from-arm-template)
+    - [Deploy from Bicep](#deploy-from-bicep)
   - [Setup](#setup)
     - [Add APIM Products and APIs](#add-apim-products-and-apis)
       - [Drivers API](#drivers-api)
@@ -67,6 +68,63 @@ In this document:
     - [Running in ACI](#running-in-aci)
     - [Running in AKS](#running-in-aks)
 
+## Getting Started
+
+In your local development environment you will need latest versions of:
+
+* Visual Studio or VS Code
+* git
+* `func` CLI
+* `az` CLI
+* Powershell
+* Nodejs & npm
+
+Deploy Azure resources:
+
+```powershell
+copy bicep/parameters.json bicep/parameters.local.json
+
+# Change params in @bicep/parameters.local.json to suit
+
+az group create -n serverless-microservices-dev -l westus2
+az deployment group create -g serverless-microservices-dev -f bicep/main.bicep -p @bicep/parameters.local.json
+```
+
+Create local settings:
+
+``` powershell
+cd dotnet
+
+# create copies of the Functions settings example files
+copy ServerlessMicroservices.FunctionApp.Drivers/local.settings.example.json ServerlessMicroservices.FunctionApp.Drivers/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.example.json ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Passengers/local.settings.example.json ServerlessMicroservices.FunctionApp.Passengers/local.settings.json
+copy ServerlessMicroservices.FunctionApp.Trips/local.settings.example.json ServerlessMicroservices.FunctionApp.Trips/local.settings.json
+
+# Now update local settings with your environment's values
+
+cd ../nodejs
+
+# create a copy of the Nodejs settings example file
+copy serverless-microservices-functionapp-triparchiver/local.settings.example.json serverless-microservices-functionapp-triparchiver/local.settings.json
+
+# Now update local settings with your environment's values
+```
+
+Build and run local:
+
+```powershell
+cd scripts
+
+./run-local.ps1
+```
+
+Run integration test:
+
+```powershell
+./test-local.ps1
+```
+
 ## Resources
 
 The following is a summary of all Azure resources required to deploy the solution:
@@ -103,13 +161,16 @@ The following is a summary of all Azure resources required to deploy the solutio
 
 ## Provision
 
-There are 3 ways to provision the required resources:
+There are 4 ways to provision the required resources:
 
 - [Manual via the Portal](#manual-via-the-portal)
 - [ARM Template](#deploy-from-arm-template)
 - [Cake](#cake-provision)
+- [Bicep](#deploy-from-bicep) (recommended)
 
 ### Manual via the Portal
+
+> ⚠️ Manual provisioning docs are obsolete will be deprecated soon. Please use [Bicep provisioning](#deploy-from-bicep) instead.
 
 Log in to the [Azure portal](https://portal.azure.com).
 
@@ -582,6 +643,8 @@ Once completed, please jump to the [setup](#setup) section to continue.
 
 ### Cake Provision
 
+> ⚠️ Cake provisioning support and docs will be deprecated soon. Please use [Bicep provisioning](#deploy-from-bicep) instead.
+
 The `Cake` script responsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
 
 1. Create a service principal that can be used to authenticate the script to use your Azure subscription. This can be easily accomplished using the following PowerShell script:
@@ -642,16 +705,14 @@ Unfortunately, the Cake script cannot provision the following resources because 
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
-### Deploy from ARM template
+### Deploy from Bicep
 
-You can provision most of the services required through the supplied [ARM (Azure Resource Manager) template](../arm/template.json). The Azure portal provides a nice user interface for deploying resources when using an ARM template. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2Fsolliancenet%2Fserverless-microservices%2Fmaster%2Farm%2Ftemplate.json).
+You can provision most of the services required through the supplied [Bicep](../bicep/main.bicep) with command-line using [Azure PowerShell](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-powershell#deploy-local-bicep-file) or [Azure CLI](https://docs.microsoft.com/en-us/azure/azure-resource-manager/bicep/deploy-cli#deploy-local-bicep-file). The Azure portal provides a nice user interface for deploying resources when using a Bicep file. To use this interface, start by [clicking this link](https://portal.azure.com/#create/Microsoft.Template/uri/https%3A%2F%2Fraw.githubusercontent.com%2FAzure-Samples%2FServerless-microservices-reference-architecture%2Frefresh-functions-v4%2Fbicep%2Fmain.json).
 
-Unfortunately, the ARM template cannot provision the following resources. Please provision these manually as described in the steps above:
+Unfortunately, the Bicep cannot provision the following resources. Please provision these manually as described in the steps above:
 
 - [Logic App](#create-the-logic-app)
-- [API Management Service](#create-the-api-management-service)
 - [B2C Tenant](#create-the-b2c-tenant)
-- [Azure Key Vault](#create-azure-key-vault)
 
 Once completed, please jump to the [setup](#setup) section to continue.
 
@@ -661,7 +722,7 @@ After you have provisioned all your resources, there are some manual steps that 
 
 - [Add APIM Products and APIs](#Add-APIM-Products-and-APIs)
 - [Connect Event Grid to Function Apps](#connect-event-grid-to-functions-apps)
-- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app) 
+- [Connect Event Grid to Logic App](#connect-event-grid-to-logic-app)
 - [Run a script to create the TripFact table](#create-tripfact-table)
 
 ### Add APIM Products and APIs
@@ -1478,16 +1539,27 @@ From a PowerShell command, use the following commands for the `Prod` environment
 
 ## Seeding
 
-The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` and `passengers` using the `Drivers APIs` and `Passengers APIs`, respectively.
+The .NET `ServerlessMicroservices.Seeder` project contains a seeding command that can be used to seed `drivers` using the `Drivers APIs`.
 
-**Please note** that the `seed` command will seed drivers only if there are no drivers and will seed passengers only if there are no passengers in the solution's database.
+**Please note** that the `seed` command will seed drivers only if there are no drivers.
 
 > You must set the **EnableAuth** App Setting on the **Drivers** and **Passengers** Function Apps to `false` for the seeder to work.
 
-The `seed` command takes 5 non-optional arguments i.e. `ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net --seedpassengersurl https://ridesharepassengers.azurewebsites.net`
+```
+> ServerlessMicroservices.Seeder.exe seed --help
 
-- Drivers Function Base URL  
-- Passengers Function Base URL
+Usage:  seed [options]
+
+Options:
+  --help               Show help information
+  -t|--seeddriversurl  Set seed drivers url
+  -t|--testurl         Set test url
+  -i|--testiterations  Set test iterations
+  -s|--testseconds     Set test seconds
+  -v|--signalrinfourl  Set SignalR Info URL
+
+> ServerlessMicroservices.Seeder.exe seed --seeddriversurl https://ridesharedrivers.azurewebsites.net
+```
 
 ## Containers
 

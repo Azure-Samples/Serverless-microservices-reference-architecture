@@ -1,48 +1,71 @@
-import { UserAgentApplication, Logger } from 'msal';
+import { LogLevel, PublicClientApplication } from '@azure/msal-browser';
+
+// refer to https://github.com/AzureAD/microsoft-authentication-library-for-js/blob/dev/lib/msal-browser/docs/working-with-b2c.md
 
 const ACCESS_TOKEN = 'rideshare_access_token';
-const ID_TOKEN = 'rideshare_id_token';
-const EXPIRES_AT = 'rideshare_expires_at';
 const USER_DETAILS = 'rideshare_user_details';
-
-let logger = new Logger((level, message, containsPii) => {
-  console.log(message);
-});
+let _accountId = null;
+let _loginRequest;
+let _tokenRequest;
 
 export class Authentication {
   constructor() {
     // The window values below should by set by public/js/settings.js
-    this._scopes = window.authScopes;
-    this._clientId = window.authClientId;
-    this._authority = window.authAuthority;
-
-    var cb = this._tokenCallback.bind(this);
-    var opts = {
-      validateAuthority: false
+    const msalConfig = {
+      auth: {
+        clientId: window.authClientId,
+        authority: window.authAuthority,
+        knownAuthorities: [window.knownAuthority],
+        redirectUri: window.redirectUri
+      },
+      cache: {
+        cacheLocation: "sessionStorage", // Configures cache location. "sessionStorage" is more secure, but "localStorage" gives you SSO between tabs.
+        storeAuthStateInCookie: false, // If you wish to store cache items in cookies as well as browser cache, set this to "true".
+      },
+      system: {
+        loggerOptions: {
+          loggerCallback: (level, message, containsPii) => {
+            if (containsPii) {	
+                return;	
+            }
+            switch (level) {	
+                case LogLevel.Error:	
+                    console.error(message);	
+                    return;	
+                case LogLevel.Info:	
+                    console.info(message);	
+                    return;	
+                case LogLevel.Verbose:	
+                    console.debug(message);	
+                    return;	
+                case LogLevel.Warning:	
+                    console.warn(message);	
+                    return;
+            }
+          }
+        }
+      } 
     };
-    this._userAgentApplication = new UserAgentApplication(
-      this._clientId,
-      this._authority,
-      cb,
-      opts
-    );
-  }
 
-  _tokenCallback(errorDesc, token, error, tokenType) {
-    this._error = error;
-    if (tokenType === 'access_token') {
-      //localStorage.setItem(ACCESS_TOKEN, token);
-      // Please note: do NOT do this in production! Should grab this value from the auth service.
-      //let expiresAt = 60 * 1000 + new Date().getTime();
-      //localStorage.setItem(EXPIRES_AT, expiresAt);
-      this._token = token;
-    } else {
-      //localStorage.removeItem(ACCESS_TOKEN);
+    this._publicClientApplication = new PublicClientApplication(msalConfig);
+
+    _loginRequest = {
+      scopes: window.loginScopes
+    };
+
+    _tokenRequest = {
+      scopes: window.apiScopes,
+      forceRefresh: false // Set this to "true" to skip a cached token and go to the server to get a new token
     }
   }
 
   getUser() {
-    return this._userAgentApplication.getUser();
+    // if _accountId is not null, then the user is already logged in
+    let user = null;
+    if (_accountId) {
+      user = this._publicClientApplication.getAccountByHomeId(_accountId);
+    }
+    return user;
   }
 
   getError() {
@@ -50,14 +73,15 @@ export class Authentication {
   }
 
   getAccessToken() {
-    return this._userAgentApplication.acquireTokenSilent(this._scopes).then(
-      accessToken => {
-        return accessToken;
+    _tokenRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
+    return this._publicClientApplication.acquireTokenSilent(_tokenRequest).then(
+      response => {
+        return response.accessToken;
       },
       error => {
-        return this._userAgentApplication.acquireTokenPopup(this._scopes).then(
-          accessToken => {
-            return accessToken;
+        return this._publicClientApplication.acquireTokenPopup(_tokenRequest).then(
+          response => {
+            return response.accessToken;
           },
           err => {
             console.error(err);
@@ -68,15 +92,11 @@ export class Authentication {
   }
 
   login() {
-    //this._userAgentApplication.loginRedirect(this._scopes);
-    return this._userAgentApplication.loginPopup(this._scopes).then(
-      idToken => {
-        const user = this._userAgentApplication.getUser();
-        if (user) {
-          return user;
-        } else {
-          return null;
-        }
+    return this._publicClientApplication.loginPopup(_loginRequest)
+    .then(
+      response => {
+        _accountId = response.account.homeAccountId;
+        return response.account;
       },
       () => {
         return null;
@@ -85,7 +105,13 @@ export class Authentication {
   }
 
   logout() {
-    this._userAgentApplication.logout();
+    const logoutRequest = {
+      account: _accountId,
+      redirectUri: window.logoutURI
+    };
+    this._publicClientApplication.logoutPopup(logoutRequest).then(() => {
+      window.location.replace('/');
+    });
   }
 
   isAuthenticated() {
@@ -93,13 +119,12 @@ export class Authentication {
   }
 
   getAccessTokenOrLoginWithPopup() {
-    return this._userAgentApplication
-      .acquireTokenSilent(this._scopes)
+    _tokenRequest.account = this._publicClientApplication.getAccountByHomeId(_accountId);
+    return this._publicClientApplication
+      .acquireTokenSilent(_tokenRequest)
       .catch(err => {
-        return this._userAgentApplication.loginPopup().then(() => {
-          return this._userAgentApplication.acquireTokenSilent(this._scopes);
+        return this.login();
         });
-      });
   }
 }
 

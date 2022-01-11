@@ -42,7 +42,10 @@ namespace ServerlessMicroservices.Shared.Services
             if (_appInsightsClient == null)
             {
                 _appInsightsClient = new TelemetryClient();
-                _appInsightsClient.InstrumentationKey = _settingService.GetInsightsInstrumentationKey();
+                string key = _settingService.GetInsightsInstrumentationKey();
+
+                // It is possible to create a Telemetry client without an iKey. But trying to set this property to null will throw a null argument exception
+                if (!string.IsNullOrEmpty(key)) _appInsightsClient.InstrumentationKey = key;
             }
 
             return _appInsightsClient;

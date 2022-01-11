@@ -1,4 +1,5 @@
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Extensions.Logging;
 using ServerlessMicroservices.Models;
 using ServerlessMicroservices.Shared.Services;
@@ -15,7 +16,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("O_DemoTrip")]
         public static async Task<object> DemoTrip(
-            [OrchestrationTrigger] DurableOrchestrationContext context,
+            [OrchestrationTrigger] IDurableOrchestrationContext context,
             ILogger log)
         {
             TripDemoState state = context.GetInput<TripDemoState>();

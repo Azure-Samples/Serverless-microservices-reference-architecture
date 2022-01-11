@@ -7,7 +7,7 @@ import store from './store/index';
 
 import BootstrapVue from 'bootstrap-vue';
 import BlockUI from 'vue-blockui';
-import VueIziToast from 'vue-izitoast';
+import VueIziToast from 'vue-izitoast-2';
 import 'izitoast/dist/css/iziToast.min.css';
 
 Vue.use(BootstrapVue);

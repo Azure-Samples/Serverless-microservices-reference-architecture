@@ -4,19 +4,19 @@ namespace ServerlessMicroservices.Models
 {
     public class PassengerItem : BaseItem
     {
-        [JsonProperty(PropertyName = "code")]
+        [JsonProperty("code")]
         public string Code { get; set; } = "";
 
-        [JsonProperty(PropertyName = "firstName")]
+        [JsonProperty("firstName")]
         public string FirstName { get; set; } = "";
 
-        [JsonProperty(PropertyName = "lastName")]
+        [JsonProperty("lastName")]
         public string LastName { get; set; } = "";
 
-        [JsonProperty(PropertyName = "mobileNumber")]
+        [JsonProperty("mobileNumber")]
         public string MobileNumber { get; set; } = "";
 
-        [JsonProperty(PropertyName = "email")]
+        [JsonProperty("email")]
         public string Email { get; set; } = "";
 
     }

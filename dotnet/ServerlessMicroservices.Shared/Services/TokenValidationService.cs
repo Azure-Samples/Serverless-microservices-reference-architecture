@@ -3,10 +3,11 @@ using System.IdentityModel.Tokens.Jwt;
 using System.Linq;
 using System.Security.Claims;
 using System.Threading.Tasks;
-using IdentityModel;
 using IdentityModel.Client;
 using Microsoft.AspNetCore.Http;
 using Microsoft.IdentityModel.Tokens;
+using Microsoft.IdentityModel.Protocols.OpenIdConnect;
+using Microsoft.IdentityModel.Protocols;
 
 namespace ServerlessMicroservices.Shared.Services
 {
@@ -30,6 +31,7 @@ namespace ServerlessMicroservices.Shared.Services
         private DiscoveryCache _discoveryCache;
         private string _audience;
         private string _scope;
+        private string _authority;
 
         /// <summary>
         /// Configured by the function app settings. If false, validation is skipped.
@@ -50,6 +52,7 @@ namespace ServerlessMicroservices.Shared.Services
 
             _audience = settingService.GetApiApplicationId();
             _scope = settingService.GetApiScopeName();
+            _authority = settingService.GetAuthorityUrl();
             AuthEnabled = settingService.EnableAuth();
         }
 
@@ -87,6 +90,10 @@ namespace ServerlessMicroservices.Shared.Services
             {
                 var handler = new JwtSecurityTokenHandler();
                 handler.InboundClaimTypeMap.Clear();
+#if DEBUG
+                // Debugging purposes only, set this to false for production
+                Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+#endif
 
                 try
                 {
@@ -114,25 +121,33 @@ namespace ServerlessMicroservices.Shared.Services
                 return null;
             }
 
-            var keys = disco.KeySet.Keys
-               .Where(x => x.Use == SigningKeyUseType)
-               .Select(x =>
-               {
-                   return new RsaSecurityKey(new System.Security.Cryptography.RSAParameters
-                   {
-                       Exponent = Base64Url.Decode(x.E),
-                       Modulus = Base64Url.Decode(x.N)
-                   })
-                   {
-                       KeyId = x.Kid
-                   };
-               });
+            ConfigurationManager<OpenIdConnectConfiguration> configManager =
+                new ConfigurationManager<OpenIdConnectConfiguration>(
+                    $"{_authority}/.well-known/openid-configuration",
+                    new OpenIdConnectConfigurationRetriever());
+
+            OpenIdConnectConfiguration config = null;
+            config = await configManager.GetConfigurationAsync();
+
+            //var keys = disco.KeySet.Keys
+            //   .Where(x => x.Use == SigningKeyUseType)
+            //   .Select(x =>
+            //   {
+            //       return new RsaSecurityKey(new System.Security.Cryptography.RSAParameters
+            //       {
+            //           Exponent = Base64Url.Decode(x.E),
+            //           Modulus = Base64Url.Decode(x.N)
+            //       })
+            //       {
+            //           KeyId = x.Kid
+            //       };
+            //   });
 
             return new TokenValidationParameters
             {
                 ValidIssuer = disco.Issuer,
                 ValidAudience = _audience,
-                IssuerSigningKeys = keys,
+                IssuerSigningKeys = config.SigningKeys,
                 NameClaimType = NameClaimType,
                 RoleClaimType = RoleClaimType
             };

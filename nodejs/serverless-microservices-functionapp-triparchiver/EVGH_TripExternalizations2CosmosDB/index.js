@@ -1,4 +1,4 @@
-module.exports = function(context, eventGridEvent) {
+module.exports = async function (context, eventGridEvent) {
   context.log(typeof eventGridEvent);
   context.log(eventGridEvent);
 
@@ -9,7 +9,8 @@ module.exports = function(context, eventGridEvent) {
   context.log('Time: ' + eventGridEvent.eventTime);
   context.log('Data: ' + JSON.stringify(eventGridEvent.data));
 
-  context.bindings.document = JSON.stringify(eventGridEvent.data);
+  context.bindings.outputDocument = JSON.stringify(eventGridEvent.data);
 
   context.done();
-};
+
+}

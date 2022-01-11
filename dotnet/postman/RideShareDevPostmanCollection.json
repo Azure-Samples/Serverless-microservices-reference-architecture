@@ -15,7 +15,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/drivers?code=Ww6z57Vje/VCcF8TEYhhOocQXGB6pDqVSaHC9PnXNPbT4ASOpan0dg==",
+							"raw": "http://localhost:7071/api/drivers?code=Ww6z57Vje/VCcF8TEYhhOocQXGB6pDqVSaHC9PnXNPbT4ASOpan0dg==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -43,7 +43,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/activedrivers?code=Uw9AAzkBvHdQPYNb/zhZbUpjXwzkdgnNrZ3ySzeKCX4CCNhV/PFqbQ==",
+							"raw": "http://localhost:7071/api/activedrivers?code=Uw9AAzkBvHdQPYNb/zhZbUpjXwzkdgnNrZ3ySzeKCX4CCNhV/PFqbQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -71,7 +71,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/drivers/{latitude}/{longitude}/{miles}?code=YViFrvypDRGrmfr85Le1/EiXnnlI4mMLGf5aVJRnyYCQudrLmVQxLw==",
+							"raw": "http://localhost:7071/api/drivers/{latitude}/{longitude}/{miles}?code=YViFrvypDRGrmfr85Le1/EiXnnlI4mMLGf5aVJRnyYCQudrLmVQxLw==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -102,7 +102,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/driverlocations/{code}?code=uXesBTL6vqtK9R9UtshLPT7EgcP4aM7rbLI73MIMardrH3yv8axkCQ==",
+							"raw": "http://localhost:7071/api/driverlocations/{code}?code=uXesBTL6vqtK9R9UtshLPT7EgcP4aM7rbLI73MIMardrH3yv8axkCQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -131,7 +131,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/drivers/{code}?code=Zg7SvgNuUfOJap6tz2TkQb6OdaYrHyVz91K0nzfsxRVE/7iFi4YRVQ==",
+							"raw": "http://localhost:7071/api/drivers/{code}?code=Zg7SvgNuUfOJap6tz2TkQb6OdaYrHyVz91K0nzfsxRVE/7iFi4YRVQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -168,7 +168,7 @@
 							"raw": "{\n\t\"code\": \"AA100\",\n\t\"firstName\": \"James\",\n\t\"lastName\": \"Beaky\",\n\t\"latitude\": 32.7174,\n\t\"longitude\": -117.1628,\n\t\"car\": {\n\t\t\"driverCode\": \"AA100\",\n\t\t\"make\": \"BMW\",\n\t\t\"model\": \"735\",\n\t\t\"color\": \"Black\",\n\t\t\"licensePlate\": \"CA-8900\"\n\t}\n}"
 						},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/drivers?code=6JjTk5yMTcXZEMBkNKZAUC7fhYxEjaZhkGYE/XyT4wDmm//M8r9jLQ==",
+							"raw": "http://localhost:7071/api/drivers?code=6JjTk5yMTcXZEMBkNKZAUC7fhYxEjaZhkGYE/XyT4wDmm//M8r9jLQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -204,7 +204,7 @@
 							"raw": "{\n\t\"driverCode\": \"AA100\",\n\t\"latitude\": -32,\n\t\"longitude\": 60\n}"
 						},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/driverlocations?code=YxQqagYJ4sAQRimkp6X3ZuN1J6w8VOsf/D5ZWISJZNZ/YVI68m0soQ==",
+							"raw": "http://localhost:7071/api/driverlocations?code=YxQqagYJ4sAQRimkp6X3ZuN1J6w8VOsf/D5ZWISJZNZ/YVI68m0soQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -240,7 +240,7 @@
 							"raw": "{\n\t\"code\": \"AA100\",\n\t\"firstName\": \"James\",\n\t\"lastName\": \"Beaky\",\n\t\"latitude\": 32.7174,\n\t\"longitude\": -117.1628,\n\t\"isAcceptingRides\": true,\n\t\"car\": {\n\t\t\"driverCode\": \"AA100\",\n\t\t\"make\": \"BMW\",\n\t\t\"model\": \"735\",\n\t\t\"color\": \"Black\",\n\t\t\"licensePlate\": \"CA-8900\"\n\t}\n}"
 						},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/drivers?code=R91k4TDaNjaaVQZPY9T6DtZZn58TSfxgx7YJbjYOnBbwzWBGwCrwVQ==",
+							"raw": "http://localhost:7071/api/drivers?code=R91k4TDaNjaaVQZPY9T6DtZZn58TSfxgx7YJbjYOnBbwzWBGwCrwVQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -273,7 +273,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=UoYcA4JAZ0g5N1RCvB9iqeLbM5NBHOseeoD7J5bM3sTMN16/CKGifA==",
+							"raw": "http://localhost:7072/api/trips?code=UoYcA4JAZ0g5N1RCvB9iqeLbM5NBHOseeoD7J5bM3sTMN16/CKGifA==",
 							"protocol": "https",
 							"host": [
 								"ridesharetripsfunctionappdev",
@@ -301,7 +301,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips/{code}?code=8cU39T1pz7GL4d43l/nNoaLDGgwzZJIMP6bURZkBzRTS9r9HYmGPGA==",
+							"raw": "http://localhost:7072/api/trips/{code}?code=8cU39T1pz7GL4d43l/nNoaLDGgwzZJIMP6bURZkBzRTS9r9HYmGPGA==",
 							"protocol": "https",
 							"host": [
 								"ridesharetripsfunctionappdev",
@@ -330,7 +330,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/activetrips?code=MmpVWuWnV5UYHeufa8z5A23o7b/XPd2wj0ZOgnTey6fRbGVXMclRsg==",
+							"raw": "http://localhost:7072/api/activetrips?code=MmpVWuWnV5UYHeufa8z5A23o7b/XPd2wj0ZOgnTey6fRbGVXMclRsg==",
 							"protocol": "https",
 							"host": [
 								"ridesharetripsfunctionappdev",
@@ -366,7 +366,7 @@
 							"raw": "{\n\t\"passenger\": {\n\t\t\"code\": \"joe@gmail.com\",\n\t\t\"firstName\": \"Joe\",\n\t\t\"lastName\": \"James\",\n\t\t\"mobileNumber\": \"+13105551212\",\n\t\t\"email\": \"joe@gmail.com\"\n\t},\n\t\"source\": {\n\t\t\"latitude\": -31,\n\t\t\"longitude\": 54\n\t},\n\t\"destination\": {\n\t\t\"latitude\": -32,\n\t\t\"longitude\": 60\n\t}\n}"
 						},
 						"url": {
-							"raw": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=EaJ/Ct5NZ3rNRkSfDuYRz3TSsSlGr8MY4yom68mJcBAOFrhk5/vGdA==",
+							"raw": "http://localhost:7072/api/trips?code=EaJ/Ct5NZ3rNRkSfDuYRz3TSsSlGr8MY4yom68mJcBAOFrhk5/vGdA==",
 							"protocol": "https",
 							"host": [
 								"ridesharetripsfunctionappdev",
@@ -701,7 +701,7 @@
 							"raw": "{\n\t\"code\": \"AA100\",\n\t\"firstName\": \"James\",\n\t\"lastName\": \"Beaky\",\n\t\"latitude\": 32.7174,\n\t\"longitude\": -117.1628,\n\t\"car\": {\n\t\t\"driverCode\": \"AA100\",\n\t\t\"make\": \"BMW\",\n\t\t\"model\": \"735\",\n\t\t\"color\": \"Black\",\n\t\t\"licensePlate\": \"CA-8900\"\n\t}\n}"
 						},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/drivers?code=6JjTk5yMTcXZEMBkNKZAUC7fhYxEjaZhkGYE/XyT4wDmm//M8r9jLQ==",
+							"raw": "http://localhost:7071/api/drivers?code=6JjTk5yMTcXZEMBkNKZAUC7fhYxEjaZhkGYE/XyT4wDmm//M8r9jLQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",
@@ -737,7 +737,7 @@
 							"raw": "{\n\t\"passenger\": {\n\t\t\"code\": \"joe@gmail.com\",\n\t\t\"firstName\": \"Joe\",\n\t\t\"lastName\": \"James\",\n\t\t\"mobileNumber\": \"+13105551212\",\n\t\t\"email\": \"joe@gmail.com\"\n\t},\n\t\"source\": {\n\t\t\"latitude\": -31,\n\t\t\"longitude\": 54\n\t},\n\t\"destination\": {\n\t\t\"latitude\": -32,\n\t\t\"longitude\": 60\n\t}\n}"
 						},
 						"url": {
-							"raw": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips?code=EaJ/Ct5NZ3rNRkSfDuYRz3TSsSlGr8MY4yom68mJcBAOFrhk5/vGdA==",
+							"raw": "http://localhost:7072/api/trips?code=EaJ/Ct5NZ3rNRkSfDuYRz3TSsSlGr8MY4yom68mJcBAOFrhk5/vGdA==",
 							"protocol": "https",
 							"host": [
 								"ridesharetripsfunctionappdev",
@@ -765,7 +765,7 @@
 						"header": [],
 						"body": {},
 						"url": {
-							"raw": "https://ridesharetripsfunctionappdev.azurewebsites.net/api/trips/{code}?code=8cU39T1pz7GL4d43l/nNoaLDGgwzZJIMP6bURZkBzRTS9r9HYmGPGA==",
+							"raw": "http://localhost:7072/api/trips/{code}?code=8cU39T1pz7GL4d43l/nNoaLDGgwzZJIMP6bURZkBzRTS9r9HYmGPGA==",
 							"protocol": "https",
 							"host": [
 								"ridesharetripsfunctionappdev",
@@ -842,7 +842,7 @@
 							"raw": "{\n\t\"driverCode\": \"AA100\",\n\t\"latitude\": -32,\n\t\"longitude\": 60\n}"
 						},
 						"url": {
-							"raw": "https://ridesharedriversfunctionappdev.azurewebsites.net/api/driverlocations?code=YxQqagYJ4sAQRimkp6X3ZuN1J6w8VOsf/D5ZWISJZNZ/YVI68m0soQ==",
+							"raw": "http://localhost:7071/api/driverlocations?code=YxQqagYJ4sAQRimkp6X3ZuN1J6w8VOsf/D5ZWISJZNZ/YVI68m0soQ==",
 							"protocol": "https",
 							"host": [
 								"ridesharedriversfunctionappdev",

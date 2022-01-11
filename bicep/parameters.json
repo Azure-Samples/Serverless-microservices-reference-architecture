@@ -1,0 +1,29 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentParameters.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "applicationName": {
+      "value": "RideshareWV"
+    },
+    "resourceTags": {
+      "value": {
+        "ProjectType": "Azure Serverless Microservices",
+        "Purpose": "Sample"
+      }
+    },
+    "sqlAdminLogin": {
+      "value": ""
+    },
+    "sqlAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": ""
+        },
+        "secretName": "sqlAdminPassword"
+      }
+    },
+    "staticWebAppLocation": {
+      "value": "westus2"
+    }
+  }
+}

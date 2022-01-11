@@ -1,5 +1,5 @@
 /Docs/*
-#.vscode/
+.vscode/
 
 # Exclude temporary files:
 *.tmp
@@ -17,3 +17,9 @@
 
 # Build temp package lock
 pipelines/package-lock.json
+
+bicep/parameters.local.json
+local.settings.json
+test/settings.example.dan.js
+
+__azurite__

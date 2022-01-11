@@ -1,7 +1,8 @@
-<template></template>
-
+<template>
+  <div></div>
+</template>
 <script>
-import * as signalR from "@aspnet/signalr";
+import * as signalR from "@microsoft/signalr";
 import { createNamespacedHelpers } from "vuex";
 import { getPassenger } from "@/api/passengers";
 const { mapGetters: commonGetters } = createNamespacedHelpers("common");
@@ -37,7 +38,7 @@ export default {
       "getSignalRInfo"
     ]),
     async getSignalRInformation() {
-      let passengerInfo = await getPassenger(this.user.idToken.oid);
+      let passengerInfo = await getPassenger(this.user.idTokenClaims.oid);
       if (passengerInfo && passengerInfo.data) {
         // Pass in the current user email so messages can be sent to just the user.
         let rawResponse = await this.getSignalRInfo(passengerInfo.data.email); // {url: '', status: 201};//await this.getSignalRInfo();
@@ -47,9 +48,6 @@ export default {
           return signalRInfo;
         } else {
           console.log(`getSignalRInfo Response status: ${rawResponse.status}`);
-          throw `Could not obtain SignalR info. Response was ${
-            rawResponse.status
-          }`;
           return null;
         }
       }

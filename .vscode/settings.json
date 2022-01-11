@@ -2,5 +2,12 @@
   "azureFunctions.projectRuntime": "~1",
   "azureFunctions.projectLanguage": "JavaScript",
   "appService.zipIgnorePattern": ["node_modules{,/**}"],
-  "appService.deploySubpath": "serverless-microservices-web"
+  "appService.deploySubpath": "serverless-microservices-web",
+  "WhiteSource Advise.Diff.BaseBranch": "main",
+  "markdownlint.config": {
+    "MD028": false,
+    "MD025": {
+      "front_matter_title": ""
+    }
+  }
 }

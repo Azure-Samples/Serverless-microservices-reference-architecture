@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.WebJobs;
+using Microsoft.Azure.WebJobs.Extensions.DurableTask;
 using Microsoft.Azure.WebJobs.Extensions.Http;
 using Microsoft.Extensions.Logging;
 using Newtonsoft.Json;
@@ -16,7 +17,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
     {
         [FunctionName("T_StartTripManagerViaQueueTrigger")]
         public static async Task StartTripManagerViaQueueTrigger(
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             [QueueTrigger("%TripManagersQueue%", Connection = "AzureWebJobsStorage")] TripItem trip,
             ILogger log)
         {
@@ -35,7 +36,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_StartTripManager")]
         public static async Task<IActionResult> StartTripManager([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmanagers")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             ILogger log)
         {
             try
@@ -64,7 +65,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_GetTripManager")]
         public static async Task<IActionResult> GetTripManager([HttpTrigger(AuthorizationLevel.Anonymous, "get", Route = "tripmanagers/{code}")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             string code,
             ILogger log)
         {
@@ -86,7 +87,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_TerminateTripManager")]
         public static async Task<IActionResult> TerminateTripManager([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmanagers/{code}/terminate")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             string code,
             ILogger log)
         {
@@ -105,7 +106,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_AcknowledgeTrip")]
         public static async Task<IActionResult> AcknowledgeTrip([HttpTrigger(AuthorizationLevel.Anonymous, "post", Route = "tripmanagers/{code}/acknowledge/drivers/{drivercode}")] HttpRequest req,
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             string code,
             string drivercode,
             ILogger log)
@@ -125,7 +126,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
 
         [FunctionName("T_AcknowledgeTripViaQueueTrigger")]
         public static async Task AcknowledgeTripViaQueueTrigger(
-            [OrchestrationClient] DurableOrchestrationClient context,
+            [DurableClient] IDurableClient context,
             [QueueTrigger("%TripDriversQueue%", Connection = "AzureWebJobsStorage")] TripDriver info,
             ILogger log)
         {
@@ -143,7 +144,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
         //TODO: Implement Get Trip Manager Instances, Restart Trip Manager Instances and Terminate Trip Manager Instances if Persist to table storage if persist instances is activated
 
         /** PRIVATE **/
-        private static async Task StartInstance(DurableOrchestrationClient context, TripItem trip, string instanceId, ILogger log)
+        private static async Task StartInstance(IDurableClient context, TripItem trip, string instanceId, ILogger log)
         {
             try
             {
@@ -165,7 +166,7 @@ namespace ServerlessMicroservices.FunctionApp.Orchestrators
             }
         }
 
-        private static async Task TeminateInstance(DurableOrchestrationClient context, string instanceId, ILogger log)
+        private static async Task TeminateInstance(IDurableClient context, string instanceId, ILogger log)
         {
             try
             {

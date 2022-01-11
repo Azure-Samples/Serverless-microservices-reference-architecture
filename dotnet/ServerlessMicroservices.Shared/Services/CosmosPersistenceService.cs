@@ -1,6 +1,5 @@
-﻿using Microsoft.Azure.Documents;
-using Microsoft.Azure.Documents.Client;
-using Microsoft.Azure.Documents.Linq;
+﻿using Microsoft.Azure.Cosmos;
+using Microsoft.Azure.Cosmos.Linq;
 using ServerlessMicroservices.Models;
 using ServerlessMicroservices.Shared.Helpers;
 using System;
@@ -22,11 +21,13 @@ namespace ServerlessMicroservices.Shared.Services
         // Doc DB Collections
         private string _docDbDigitalMainCollectionName;
 
-        private static DocumentClient _docDbSingletonClient;
+        private static CosmosClient _docDbSingletonClient;
+
 
         private ISettingService _settingService;
         private ILoggerService _loggerService;
         private IChangeNotifierService _changeNotifierService;
+        private readonly Lazy<Task<Container>> _cosmosContainer;
 
         public CosmosPersistenceService(ISettingService setting, ILoggerService logger, IChangeNotifierService changeService)
         {
@@ -39,13 +40,21 @@ namespace ServerlessMicroservices.Shared.Services
 
             _docDbDatabaseName = _settingService.GetDocDbRideShareDatabaseName();
             _docDbDigitalMainCollectionName = _settingService.GetDocDbMainCollectionName();
+
+            _cosmosContainer = new Lazy<Task<Container>>(async () =>
+            {
+                var cosmos = new CosmosClient(setting.GetDocDbEndpointUri(), setting.GetDocDbApiKey());
+                var db = cosmos.GetDatabase(setting.GetDocDbRideShareDatabaseName());
+                //TODO: Hardcoded partition key field here
+                return await db.CreateContainerIfNotExistsAsync(setting.GetDocDbMainCollectionName(), "/code", throughput: setting.GetDocDbThroughput());
+            });
         }
 
         // Drivers
         public async Task<DriverItem> RetrieveDriver(string code)
         {
             var error = "";
-            double cost = 0;
+            //double cost = 0;
 
             try
             {
@@ -57,10 +66,8 @@ namespace ServerlessMicroservices.Shared.Services
 
                 // NOTE: ReadDocumentAsync is really fast in Cosmos as it bypasses all indexing...but it requires the doc ID
                 var docId = $"{code.ToUpper()}-{ItemCollectionTypes.Driver}";
-                RequestOptions options = new RequestOptions() { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<DriverItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId), options);
-                cost = request.Result.RequestCharge;
-                return request.Result;
+
+                return await (await GetCosmosContainer()).ReadItemAsync<DriverItem>(docId, new PartitionKey(code.ToUpper()));
             }
             catch (Exception ex)
             {
@@ -72,7 +79,7 @@ namespace ServerlessMicroservices.Shared.Services
                 else
                 {
                     error = ex.Message;
-                    throw ex;
+                    throw new Exception(ex.Message, ex);
                 }
             }
             finally
@@ -84,37 +91,34 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<List<DriverItem>> RetrieveDrivers(int max = Constants.MAX_RETRIEVE_DOCS)
         {
             var error = "";
-            double cost = 0;
+            //double cost = 0;
 
             try
             {
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
-
-                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
-                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                using (var query = (await GetCosmosContainer()).GetItemLinqQueryable<DriverItem>(requestOptions: new QueryRequestOptions { MaxItemCount = max })
                                 .Where(e => e.CollectionType == ItemCollectionTypes.Driver)
                                 .OrderByDescending(e => e.UpsertDate)
                                 .Take(max)
-                                .AsDocumentQuery();
-
-                List<DriverItem> allDocuments = new List<DriverItem>();
-                while (query.HasMoreResults)
+                                .ToFeedIterator())
                 {
-                    var queryResult = await query.ExecuteNextAsync<DriverItem>();
-                    cost += queryResult.RequestCharge;
-                    allDocuments.AddRange(queryResult.ToList());
-                }
+                    List<DriverItem> allDocuments = new List<DriverItem>();
+                    while (query.HasMoreResults)
+                    {
+                        var queryResult = await query.ReadNextAsync();
+                        //cost += queryResult.RequestCharge;
+                        allDocuments.AddRange(queryResult.ToList());
+                    }
 
-                return allDocuments;
+                    return allDocuments;
+                }
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -138,30 +142,27 @@ namespace ServerlessMicroservices.Shared.Services
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
-
-                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
-                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                using (var query = (await GetCosmosContainer()).GetItemLinqQueryable<DriverItem>(requestOptions: new QueryRequestOptions { MaxItemCount = max })
                                 .Where(e => e.CollectionType == ItemCollectionTypes.Driver && e.IsAcceptingRides == true)
                                 .OrderByDescending(e => e.UpsertDate)
                                 .Take(max)
-                                .AsDocumentQuery();
-
-                List<DriverItem> allDocuments = new List<DriverItem>();
-                while (query.HasMoreResults)
+                                .ToFeedIterator())
                 {
-                    var queryResult = await query.ExecuteNextAsync<DriverItem>();
-                    cost += queryResult.RequestCharge;
-                    allDocuments.AddRange(queryResult.ToList());
-                }
+                    List<DriverItem> allDocuments = new List<DriverItem>();
+                    while (query.HasMoreResults)
+                    {
+                        var queryResult = await query.ReadNextAsync();
+                        //cost += queryResult.RequestCharge;
+                        allDocuments.AddRange(queryResult.ToList());
+                    }
 
-                return allDocuments;
+                    return allDocuments;
+                }
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -173,25 +174,21 @@ namespace ServerlessMicroservices.Shared.Services
         {
             var error = "";
             // NOTE: Unfortunately I could not find a way to get the cost when performing `count` against Cosmos
-            double cost = 0;
+            //double cost = 0;
 
             try
             {
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true };
-
-                return await(await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
-                            UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
-                            .Where(e => e.CollectionType == ItemCollectionTypes.Driver)
-                            .CountAsync();
+                return await (await GetCosmosContainer()).GetItemLinqQueryable<DriverItem>()
+                                .Where(e => e.CollectionType == ItemCollectionTypes.Driver)
+                                .CountAsync();
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -202,7 +199,7 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<DriverItem> UpsertDriver(DriverItem driver, bool isIgnoreChangeFeed = false)
         {
             var error = "";
-            double cost = 0;
+            //double cost = 0;
 
             try
             {
@@ -221,31 +218,29 @@ namespace ServerlessMicroservices.Shared.Services
                     driver.Id = $"{driver.Code}-{driver.CollectionType}";
                 }
 
-                var response = await(await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), driver);
-                cost = response.RequestCharge;
+                var response = await (await GetCosmosContainer()).UpsertItemAsync(driver, new PartitionKey(driver.Code.ToUpper()));
 
                 if (!isIgnoreChangeFeed)
                 {
                     await _changeNotifierService.DriverChanged(driver);
                 }
+
+                return response.Resource;
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
                 _loggerService.Log($"{LOG_TAG} - UpsertDriver - Error: {error}");
             }
-
-            return driver;
         }
 
         public async Task<string> UpsertDriverLocation(DriverLocationItem location, bool isIgnoreChangeFeed = false)
         {
             var error = "";
-            double cost = 0;
             string resourceId = "";
 
             try
@@ -264,8 +259,8 @@ namespace ServerlessMicroservices.Shared.Services
                 if (location.Id == "")
                     location.Id = $"{location.DriverCode}-{location.CollectionType}-{Guid.NewGuid().ToString()}";
 
-                var response = await (await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), location);
-                cost = response.RequestCharge;
+                //TODO: DriverLocationItem has no Code property, which is the PK 😬
+                var response = await (await GetCosmosContainer()).UpsertItemAsync(location);
 
                 // Also update the driver latest location
                 driver.Latitude = location.Latitude;
@@ -280,50 +275,48 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
                 _loggerService.Log($"{LOG_TAG} - UpsertDriverLocation - Error: {error}");
             }
 
+            //TODO: Always returns empty string...
             return resourceId;
         }
 
         public async Task<List<DriverLocationItem>> RetrieveDriverLocations(string code, int max = Constants.MAX_RETRIEVE_DOCS)
         {
             var error = "";
-            double cost = 0;
+            //double cost = 0;
 
             try
             {
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
-
-                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<DriverItem>(
-                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                using (var query = (await GetCosmosContainer()).GetItemLinqQueryable<DriverLocationItem>(requestOptions: new QueryRequestOptions { MaxItemCount = max })
                                 .Where(e => e.CollectionType == ItemCollectionTypes.DriverLocation)
                                 .OrderByDescending(e => e.UpsertDate)
                                 .Take(max)
-                                .AsDocumentQuery();
-
-                List<DriverLocationItem> allDocuments = new List<DriverLocationItem>();
-                while (query.HasMoreResults)
+                                .ToFeedIterator())
                 {
-                    var queryResult = await query.ExecuteNextAsync<DriverLocationItem>();
-                    cost += queryResult.RequestCharge;
-                    allDocuments.AddRange(queryResult.ToList());
-                }
+                    List<DriverLocationItem> allDocuments = new List<DriverLocationItem>();
+                    while (query.HasMoreResults)
+                    {
+                        var queryResult = await query.ReadNextAsync();
+                        //cost += queryResult.RequestCharge;
+                        allDocuments.AddRange(queryResult.ToList());
+                    }
 
-                return allDocuments;
+                    return allDocuments;
+                }
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -334,7 +327,6 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task DeleteDriver(string code)
         {
             var error = "";
-            double cost = 0;
 
             try
             {
@@ -345,17 +337,14 @@ namespace ServerlessMicroservices.Shared.Services
                 if (driver == null)
                     throw new Exception($"Unable to locate a driver with code {code}");
 
-                var link = (string)driver.Self;
-                RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                var response = await(await GetDocDBClient(_settingService)).DeleteDocumentAsync(link, requestOptions);
-                cost += response.RequestCharge;
+                var response = await (await GetCosmosContainer()).DeleteItemAsync<DriverItem>(driver.Id, new PartitionKey(code.ToUpper()));
 
                 //TODO: Also delete the associated driver location items
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -367,7 +356,6 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<TripItem> RetrieveTrip(string code)
         {
             var error = "";
-            double cost = 0;
 
             try
             {
@@ -379,10 +367,7 @@ namespace ServerlessMicroservices.Shared.Services
 
                 // NOTE: ReadDocumentAsync is really fast in Cosmos as it bypasses all indexing...but it requires the doc ID
                 var docId = $"{code.ToUpper()}-{ItemCollectionTypes.Trip}";
-                RequestOptions options = new RequestOptions() { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                var request = (await GetDocDBClient(_settingService)).ReadDocumentAsync<TripItem>(UriFactory.CreateDocumentUri(_docDbDatabaseName, _docDbDigitalMainCollectionName, docId), options);
-                cost = request.Result.RequestCharge;
-                return request.Result;
+                return await (await GetCosmosContainer()).ReadItemAsync<TripItem>(docId, new PartitionKey(code.ToUpper()));
             }
             catch (Exception ex)
             {
@@ -394,7 +379,7 @@ namespace ServerlessMicroservices.Shared.Services
                 else
                 {
                     error = ex.Message;
-                    throw ex;
+                    throw new Exception(ex.Message, ex);
                 }
             }
             finally
@@ -406,37 +391,33 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<List<TripItem>> RetrieveTrips(int max = Constants.MAX_RETRIEVE_DOCS)
         {
             var error = "";
-            double cost = 0;
 
             try
             {
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
-
-                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
-                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                using (var query = (await GetCosmosContainer()).GetItemLinqQueryable<TripItem>(requestOptions: new QueryRequestOptions { MaxItemCount = max })
                                 .Where(e => e.CollectionType == ItemCollectionTypes.Trip)
                                 .OrderByDescending(e => e.UpsertDate)
                                 .Take(max)
-                                .AsDocumentQuery();
-
-                List<TripItem> allDocuments = new List<TripItem>();
-                while (query.HasMoreResults)
+                                .ToFeedIterator())
                 {
-                    var queryResult = await query.ExecuteNextAsync<TripItem>();
-                    cost += queryResult.RequestCharge;
-                    allDocuments.AddRange(queryResult.ToList());
+                    List<TripItem> allDocuments = new List<TripItem>();
+                    while (query.HasMoreResults)
+                    {
+                        var queryResult = await query.ReadNextAsync();
+                        allDocuments.AddRange(queryResult.ToList());
+                    }
+
+                    return allDocuments;
                 }
 
-                return allDocuments;
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -460,30 +441,26 @@ namespace ServerlessMicroservices.Shared.Services
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = max, EnableCrossPartitionQuery = true };
-
-                var query = (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
-                                UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
+                using (var query = (await GetCosmosContainer()).GetItemLinqQueryable<TripItem>(requestOptions: new QueryRequestOptions { MaxItemCount = max })
                                 .Where(e => e.CollectionType == ItemCollectionTypes.Trip && e.EndDate == null)
                                 .OrderByDescending(e => e.UpsertDate)
                                 .Take(max)
-                                .AsDocumentQuery();
-
-                List<TripItem> allDocuments = new List<TripItem>();
-                while (query.HasMoreResults)
+                                .ToFeedIterator())
                 {
-                    var queryResult = await query.ExecuteNextAsync<TripItem>();
-                    cost += queryResult.RequestCharge;
-                    allDocuments.AddRange(queryResult.ToList());
-                }
+                    List<TripItem> allDocuments = new List<TripItem>();
+                    while (query.HasMoreResults)
+                    {
+                        var queryResult = await query.ReadNextAsync();
+                        allDocuments.AddRange(queryResult.ToList());
+                    }
 
-                return allDocuments;
+                    return allDocuments;
+                }
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -494,26 +471,20 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<int> RetrieveTripsCount()
         {
             var error = "";
-            // NOTE: Unfortunately I could not find a way to get the cost when performing `count` against Cosmos
-            double cost = 0;
 
             try
             {
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true };
-
-                return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
-                            UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
-                            .Where(e => e.CollectionType == ItemCollectionTypes.Trip)
-                            .CountAsync();
+                return await (await GetCosmosContainer()).GetItemLinqQueryable<TripItem>()
+                                .Where(e => e.CollectionType == ItemCollectionTypes.Trip)
+                                .CountAsync();
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -524,26 +495,19 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<int> RetrieveActiveTripsCount()
         {
             var error = "";
-            // NOTE: Unfortunately I could not find a way to get the cost when performing `count` against Cosmos
-            double cost = 0;
-
             try
             {
                 if (string.IsNullOrEmpty(_docDbDigitalMainCollectionName))
                     throw new Exception("No Digital Main collection defined!");
 
-                //FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                FeedOptions queryOptions = new FeedOptions { MaxItemCount = 1, EnableCrossPartitionQuery = true };
-
-                return await (await GetDocDBClient(_settingService)).CreateDocumentQuery<TripItem>(
-                            UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), queryOptions)
-                            .Where(e => e.CollectionType == ItemCollectionTypes.Trip & e.EndDate == null)
-                            .CountAsync();
+                return await (await GetCosmosContainer()).GetItemLinqQueryable<TripItem>()
+                    .Where(e => e.CollectionType == ItemCollectionTypes.Trip & e.EndDate == null)
+                    .CountAsync();
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -554,7 +518,6 @@ namespace ServerlessMicroservices.Shared.Services
         public async Task<TripItem> UpsertTrip(TripItem trip, bool isIgnoreChangeFeed = false)
         {
             var error = "";
-            double cost = 0;
 
             try
             {
@@ -576,31 +539,29 @@ namespace ServerlessMicroservices.Shared.Services
                 if (trip.EndDate != null)
                     trip.Duration = ((DateTime)trip.EndDate - trip.StartDate).TotalSeconds;
 
-                var response = await (await GetDocDBClient(_settingService)).UpsertDocumentAsync(UriFactory.CreateDocumentCollectionUri(_docDbDatabaseName, _docDbDigitalMainCollectionName), trip);
-                cost = response.RequestCharge;
+                var response = await (await GetCosmosContainer()).UpsertItemAsync(trip, new PartitionKey(trip.Code.ToUpper()));
 
                 if (!isIgnoreChangeFeed && blInsert)
                 {
                     await _changeNotifierService.TripCreated(trip, await RetrieveActiveTripsCount());
                 }
+
+                return response.Resource;
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
                 _loggerService.Log($"{LOG_TAG} - UpsertTrip - Error: {error}");
             }
-
-            return trip;
         }
 
         public async Task DeleteTrip(string code)
         {
             var error = "";
-            double cost = 0;
 
             try
             {
@@ -611,17 +572,13 @@ namespace ServerlessMicroservices.Shared.Services
                 if (trip == null)
                     throw new Exception($"Unable to locate a trip with code {code}");
 
-                var link = (string)trip.Self;
-                RequestOptions requestOptions = new RequestOptions { PartitionKey = new Microsoft.Azure.Documents.PartitionKey(code.ToUpper()) };
-                var response = await (await GetDocDBClient(_settingService)).DeleteDocumentAsync(link, requestOptions);
-                cost += response.RequestCharge;
-
+                var response = await (await GetCosmosContainer()).DeleteItemAsync<TripItem>(trip.Id, new PartitionKey(code.ToUpper()));
                 await _changeNotifierService.TripDeleted(trip);
             }
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -644,7 +601,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -673,7 +630,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -698,7 +655,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -727,7 +684,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -758,7 +715,7 @@ namespace ServerlessMicroservices.Shared.Services
             catch (Exception ex)
             {
                 error = ex.Message;
-                throw new Exception(error);
+                throw new Exception(ex.Message, ex);
             }
             finally
             {
@@ -767,58 +724,7 @@ namespace ServerlessMicroservices.Shared.Services
         }
 
         //**** PRIVATE METHODS ****//
-        private static async Task<DocumentClient> GetDocDBClient(ISettingService settingService)
-        {
-            if (_docDbSingletonClient == null)
-            {
-                var docDbName = settingService.GetDocDbRideShareDatabaseName();
-                var docDbEndpointUrl = settingService.GetDocDbEndpointUri();
-                var docDbApiKey = settingService.GetDocDbApiKey();
 
-                // TODO: DocumentClient using direct TCP protocol does not work in Linux!!! 
-                //_docDbSingletonClient = new DocumentClient(new Uri(docDbEndpointUrl), docDbApiKey, new ConnectionPolicy()
-                //{
-                //    ConnectionMode = ConnectionMode.Direct,
-                //    ConnectionProtocol = Protocol.Tcp,
-                //    MaxConnectionLimit = 200
-                //});
-                _docDbSingletonClient = new DocumentClient(new Uri(docDbEndpointUrl), docDbApiKey);
-
-
-                // Do each collection seperately as we may need to set different create options for each
-                {
-                    DocumentCollection collectionDefinition = new DocumentCollection();
-                    collectionDefinition.Id = settingService.GetDocDbMainCollectionName();
-                    //collectionDefinition.PartitionKey.Paths.Add("/something");
-                    collectionDefinition.DefaultTimeToLive = -1;
-
-                    // TIP: If queries are known upfront, index just the properties you need
-                    // Can be a mute point since we are using a fixed size and no partition!!!!
-                    // But the below commented-out code shows hw this can be accomplished if we change to a partition-based collection
-                    collectionDefinition.IndexingPolicy.Automatic = true;
-                    collectionDefinition.IndexingPolicy.IndexingMode = IndexingMode.Consistent;
-                    collectionDefinition.IndexingPolicy.IncludedPaths.Clear();
-
-                    //IncludedPath path = new IncludedPath();
-                    //path.Path = "/upsertDate/?";
-                    //path.Indexes.Add(new RangeIndex(DataType.String) { Precision = -1 });
-                    //collectionDefinition.IndexingPolicy.IncludedPaths.Add(path);
-
-                    //path = new IncludedPath();
-                    //path.Path = "/collectionType/?";
-                    //path.Indexes.Add(new RangeIndex(DataType.Number) { Precision = -1 });
-                    //collectionDefinition.IndexingPolicy.IncludedPaths.Add(path);
-
-                    //collectionDefinition.IndexingPolicy.ExcludedPaths.Clear();
-                    //collectionDefinition.IndexingPolicy.ExcludedPaths.Add(new ExcludedPath { Path = "/*" });
-
-                    DocumentCollection ttlEnabledCollection = await _docDbSingletonClient.CreateDocumentCollectionIfNotExistsAsync(
-                    UriFactory.CreateDatabaseUri(docDbName), collectionDefinition, new RequestOptions { OfferThroughput = settingService.GetDocDbThroughput() });
-                }
-
-            }
-
-            return _docDbSingletonClient;
-        }
+        private Task<Container> GetCosmosContainer() => _cosmosContainer.Value;
     }
 }

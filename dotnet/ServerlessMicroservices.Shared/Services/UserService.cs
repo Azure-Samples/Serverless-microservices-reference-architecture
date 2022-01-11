@@ -4,20 +4,21 @@ using System.Net.Http;
 using System.Net.Http.Headers;
 using System.Text;
 using System.Threading.Tasks;
-using Microsoft.IdentityModel.Clients.ActiveDirectory;
+using Microsoft.Identity.Client;
 using Newtonsoft.Json;
 
 namespace ServerlessMicroservices.Shared.Services
 {
     public class UserService : IUserService
     {
-        const string GraphBaseUrl = "https://graph.windows.net/";
-        const string GraphVersionQueryString = "?" + GraphVersion;
-        const string GraphVersion = "api-version=1.6";
+        const string GraphBaseUrl = "https://graph.microsoft.com/v1.0";
+        const string GraphVersionQueryString = "?";
 
-        private readonly AuthenticationContext _authContext;
-        private readonly ClientCredential _clientCreds;
-        private readonly string _graphUrl;
+        private string[] _scopes = new[] { "https://graph.microsoft.com/.default" };
+        private IConfidentialClientApplication _app;
+        private readonly string _authority = "https://login.microsoftonline.com/";
+
+
 
         public UserService(ISettingService settingService)
             : this(settingService.GetGraphTenantId(), settingService.GetGraphClientId(), settingService.GetGraphClientSecret())
@@ -26,22 +27,26 @@ namespace ServerlessMicroservices.Shared.Services
 
         public UserService(string tenantId, string clientId, string clientSecret)
         {
-            _graphUrl = GraphBaseUrl + tenantId;
+            if (string.IsNullOrEmpty(tenantId)) throw new ArgumentNullException(nameof(tenantId), "GraphTenantId environment variable must be set before instantiating UserService.");
 
-            var authority = "https://login.microsoftonline.com/" + tenantId;
-            _authContext = new AuthenticationContext(authority);
-            _clientCreds = new ClientCredential(clientId, clientSecret);
+            _authority = _authority + tenantId;
+
+            _app = ConfidentialClientApplicationBuilder.Create(clientId)
+                                          .WithClientSecret(clientSecret)
+                                          .WithAuthority(new Uri(_authority))
+                                          .Build();
         }
 
         async Task<string> GetAccessToken()
         {
-            var authResult = await _authContext.AcquireTokenAsync(GraphBaseUrl, _clientCreds);
-            return authResult.AccessToken;
+            var result = await _app.AcquireTokenForClient(_scopes)
+                  .ExecuteAsync();
+            return result.AccessToken;
         }
 
         public async Task<(User, string error)> CreateUser(CreateUser newUser)
         {
-            var url = _graphUrl + "/users" + GraphVersionQueryString;
+            var url = GraphBaseUrl + "/users";
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessToken());
@@ -68,7 +73,7 @@ namespace ServerlessMicroservices.Shared.Services
 
         public async Task<(IEnumerable<User>, string error)> GetUsers()
         {
-            var url = _graphUrl + "/users" + GraphVersionQueryString;
+            var url = GraphBaseUrl + "/users";
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessToken());
@@ -96,7 +101,7 @@ namespace ServerlessMicroservices.Shared.Services
         {
             if (String.IsNullOrWhiteSpace(userId)) throw new ArgumentNullException(nameof(userId));
 
-            var url = _graphUrl + "/users/" + userId + GraphVersionQueryString;
+            var url = GraphBaseUrl + "/users/" + userId;
 
             var client = new HttpClient();
             client.DefaultRequestHeaders.Authorization = new AuthenticationHeaderValue("Bearer", await GetAccessToken());

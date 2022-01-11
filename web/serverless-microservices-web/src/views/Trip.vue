@@ -314,8 +314,9 @@ export default {
           );
         })
         .catch(err => {
+          console.error(err)
           this.$toast.error(
-            err.response ? err.response : err.message ? err.message : err,
+            err.response ? err.response.data : err.message ? err.message : err,
             "Error",
             this.notificationSystem.options.error
           );
@@ -323,37 +324,34 @@ export default {
     },
     requestDriver() {
       if (this.user) {
-        getPassenger(this.user.idToken.oid)
-          .then(response => {
-            this.passengerInfo = response.data;
+        if (this.user.idTokenClaims === undefined || this.user.idTokenClaims.emails === undefined || this.user.idTokenClaims.emails.length == 0) {
+          console.error("this.user.idTokenClaims.emails is not present or does not contain any emails. Please check user claims and permissions.")
+          this.$toast.error(
+            "User's email not found",
+            "Error",
+            this.notificationSystem.options.error
+          );
+        }
 
-            var trip = {
-              passenger: {
-                code: this.passengerInfo.email,
-                firstName: this.passengerInfo.givenName,
-                surname: this.passengerInfo.surname,
-                //"mobileNumber": this.passengerInfo.mobileNumber,
-                email: this.passengerInfo.givenName
-              },
-              source: {
-                latitude: this.selectedPickUpLocation.latitude,
-                longitude: this.selectedPickUpLocation.longitude
-              },
-              destination: {
-                latitude: this.selectedDestinationLocation.latitude,
-                longitude: this.selectedDestinationLocation.longitude
-              },
-              type: 1 //0 = Normal, 1 = Demo
-            };
-            this.createTripRequest(trip);
-          })
-          .catch(err => {
-            this.$toast.error(
-              err.response,
-              "Error",
-              this.notificationSystem.options.error
-            );
-          });
+        var trip = {
+          passenger: {
+            code: this.user.idTokenClaims.emails[0],
+            firstName: this.user.idTokenClaims.given_name,
+            surname: this.user.idTokenClaims.family_name,
+            //"mobileNumber": this.passengerInfo.mobileNumber,
+            email: this.user.idTokenClaims.emails[0]
+          },
+          source: {
+            latitude: this.selectedPickUpLocation.latitude,
+            longitude: this.selectedPickUpLocation.longitude
+          },
+          destination: {
+            latitude: this.selectedDestinationLocation.latitude,
+            longitude: this.selectedDestinationLocation.longitude
+          },
+          type: 1 //0 = Normal, 1 = Demo
+        };
+        this.createTripRequest(trip);
       } else {
         this.$toast.error(
           "You must be logged in to start a new trip!",
