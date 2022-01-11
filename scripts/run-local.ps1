@@ -6,37 +6,32 @@ $ErrorActionPreference = 'Stop'
 
 try {
 
-    # Start the storage emulator
-    & "C:\Program Files (x86)\Microsoft SDKs\Azure\Storage Emulator\AzureStorageEmulator.exe" "start"
-
     # cd /dotnet
     Push-Location ( Join-Path $PSScriptRoot ../dotnet )
 
-    # Build and host SPA at http://127.0.0.1:4280/
+    Write-Host 'Install and start the storage emulator...'
+    #   If this fails with error EADDRINUSE it is because Visual Studio has already started azurite (which is fine)
+    Start-Process pwsh { -c md __azurite__ -Force && npm install -g azurite && azurite --silent -l __azurite__ }
+
+    Write-Host 'Build and host SPA...'
     Start-Process pwsh { -c cd ../web/serverless-microservices-web && npm install && copy ../../test/settings.example.js ./public/js/settings.js && npm run serve -- --port 4280 }
 
-    # Build and start Trip Archiver Nodejs Function
+    Write-Host 'Build and start Trip Archiver Nodejs Function...'
     Start-Process pwsh { -c cd ../nodejs/serverless-microservices-functionapp-triparchiver && npm install && npm run pack && func start --javascript -p 7075 --cors http://localhost:4280 }
 
-    # Start each Function in a new console. Give each one a head start to avoid collisions building shared DLLs
-    # Build and start Drivers Function
+    Write-Host 'Build and start Drivers Function...'
     Start-Process pwsh { -c cd ServerlessMicroservices.FunctionApp.Drivers && func start --csharp -p 7071 --cors http://localhost:4280 }
     
-    Start-Sleep -Seconds 2
-    # Build and start Trips Function
+    Write-Host 'Build and start Trips Function...'
     Start-Process pwsh { -c cd ServerlessMicroservices.FunctionApp.Trips && func start --csharp -p 7072 --cors http://localhost:4280 }
     
-    Start-Sleep -Seconds 2
-    # Build and start Passengers Function
+    Write-Host 'Build and start Passengers Function...'
     Start-Process pwsh { -c cd ServerlessMicroservices.FunctionApp.Passengers && func start --csharp -p 7073 --cors http://localhost:4280 }
     
-    Start-Sleep -Seconds 2
-    # Build and start Orchestrators Function
+    Write-Host 'Build and start Orchestrators Function...'
     Start-Process pwsh { -c cd ServerlessMicroservices.FunctionApp.Orchestrators && func start --csharp -p 7074 --cors http://localhost:4280 }
 
-    Start-Sleep -Seconds 90
-    # Open the browser
-    start 'http://localhost:4280/'
+    Write-Host 'When all builds have finished, open browser at http://localhost:4280/'
 
 }
 finally {

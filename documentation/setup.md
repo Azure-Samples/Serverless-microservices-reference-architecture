@@ -72,11 +72,12 @@ In this document:
 
 In your local development environment you will need latest versions of:
 
-* Visual Studio or VSCode
+* Visual Studio or VS Code
 * git
 * `func` CLI
 * `az` CLI
 * Powershell
+* Nodejs & npm
 
 Deploy Azure resources:
 
@@ -91,14 +92,21 @@ Create local settings:
 
 ``` powershell
 cd dotnet
+
+# create copies of the Functions settings example files
 copy ServerlessMicroservices.FunctionApp.Drivers/local.settings.example.json ServerlessMicroservices.FunctionApp.Drivers/local.settings.json
 copy ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.example.json ServerlessMicroservices.FunctionApp.Orchestrators/local.settings.json
 copy ServerlessMicroservices.FunctionApp.Passengers/local.settings.example.json ServerlessMicroservices.FunctionApp.Passengers/local.settings.json
 copy ServerlessMicroservices.FunctionApp.Trips/local.settings.example.json ServerlessMicroservices.FunctionApp.Trips/local.settings.json
 
+# Now update local settings with your environment's values
+
 cd ../nodejs
+
+# create a copy of the Nodejs settings example file
 copy serverless-microservices-functionapp-triparchiver/local.settings.example.json serverless-microservices-functionapp-triparchiver/local.settings.json
-# Update local settings with your environment's values
+
+# Now update local settings with your environment's values
 ```
 
 Build and run local:

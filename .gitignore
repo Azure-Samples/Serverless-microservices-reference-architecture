@@ -21,3 +21,5 @@ pipelines/package-lock.json
 bicep/parameters.local.json
 local.settings.json
 test/settings.example.dan.js
+
+__azurite__
