@@ -83,7 +83,9 @@ Deploy Azure resources:
 
 ```powershell
 copy bicep/parameters.json bicep/parameters.local.json
+
 # Change params in @bicep/parameters.local.json to suit
+
 az group create -n serverless-microservices-dev -l westus2
 az deployment group create -g serverless-microservices-dev -f bicep/main.bicep -p @bicep/parameters.local.json
 ```
@@ -113,13 +115,13 @@ Build and run local:
 
 ```powershell
 cd scripts
+
 ./run-local.ps1
 ```
 
-Integration test:
+Run integration test:
 
 ```powershell
-cd scripts
 ./test-local.ps1
 ```
 
