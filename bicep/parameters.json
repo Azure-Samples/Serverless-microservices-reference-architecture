@@ -12,12 +12,12 @@
       }
     },
     "sqlAdminLogin": {
-      "value": "wviriya"
+      "value": ""
     },
     "sqlAdminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/10fe34c7-c442-46d8-b43f-2c92651e6545/resourceGroups/common-rg/providers/Microsoft.KeyVault/vaults/wviriya-kv"
+          "id": ""
         },
         "secretName": "sqlAdminPassword"
       }

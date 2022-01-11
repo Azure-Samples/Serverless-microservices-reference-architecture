@@ -90,9 +90,10 @@ namespace ServerlessMicroservices.Shared.Services
             {
                 var handler = new JwtSecurityTokenHandler();
                 handler.InboundClaimTypeMap.Clear();
-
+#if DEBUG
                 // Debugging purposes only, set this to false for production
                 Microsoft.IdentityModel.Logging.IdentityModelEventSource.ShowPII = true;
+#endif
 
                 try
                 {

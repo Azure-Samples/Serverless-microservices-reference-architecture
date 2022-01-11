@@ -1,10 +1,10 @@
 // Auth
-window.authClientId = 'a298b04d-dbe2-4fc8-8191-b64c1fd287e2';
-window.authAuthority = 'https://wviriyab2c.b2clogin.com/wviriyab2c.onmicrosoft.com/B2C_1_default-signin';
-window.knownAuthority = 'wviriyab2c.b2clogin.com';
+window.authClientId = '';
+window.authAuthority = 'https://{tenant_name}.b2clogin.com/{tenant_name}.onmicrosoft.com/{policy_name}';
+window.knownAuthority = '{tenant_name}.b2clogin.com';
 window.redirectUri = 'http://localhost:4280';
-window.loginScopes = ['https://wviriyab2c.onmicrosoft.com/509b5353-3a44-4d09-85ed-64bf2e30ccb8/rideshare'];
-window.apiScopes = ['https://wviriyab2c.onmicrosoft.com/509b5353-3a44-4d09-85ed-64bf2e30ccb8/rideshare'];
+window.loginScopes = ['openid', '{api_scope}'];  // e.g. 'https://rideshare.onmicrosoft.com/serverless-spa-api/Rides.ReadWrite'
+window.apiScopes = ['{api_scopes}'];  // e.g. 'https://rideshare.onmicrosoft.com/serverless-spa-api/Rides.ReadWrite'
 window.authEnabled = true;
 
 

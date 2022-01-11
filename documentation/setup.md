@@ -170,6 +170,8 @@ There are 4 ways to provision the required resources:
 
 ### Manual via the Portal
 
+> ⚠️ Manual provisioning docs are obsolete will be deprecated soon. Please use [Bicep provisioning](#deploy-from-bicep) instead.
+
 Log in to the [Azure portal](https://portal.azure.com).
 
 #### Create the Resource Group
@@ -640,6 +642,8 @@ You must create a policy for the sign-up/in user workflow. Without this, users w
 Once completed, please jump to the [setup](#setup) section to continue.
 
 ### Cake Provision
+
+> ⚠️ Cake provisioning support and docs will be deprecated soon. Please use [Bicep provisioning](#deploy-from-bicep) instead.
 
 The `Cake` script responsible to `deploy` and `provision` is included in the `dotnet` source directory. In order to run the Cake Script locally and deploy to your Azure Subscription, there are some pre-requisites:
 
