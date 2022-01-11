@@ -22,7 +22,7 @@ description: "This architecture walks you through the process involved in develo
 [![Node.js CI](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/nodejs.yml/badge.svg)](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/nodejs.yml) 
 [![spa build](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/spa.yml/badge.svg)](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/actions/workflows/spa.yml)
 
-> This sample has been upgraded to Azure Functions v3. An upgrade to Azure Functions v4 is in progress. See [PR #43](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/pull/43) for details.
+> This sample is being upgraded to Azure Functions v4 / dotnet 6. See [PR #43](https://github.com/Azure-Samples/Serverless-microservices-reference-architecture/pull/43) for details.
 
 ## The reference architecture
 
