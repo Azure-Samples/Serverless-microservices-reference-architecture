@@ -43,6 +43,7 @@ module cosmos 'modules/cosmosdb.bicep' = {
     location: location
     databaseName: applicationName
     resourceTags: resourceTags
+    keyVaultName: keyVaultName
   }
 }
 
