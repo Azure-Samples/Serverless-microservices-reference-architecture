@@ -18,7 +18,9 @@ param sku string = 'Developer'
 @minValue(1)
 param skuCount int = 1
 
-var location = resourceGroup().location
+@description('The location of this API Management service')
+param location string
+
 var publisherEmail = 'email@contoso.com'
 var publisherName = 'Company Name'
 

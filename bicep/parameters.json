@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "applicationName": {
-      "value": "RideshareWV"
+      "value": "velidarideshare"
     },
     "resourceTags": {
       "value": {
@@ -12,15 +12,7 @@
       }
     },
     "sqlAdminLogin": {
-      "value": "wviriya"
-    },
-    "sqlAdminPassword": {
-      "reference": {
-        "keyVault": {
-          "id": "/subscriptions/10fe34c7-c442-46d8-b43f-2c92651e6545/resourceGroups/common-rg/providers/Microsoft.KeyVault/vaults/wviriya-kv"
-        },
-        "secretName": "sqlAdminPassword"
-      }
+      "value": "wvelida"
     },
     "staticWebAppLocation": {
       "value": "westus2"

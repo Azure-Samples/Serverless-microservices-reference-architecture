@@ -21,6 +21,7 @@ var containerNames = [
 
 var cosmosDbConnectionStringSecretName = 'CosmosDbConnectionString'
 var cosmosDbPrimaryKeySecretName = 'CosmosDbPrimaryKey'
+var cosmosDbEndpointSecretName = 'CosmosDbEndpoint'
 
 resource cosmosAccount 'Microsoft.DocumentDB/databaseAccounts@2021-06-15' = {
   name: toLower(accountName)
@@ -62,13 +63,13 @@ resource cosmosDB 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases@2021-06-15
   }
 }
 
-resource containers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-06-15' = [for cotainerName in containerNames :{
-  name: cotainerName
+resource containers 'Microsoft.DocumentDB/databaseAccounts/sqlDatabases/containers@2021-06-15' = [for containerName in containerNames :{
+  name: containerName
   parent: cosmosDB
   tags: resourceTags
   properties: {
     resource: {
-      id: cotainerName
+      id: containerName
       partitionKey: {
         paths: [
           '/code'
@@ -98,4 +99,15 @@ resource cosmosConnectionSecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-pr
   }
 }
 
+resource cosmosEndpointSecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  name: cosmosDbEndpointSecretName
+  parent: keyVault
+  properties: {
+    value: cosmosAccount.properties.documentEndpoint
+  }
+}
+
 output cosmosDBAccountName string = cosmosAccount.name
+output cosmosDBDatabaseName string = cosmosDB.name
+output cosmosDBRideMainCollectionName string = containerNames[0]
+output cosmosDBThroughput int = throughput

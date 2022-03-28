@@ -1,10 +1,15 @@
 param sqlServerName string
-param sqlDatabaeName string
+param sqlDatabaseName string
 param location string
 param administratorLogin string
 @secure()
 param administratorPassword string
 param resourceTags object
+
+@description('Name of the Key Vault to store secrets in.')
+param keyVaultName string
+
+var sqlDbConnectionStringSecretName = 'SqlConnectionString'
 
 resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   name: sqlServerName
@@ -18,9 +23,9 @@ resource sqlServer 'Microsoft.Sql/servers@2021-05-01-preview' = {
   dependsOn: []
 }
 
-resource servers_rideshare_server_name_databases_Rideshare_name 'Microsoft.Sql/servers/databases@2021-05-01-preview' = {
+resource sqlDatabase 'Microsoft.Sql/servers/databases@2021-05-01-preview' = {
   parent: sqlServer
-  name: sqlDatabaeName
+  name: sqlDatabaseName
   location: location
   tags: resourceTags
   sku: {
@@ -32,5 +37,17 @@ resource servers_rideshare_server_name_databases_Rideshare_name 'Microsoft.Sql/s
     maxSizeBytes: 268435456000
     catalogCollation: 'SQL_Latin1_General_CP1_CI_AS'
     zoneRedundant: false
+  }
+}
+
+resource keyVault 'Microsoft.KeyVault/vaults@2021-11-01-preview' existing = {
+  name: keyVaultName
+}
+
+resource sqlDbConnectionStringSecret 'Microsoft.KeyVault/vaults/secrets@2021-11-01-preview' = {
+  name: sqlDbConnectionStringSecretName
+  parent: keyVault
+  properties: {
+    value: 'Server=tcp:${sqlServer.name}${environment().suffixes.sqlServerHostname},1433;Initial Catalog=db${sqlDatabase.name};Persist Security Info=False;User ID=${administratorLogin};Password=${administratorPassword};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;'
   }
 }

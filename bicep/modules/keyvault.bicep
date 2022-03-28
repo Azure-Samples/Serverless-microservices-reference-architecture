@@ -2,6 +2,7 @@ param keyVaultName string
 param functionAppPrefix string
 param functionApps array
 param resourceTags object
+param location string
 
 resource functions 'Microsoft.Web/sites@2021-01-15' existing = [for functionApp in functionApps :{
   name: '${functionAppPrefix}${functionApp}'
@@ -9,12 +10,15 @@ resource functions 'Microsoft.Web/sites@2021-01-15' existing = [for functionApp 
 
 resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   name: keyVaultName
-  location: resourceGroup().location
+  location: location
   properties: {
     sku: {
       name: 'standard'
       family: 'A'
     }
+    enableSoftDelete: true
+    softDeleteRetentionInDays: 7
+    enabledForTemplateDeployment: true
     tenantId: subscription().tenantId
     accessPolicies: [for i in range(0, length(functionApps)) : {
       tenantId: functions[i].identity.tenantId
@@ -28,4 +32,3 @@ resource keyVault 'Microsoft.KeyVault/vaults@2021-06-01-preview' = {
   }
   tags: resourceTags
 }
-
