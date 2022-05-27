@@ -1,7 +1,13 @@
 @description('API Management DB account name')
 param apimName string
+
+@description('The name of the Application insights workspace to send APIM logs to.')
 param appInsightsName string
+
+@description('The Application insights instrumentation key to authenticate APIM logs.')
 param appInsightsInstrumentationKey string
+
+@description('The resource tags that will be applied to the APIM instance.')
 param resourceTags object
 
 @allowed([

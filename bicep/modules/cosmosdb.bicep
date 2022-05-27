@@ -1,4 +1,3 @@
-  
 @description('Cosmos DB account name')
 param accountName string
 
@@ -7,11 +6,14 @@ param location string = resourceGroup().location
 
 @description('The name for the Core (SQL) database')
 param databaseName string
+
+@description('The resource tags that will be applied to the Cosmos DB account.')
 param resourceTags object
 
 @description('Name of the Key Vault to store secrets in.')
 param keyVaultName string
 
+@description('The amount of Request Units that will be provisioned to the database. Default value is 400 RUs.')
 param throughput int = 400
 
 var containerNames = [

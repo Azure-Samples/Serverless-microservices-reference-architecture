@@ -1,7 +1,16 @@
+@description('The name of the APIM instance that the APIs will be deployed to.')
 param apimName string
+
+@description('The resource group that the APIM is deployed to.')
 param currentResourceGroup string
+
+@description('The name of the Backend API in APIM.')
 param backendApiName string
+
+@description('The name of the API.')
 param apiName string
+
+@description('The origin URL used for the backend policy.')
 param originUrl string
 
 var functionAppKeyName = '${backendApiName}-key'

@@ -4,6 +4,7 @@ param eventGridTopicName string
 @description('The location that the Event Grid Topic will be deployed to')
 param location string
 
+@description('The resource tags that will be applied to the Event Grid resource.')
 param resourceTags object
 
 @description('Name of the Key Vault to store secrets in.')

@@ -1,9 +1,20 @@
+@description('The name of the SQL Server that will be deployed.')
 param sqlServerName string
+
+@description('The name of the database that will be deployed.')
 param sqlDatabaseName string
+
+@description('The location that our server and database will be deployed to.')
 param location string
+
+@description('The admin username for the server.')
 param administratorLogin string
+
+@description('The password for the deployed server.')
 @secure()
 param administratorPassword string
+
+@description('The resource tags that will be applied to our SQL resources.')
 param resourceTags object
 
 @description('Name of the Key Vault to store secrets in.')

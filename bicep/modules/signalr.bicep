@@ -1,5 +1,10 @@
+@description('The name of the SignalR service that will be deployed.')
 param signalRName string
+
+@description('The location that the SignalR service will be deployed to.')
 param location string
+
+@description('The resource tags that will be applied to the SignalR resource.')
 param resourceTags object
 
 @description('Name of the Key Vault to store secrets in.')

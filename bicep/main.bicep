@@ -1,3 +1,4 @@
+@description('The name of the Rideshare application.')
 param applicationName string = 'Rideshare'
 
 @allowed([
@@ -7,11 +8,17 @@ param applicationName string = 'Rideshare'
   'westeurope'
   'westus2'
 ])
+@description('The location that the Static Web App will be deployed to.')
 param staticWebAppLocation string
+
+@description('The username that will be used for the provisioned SQL Server.')
 param sqlAdminLogin string
 
+@description('The password that will be used for the provisioned SQL Server.')
 @secure()
 param sqlAdminPassword string
+
+@description('The resource tags that will be applied to the deployed resources.')
 param resourceTags object = {
   ProjectType: 'Azure Serverless Microservices'
   Purpose: 'Sample'

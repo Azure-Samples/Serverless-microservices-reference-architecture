@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "applicationName": {
-      "value": "velidarideshare"
+      "value": ""
     },
     "resourceTags": {
       "value": {
@@ -12,10 +12,17 @@
       }
     },
     "sqlAdminLogin": {
-      "value": "wvelida"
+      "value": ""
     },
+    "sqlAdminPassword": {
+      "reference": {
+        "keyVault": {
+          "id": "/subscriptions/<SUBSCRIPTION-ID>/resourceGroups/<RESOURCE-GROUP-NAME>/providers/Microsoft.KeyVault/vaults/<KEY-VAULT-NAME>"
+        },
+        "secretName": "sqlAdminPassword"
+      },
     "staticWebAppLocation": {
-      "value": "westus2"
+      "value": ""
     }
   }
 }
