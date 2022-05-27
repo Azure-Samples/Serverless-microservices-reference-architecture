@@ -20,7 +20,8 @@
           "id": "/subscriptions/<SUBSCRIPTION-ID>/resourceGroups/<RESOURCE-GROUP-NAME>/providers/Microsoft.KeyVault/vaults/<KEY-VAULT-NAME>"
         },
         "secretName": "sqlAdminPassword"
-      },
+      }
+    },
     "staticWebAppLocation": {
       "value": ""
     }
