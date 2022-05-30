@@ -4,8 +4,8 @@
   "metadata": {
     "_generator": {
       "name": "bicep",
-      "version": "0.4.1008.15138",
-      "templateHash": "9570357947747340552"
+      "version": "0.4.1318.3566",
+      "templateHash": "8701539398809098241"
     }
   },
   "parameters": {
@@ -35,11 +35,13 @@
         "ProjectType": "Azure Serverless Microservices",
         "Purpose": "Sample"
       }
+    },
+    "location": {
+      "type": "string",
+      "defaultValue": "[resourceGroup().location]"
     }
   },
-  "functions": [],
   "variables": {
-    "location": "[resourceGroup().location]",
     "functionAppServicePlanName": "[format('{0}Plan', parameters('applicationName'))]",
     "keyVaultName": "[format('{0}KeyVault', parameters('applicationName'))]",
     "cosmosdbName": "[format('{0}Cosmos', parameters('applicationName'))]",
@@ -49,19 +51,510 @@
     "apimName": "[format('{0}Apim', parameters('applicationName'))]",
     "sqlServerName": "[format('{0}-db', parameters('applicationName'))]",
     "staticWebAppName": "[format('{0}Web', parameters('applicationName'))]",
-    "storageAccountName": "[toLower(format('{0}functionstore', parameters('applicationName')))]",
+    "storageAccountName": "[take(toLower(replace(format('{0}func', parameters('applicationName')), '-', '')), 24)]",
     "functionsApps": [
       "Trips",
       "Drivers",
       "Passengers",
       "TripArchiver",
       "Orchestrators"
-    ]
+    ],
+    "functionRuntime": "dotnet",
+    "functionVersion": "~4"
   },
   "resources": [
     {
+      "type": "Microsoft.Storage/storageAccounts",
+      "apiVersion": "2021-08-01",
+      "name": "[variables('storageAccountName')]",
+      "location": "[parameters('location')]",
+      "sku": {
+        "name": "Standard_LRS"
+      },
+      "kind": "StorageV2",
+      "properties": {
+        "supportsHttpsTrafficOnly": true,
+        "encryption": {
+          "services": {
+            "file": {
+              "keyType": "Account",
+              "enabled": true
+            },
+            "blob": {
+              "keyType": "Account",
+              "enabled": true
+            }
+          },
+          "keySource": "Microsoft.Storage"
+        },
+        "accessTier": "Hot"
+      }
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}Trips', parameters('applicationName'))]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "serverFarmId": "[reference(resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))).outputs.appServicePlanId.value]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value)]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[variables('functionRuntime')]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "[variables('functionVersion')]"
+            },
+            {
+              "name": "DocDbApiKey",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbPrimaryKey)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbEndpointUri",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbEndpoint)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbRideShareDatabaseName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBDatabaseName.value]"
+            },
+            {
+              "name": "DocDbRideShareMainCollectionName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBRideMainCollectionName.value]"
+            },
+            {
+              "name": "DocDbThroughput",
+              "value": "[format('{0}', reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBThroughput.value)]"
+            },
+            {
+              "name": "InsightsInstrumentationKey",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "IsEnqueueToOrchestrators",
+              "value": "true"
+            },
+            {
+              "name": "TripManagersQueue",
+              "value": "trip-managers"
+            },
+            {
+              "name": "TripMonitorsQueue",
+              "value": "trip-monitors"
+            },
+            {
+              "name": "TripDemosQueue",
+              "value": "trip-demos"
+            },
+            {
+              "name": "AuthorityUrl",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/AuthorityUrl)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "ApiApplicationId",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/ApiApplicationId)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "ApiScopeName",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/ApiScopeName)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "EnableAuth",
+              "value": "true"
+            },
+            {
+              "name": "SqlConnectionString",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/SqlConnectionString)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "AzureSignalRConnectionString",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/AzureSignalRConnectionString)', variables('keyVaultName'))]"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))).outputs.staticWebAppURL.value]"
+            ]
+          }
+        },
+        "httpsOnly": true
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}Drivers', parameters('applicationName'))]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "serverFarmId": "[reference(resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))).outputs.appServicePlanId.value]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value)]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[variables('functionRuntime')]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "[variables('functionVersion')]"
+            },
+            {
+              "name": "DocDbApiKey",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbPrimaryKey)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbEndpointUri",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbEndpoint)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbRideShareDatabaseName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBDatabaseName.value]"
+            },
+            {
+              "name": "DocDbRideShareMainCollectionName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBRideMainCollectionName.value]"
+            },
+            {
+              "name": "DocDbThroughput",
+              "value": "[format('{0}', reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBThroughput.value)]"
+            },
+            {
+              "name": "InsightsInstrumentationKey",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "AuthorityUrl",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/AuthorityUrl)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "ApiApplicationId",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/ApiApplicationId)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "ApiScopeName",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/ApiScopeName)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "EnableAuth",
+              "value": "true"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))).outputs.staticWebAppURL.value]"
+            ]
+          }
+        },
+        "httpsOnly": true
+      },
+      "identity": {
+        "type": "SystemAssigned"
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}Passengers', parameters('applicationName'))]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "serverFarmId": "[reference(resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))).outputs.appServicePlanId.value]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value)]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[variables('functionRuntime')]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "[variables('functionVersion')]"
+            },
+            {
+              "name": "DocDbApiKey",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbPrimaryKey)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbEndpointUri",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbEndpoint)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbRideShareDatabaseName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBDatabaseName.value]"
+            },
+            {
+              "name": "DocDbRideShareMainCollectionName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBRideMainCollectionName.value]"
+            },
+            {
+              "name": "DocDbThroughput",
+              "value": "[format('{0}', reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBThroughput.value)]"
+            },
+            {
+              "name": "InsightsInstrumentationKey",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "AuthorityUrl",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/AuthorityUrl)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "ApiApplicationId",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/ApiApplicationId)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "ApiScopeName",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/ApiScopeName)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "EnableAuth",
+              "value": "true"
+            },
+            {
+              "name": "GraphTenantId",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/GraphTenantId)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "GraphClientId",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/GraphClientId)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "GraphClientSecret",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/GraphClientSecret)', variables('keyVaultName'))]"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))).outputs.staticWebAppURL.value]"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}Passengers', parameters('applicationName'))]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "serverFarmId": "[reference(resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))).outputs.appServicePlanId.value]",
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "AzureWebJobsStorage",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
+              "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', variables('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName')), '2021-08-01').keys[0].value)]"
+            },
+            {
+              "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
+              "value": "[format('InstrumentationKey={0}', reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value)]"
+            },
+            {
+              "name": "FUNCTIONS_WORKER_RUNTIME",
+              "value": "[variables('functionRuntime')]"
+            },
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "[variables('functionVersion')]"
+            },
+            {
+              "name": "DocDbApiKey",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbPrimaryKey)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbEndpointUri",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbEndpoint)', variables('keyVaultName'))]"
+            },
+            {
+              "name": "DocDbRideShareDatabaseName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBDatabaseName.value]"
+            },
+            {
+              "name": "DocDbRideShareMainCollectionName",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBRideMainCollectionName.value]"
+            },
+            {
+              "name": "DocDbThroughput",
+              "value": "[format('{0}', reference(resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))).outputs.cosmosDBThroughput.value)]"
+            },
+            {
+              "name": "InsightsInstrumentationKey",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
+            },
+            {
+              "name": "DriversAcknowledgeMaxWaitPeriodInSeconds",
+              "value": "120"
+            },
+            {
+              "name": "DriversLocationRadiusInMiles",
+              "value": "15"
+            },
+            {
+              "name": "TripMonitorIntervalInSeconds",
+              "value": "10"
+            },
+            {
+              "name": "TripMonitorMaxIterations",
+              "value": "20"
+            },
+            {
+              "name": "IsPersistDirectly",
+              "value": "true"
+            },
+            {
+              "name": "TripManagersQueue",
+              "value": "trip-managers"
+            },
+            {
+              "name": "TripMonitorsQueue",
+              "value": "trip-monitors"
+            },
+            {
+              "name": "TripDemosQueue",
+              "value": "trip-demos"
+            },
+            {
+              "name": "TripDriversQueue",
+              "value": "trip-drivers"
+            },
+            {
+              "name": "TripExternalizationsEventGridTopicUrl",
+              "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('eventGridName'))).outputs.eventGripEndpoint.value]"
+            },
+            {
+              "name": "TripExternalizationsEventGridTopicApiKey",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/TripExternalizationsEventGridTopicApiKey)', variables('keyVaultName'))]"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))).outputs.staticWebAppURL.value]"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('functionAppServicePlanName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('cosmosdbName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('eventGridName'))]",
+        "[resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))]",
+        "[resourceId('Microsoft.Storage/storageAccounts', variables('storageAccountName'))]"
+      ]
+    },
+    {
+      "type": "Microsoft.Web/sites",
+      "apiVersion": "2021-03-01",
+      "name": "[format('{0}TripArchiver', parameters('applicationName'))]",
+      "location": "[parameters('location')]",
+      "kind": "functionapp",
+      "properties": {
+        "siteConfig": {
+          "appSettings": [
+            {
+              "name": "FUNCTIONS_EXTENSION_VERSION",
+              "value": "~1"
+            },
+            {
+              "name": "DocDbConnectionString",
+              "value": "[format('@Microsoft.KeyVault(SecretUri=https:://{0}.vault.azure.net/secrets/CosmosDbConnectionString)', variables('keyVaultName'))]"
+            }
+          ],
+          "cors": {
+            "allowedOrigins": [
+              "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))).outputs.staticWebAppURL.value]"
+            ]
+          }
+        }
+      },
+      "dependsOn": [
+        "[resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))]"
+      ]
+    },
+    {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('cosmosdbName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -73,13 +566,16 @@
             "value": "[variables('cosmosdbName')]"
           },
           "location": {
-            "value": "[variables('location')]"
+            "value": "[parameters('location')]"
           },
           "databaseName": {
             "value": "[parameters('applicationName')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
+          },
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
           }
         },
         "template": {
@@ -88,8 +584,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "3083240189091619866"
+              "version": "0.4.1318.3566",
+              "templateHash": "10836054490273803686"
             }
           },
           "parameters": {
@@ -114,14 +610,26 @@
             },
             "resourceTags": {
               "type": "object"
+            },
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Key Vault to store secrets in."
+              }
+            },
+            "throughput": {
+              "type": "int",
+              "defaultValue": 400
             }
           },
-          "functions": [],
           "variables": {
             "containerNames": [
               "main",
               "archiver"
-            ]
+            ],
+            "cosmosDbConnectionStringSecretName": "CosmosDbConnectionString",
+            "cosmosDbPrimaryKeySecretName": "CosmosDbPrimaryKey",
+            "cosmosDbEndpointSecretName": "CosmosDbEndpoint"
           },
           "resources": [
             {
@@ -136,11 +644,6 @@
                 "consistencyPolicy": {
                   "defaultConsistencyLevel": "Session"
                 },
-                "capabilities": [
-                  {
-                    "name": "EnableServerless"
-                  }
-                ],
                 "enableFreeTier": false,
                 "locations": [
                   {
@@ -164,6 +667,9 @@
               "properties": {
                 "resource": {
                   "id": "[format('{0}', toLower(parameters('databaseName')))]"
+                },
+                "options": {
+                  "throughput": "[parameters('throughput')]"
                 }
               },
               "dependsOn": [
@@ -193,12 +699,57 @@
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]",
                 "[resourceId('Microsoft.DocumentDB/databaseAccounts/sqlDatabases', toLower(parameters('accountName')), format('{0}', toLower(parameters('databaseName'))))]"
               ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), variables('cosmosDbPrimaryKeySecretName'))]",
+              "properties": {
+                "value": "[listKeys(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName'))), '2021-06-15').primaryMasterKey]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), variables('cosmosDbConnectionStringSecretName'))]",
+              "properties": {
+                "value": "[listConnectionStrings(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName'))), '2021-06-15').connectionStrings[0].connectionString]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), variables('cosmosDbEndpointSecretName'))]",
+              "properties": {
+                "value": "[reference(resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))).documentEndpoint]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.DocumentDB/databaseAccounts', toLower(parameters('accountName')))]"
+              ]
             }
           ],
           "outputs": {
             "cosmosDBAccountName": {
               "type": "string",
               "value": "[toLower(parameters('accountName'))]"
+            },
+            "cosmosDBDatabaseName": {
+              "type": "string",
+              "value": "[format('{0}', toLower(parameters('databaseName')))]"
+            },
+            "cosmosDBRideMainCollectionName": {
+              "type": "string",
+              "value": "[variables('containerNames')[0]]"
+            },
+            "cosmosDBThroughput": {
+              "type": "int",
+              "value": "[parameters('throughput')]"
             }
           }
         }
@@ -206,7 +757,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "sqldb",
       "properties": {
         "expressionEvaluationOptions": {
@@ -217,7 +768,7 @@
           "sqlServerName": {
             "value": "[variables('sqlServerName')]"
           },
-          "sqlDatabaeName": {
+          "sqlDatabaseName": {
             "value": "[parameters('applicationName')]"
           },
           "administratorLogin": {
@@ -227,10 +778,13 @@
             "value": "[parameters('sqlAdminPassword')]"
           },
           "location": {
-            "value": "[variables('location')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
+          },
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
           }
         },
         "template": {
@@ -239,15 +793,15 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "5407239579252073037"
+              "version": "0.4.1318.3566",
+              "templateHash": "3153046550953969148"
             }
           },
           "parameters": {
             "sqlServerName": {
               "type": "string"
             },
-            "sqlDatabaeName": {
+            "sqlDatabaseName": {
               "type": "string"
             },
             "location": {
@@ -261,9 +815,17 @@
             },
             "resourceTags": {
               "type": "object"
+            },
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Key Vault to store secrets in."
+              }
             }
           },
-          "functions": [],
+          "variables": {
+            "sqlDbConnectionStringSecretName": "SqlConnectionString"
+          },
           "resources": [
             {
               "type": "Microsoft.Sql/servers",
@@ -280,7 +842,7 @@
             {
               "type": "Microsoft.Sql/servers/databases",
               "apiVersion": "2021-05-01-preview",
-              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('sqlDatabaeName'))]",
+              "name": "[format('{0}/{1}', parameters('sqlServerName'), parameters('sqlDatabaseName'))]",
               "location": "[parameters('location')]",
               "tags": "[parameters('resourceTags')]",
               "sku": {
@@ -296,6 +858,18 @@
               "dependsOn": [
                 "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
               ]
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), variables('sqlDbConnectionStringSecretName'))]",
+              "properties": {
+                "value": "[format('Server=tcp:{0}{1},1433;Initial Catalog=db{2};Persist Security Info=False;User ID={3};Password={4};MultipleActiveResultSets=False;Encrypt=True;TrustServerCertificate=False;Connection Timeout=30;', parameters('sqlServerName'), environment().suffixes.sqlServerHostname, parameters('sqlDatabaseName'), parameters('administratorLogin'), parameters('administratorPassword'))]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.Sql/servers/databases', parameters('sqlServerName'), parameters('sqlDatabaseName'))]",
+                "[resourceId('Microsoft.Sql/servers', parameters('sqlServerName'))]"
+              ]
             }
           ]
         }
@@ -303,7 +877,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('eventGridName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -315,10 +889,13 @@
             "value": "[variables('eventGridName')]"
           },
           "location": {
-            "value": "[variables('location')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
+          },
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
           }
         },
         "template": {
@@ -327,22 +904,36 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "17203959133581660403"
+              "version": "0.4.1318.3566",
+              "templateHash": "13429133402434012737"
             }
           },
           "parameters": {
             "eventGridTopicName": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Event Grid Topic"
+              }
             },
             "location": {
-              "type": "string"
+              "type": "string",
+              "metadata": {
+                "description": "The location that the Event Grid Topic will be deployed to"
+              }
             },
             "resourceTags": {
               "type": "object"
+            },
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Key Vault to store secrets in."
+              }
             }
           },
-          "functions": [],
+          "variables": {
+            "eventGridTopicApiKeySecretName": "TripExternalizationsEventGridTopicApiKey"
+          },
           "resources": [
             {
               "type": "Microsoft.EventGrid/topics",
@@ -354,6 +945,17 @@
                 "publicNetworkAccess": "Enabled",
                 "inputSchema": "EventGridSchema"
               }
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), variables('eventGridTopicApiKeySecretName'))]",
+              "properties": {
+                "value": "[listKeys(resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName')), '2020-06-01').key1]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.EventGrid/topics', parameters('eventGridTopicName'))]"
+              ]
             }
           ],
           "outputs": {
@@ -367,7 +969,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('signalRName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -379,10 +981,13 @@
             "value": "[variables('signalRName')]"
           },
           "location": {
-            "value": "[variables('location')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
+          },
+          "keyVaultName": {
+            "value": "[variables('keyVaultName')]"
           }
         },
         "template": {
@@ -391,8 +996,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "2160980875649621117"
+              "version": "0.4.1318.3566",
+              "templateHash": "2675249973579397886"
             }
           },
           "parameters": {
@@ -404,9 +1009,17 @@
             },
             "resourceTags": {
               "type": "object"
+            },
+            "keyVaultName": {
+              "type": "string",
+              "metadata": {
+                "description": "Name of the Key Vault to store secrets in."
+              }
             }
           },
-          "functions": [],
+          "variables": {
+            "signalRConnectionStringSecretName": "AzureSignalRConnectionString"
+          },
           "resources": [
             {
               "type": "Microsoft.SignalRService/signalR",
@@ -423,6 +1036,17 @@
               "properties": {
                 "hostNamePrefix": null
               }
+            },
+            {
+              "type": "Microsoft.KeyVault/vaults/secrets",
+              "apiVersion": "2021-11-01-preview",
+              "name": "[format('{0}/{1}', parameters('keyVaultName'), variables('signalRConnectionStringSecretName'))]",
+              "properties": {
+                "value": "[listKeys(resourceId('Microsoft.SignalRService/signalR', parameters('signalRName')), '2018-10-01').primaryConnectionString]"
+              },
+              "dependsOn": [
+                "[resourceId('Microsoft.SignalRService/signalR', parameters('signalRName'))]"
+              ]
             }
           ]
         }
@@ -430,7 +1054,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('applicationInsightsName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -442,7 +1066,7 @@
             "value": "[variables('applicationInsightsName')]"
           },
           "location": {
-            "value": "[variables('location')]"
+            "value": "[parameters('location')]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -454,8 +1078,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "16613972829894520281"
+              "version": "0.4.1318.3566",
+              "templateHash": "14891316511597726658"
             }
           },
           "parameters": {
@@ -469,7 +1093,6 @@
               "type": "object"
             }
           },
-          "functions": [],
           "resources": [
             {
               "type": "Microsoft.Insights/components",
@@ -498,7 +1121,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('apimName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -509,11 +1132,14 @@
           "apimName": {
             "value": "[variables('apimName')]"
           },
+          "location": {
+            "value": "[parameters('location')]"
+          },
           "appInsightsName": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName')), '2020-06-01').outputs.appInsightsName.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsName.value]"
           },
           "appInsightsInstrumentationKey": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName')), '2020-06-01').outputs.appInsightsInstrumentationKey.value]"
+            "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))).outputs.appInsightsInstrumentationKey.value]"
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
@@ -525,8 +1151,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "12818415135131956890"
+              "version": "0.4.1318.3566",
+              "templateHash": "9214130584774277020"
             }
           },
           "parameters": {
@@ -566,11 +1192,15 @@
               "metadata": {
                 "description": "The instance size of this API Management service."
               }
+            },
+            "location": {
+              "type": "string",
+              "metadata": {
+                "description": "The location of this API Management service"
+              }
             }
           },
-          "functions": [],
           "variables": {
-            "location": "[resourceGroup().location]",
             "publisherEmail": "email@contoso.com",
             "publisherName": "Company Name"
           },
@@ -579,7 +1209,7 @@
               "type": "Microsoft.ApiManagement/service",
               "apiVersion": "2021-01-01-preview",
               "name": "[parameters('apimName')]",
-              "location": "[variables('location')]",
+              "location": "[parameters('location')]",
               "tags": "[parameters('resourceTags')]",
               "sku": {
                 "name": "[parameters('sku')]",
@@ -645,7 +1275,7 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('staticWebAppName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -669,8 +1299,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "9606543262645889119"
+              "version": "0.4.1318.3566",
+              "templateHash": "990238708955225645"
             }
           },
           "parameters": {
@@ -684,7 +1314,6 @@
               "type": "object"
             }
           },
-          "functions": [],
           "resources": [
             {
               "type": "Microsoft.Web/staticSites",
@@ -717,37 +1346,19 @@
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
-      "name": "functions",
+      "apiVersion": "2020-10-01",
+      "name": "[variables('functionAppServicePlanName')]",
       "properties": {
         "expressionEvaluationOptions": {
           "scope": "inner"
         },
         "mode": "Incremental",
         "parameters": {
-          "storageAccountName": {
-            "value": "[variables('storageAccountName')]"
-          },
-          "functionAppPrefix": {
-            "value": "[parameters('applicationName')]"
-          },
-          "functionApps": {
-            "value": "[variables('functionsApps')]"
-          },
           "appServicePlanName": {
             "value": "[variables('functionAppServicePlanName')]"
           },
           "location": {
-            "value": "[variables('location')]"
-          },
-          "staticWebAppURL": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('staticWebAppName')), '2020-06-01').outputs.staticWebAppURL.value]"
-          },
-          "appInsightsInstrumentationKey": {
-            "value": "[reference(resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName')), '2020-06-01').outputs.appInsightsInstrumentationKey.value]"
-          },
-          "resourceTags": {
-            "value": "[parameters('resourceTags')]"
+            "value": "[parameters('location')]"
           }
         },
         "template": {
@@ -756,71 +1367,20 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "105252057361555557"
+              "version": "0.4.1318.3566",
+              "templateHash": "1091027108330860427"
             }
           },
           "parameters": {
-            "storageAccountName": {
-              "type": "string"
-            },
-            "functionAppPrefix": {
-              "type": "string"
-            },
-            "functionApps": {
-              "type": "array"
-            },
             "appServicePlanName": {
               "type": "string"
             },
             "location": {
               "type": "string",
               "defaultValue": "[resourceGroup().location]"
-            },
-            "staticWebAppURL": {
-              "type": "string"
-            },
-            "appInsightsInstrumentationKey": {
-              "type": "string"
-            },
-            "resourceTags": {
-              "type": "object"
             }
           },
-          "functions": [],
-          "variables": {
-            "functionRuntime": "dotnet",
-            "functionVersion": "~4"
-          },
           "resources": [
-            {
-              "type": "Microsoft.Storage/storageAccounts",
-              "apiVersion": "2019-06-01",
-              "name": "[parameters('storageAccountName')]",
-              "location": "[parameters('location')]",
-              "tags": "[parameters('resourceTags')]",
-              "sku": {
-                "name": "Standard_LRS"
-              },
-              "kind": "StorageV2",
-              "properties": {
-                "supportsHttpsTrafficOnly": true,
-                "encryption": {
-                  "services": {
-                    "file": {
-                      "keyType": "Account",
-                      "enabled": true
-                    },
-                    "blob": {
-                      "keyType": "Account",
-                      "enabled": true
-                    }
-                  },
-                  "keySource": "Microsoft.Storage"
-                },
-                "accessTier": "Hot"
-              }
-            },
             {
               "type": "Microsoft.Web/serverfarms",
               "apiVersion": "2020-06-01",
@@ -832,73 +1392,20 @@
                 "tier": "Dynamic"
               },
               "properties": {}
-            },
-            {
-              "copy": {
-                "name": "functionApp",
-                "count": "[length(parameters('functionApps'))]"
-              },
-              "type": "Microsoft.Web/sites",
-              "apiVersion": "2020-06-01",
-              "name": "[format('{0}{1}', parameters('functionAppPrefix'), parameters('functionApps')[copyIndex()])]",
-              "location": "[parameters('location')]",
-              "kind": "functionapp",
-              "properties": {
-                "serverFarmId": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
-                "siteConfig": {
-                  "appSettings": [
-                    {
-                      "name": "AzureWebJobsStorage",
-                      "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', parameters('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
-                    },
-                    {
-                      "name": "WEBSITE_CONTENTAZUREFILECONNECTIONSTRING",
-                      "value": "[format('DefaultEndpointsProtocol=https;AccountName={0};EndpointSuffix={1};AccountKey={2}', parameters('storageAccountName'), environment().suffixes.storage, listKeys(resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName')), '2019-06-01').keys[0].value)]"
-                    },
-                    {
-                      "name": "APPINSIGHTS_INSTRUMENTATIONKEY",
-                      "value": "[parameters('appInsightsInstrumentationKey')]"
-                    },
-                    {
-                      "name": "APPLICATIONINSIGHTS_CONNECTION_STRING",
-                      "value": "[format('InstrumentationKey={0}', parameters('appInsightsInstrumentationKey'))]"
-                    },
-                    {
-                      "name": "FUNCTIONS_WORKER_RUNTIME",
-                      "value": "[variables('functionRuntime')]"
-                    },
-                    {
-                      "name": "FUNCTIONS_EXTENSION_VERSION",
-                      "value": "[variables('functionVersion')]"
-                    }
-                  ],
-                  "cors": {
-                    "allowedOrigins": [
-                      "[parameters('staticWebAppURL')]"
-                    ]
-                  }
-                },
-                "httpsOnly": true
-              },
-              "identity": {
-                "type": "SystemAssigned"
-              },
-              "dependsOn": [
-                "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]",
-                "[resourceId('Microsoft.Storage/storageAccounts', parameters('storageAccountName'))]"
-              ]
             }
-          ]
+          ],
+          "outputs": {
+            "appServicePlanId": {
+              "type": "string",
+              "value": "[resourceId('Microsoft.Web/serverfarms', parameters('appServicePlanName'))]"
+            }
+          }
         }
-      },
-      "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', variables('applicationInsightsName'))]",
-        "[resourceId('Microsoft.Resources/deployments', variables('staticWebAppName'))]"
-      ]
+      }
     },
     {
       "type": "Microsoft.Resources/deployments",
-      "apiVersion": "2020-06-01",
+      "apiVersion": "2020-10-01",
       "name": "[variables('keyVaultName')]",
       "properties": {
         "expressionEvaluationOptions": {
@@ -917,6 +1424,9 @@
           },
           "resourceTags": {
             "value": "[parameters('resourceTags')]"
+          },
+          "location": {
+            "value": "[parameters('location')]"
           }
         },
         "template": {
@@ -925,8 +1435,8 @@
           "metadata": {
             "_generator": {
               "name": "bicep",
-              "version": "0.4.1008.15138",
-              "templateHash": "14106814129237260996"
+              "version": "0.4.1318.3566",
+              "templateHash": "3427998671960147103"
             }
           },
           "parameters": {
@@ -941,15 +1451,17 @@
             },
             "resourceTags": {
               "type": "object"
+            },
+            "location": {
+              "type": "string"
             }
           },
-          "functions": [],
           "resources": [
             {
               "type": "Microsoft.KeyVault/vaults",
               "apiVersion": "2021-06-01-preview",
               "name": "[parameters('keyVaultName')]",
-              "location": "[resourceGroup().location]",
+              "location": "[parameters('location')]",
               "properties": {
                 "copy": [
                   {
@@ -978,7 +1490,11 @@
         }
       },
       "dependsOn": [
-        "[resourceId('Microsoft.Resources/deployments', 'functions')]"
+        "[resourceId('Microsoft.Web/sites', format('{0}Drivers', parameters('applicationName')))]",
+        "[resourceId('Microsoft.Web/sites', format('{0}Passengers', parameters('applicationName')))]",
+        "[resourceId('Microsoft.Web/sites', format('{0}Passengers', parameters('applicationName')))]",
+        "[resourceId('Microsoft.Web/sites', format('{0}TripArchiver', parameters('applicationName')))]",
+        "[resourceId('Microsoft.Web/sites', format('{0}Trips', parameters('applicationName')))]"
       ]
     }
   ]

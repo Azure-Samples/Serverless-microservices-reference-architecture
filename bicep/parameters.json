@@ -3,7 +3,7 @@
   "contentVersion": "1.0.0.0",
   "parameters": {
     "applicationName": {
-      "value": "RideshareWV"
+      "value": ""
     },
     "resourceTags": {
       "value": {
@@ -12,18 +12,18 @@
       }
     },
     "sqlAdminLogin": {
-      "value": "wviriya"
+      "value": ""
     },
     "sqlAdminPassword": {
       "reference": {
         "keyVault": {
-          "id": "/subscriptions/10fe34c7-c442-46d8-b43f-2c92651e6545/resourceGroups/common-rg/providers/Microsoft.KeyVault/vaults/wviriya-kv"
+          "id": "/subscriptions/<SUBSCRIPTION-ID>/resourceGroups/<RESOURCE-GROUP-NAME>/providers/Microsoft.KeyVault/vaults/<KEY-VAULT-NAME>"
         },
         "secretName": "sqlAdminPassword"
       }
     },
     "staticWebAppLocation": {
-      "value": "westus2"
+      "value": ""
     }
   }
 }

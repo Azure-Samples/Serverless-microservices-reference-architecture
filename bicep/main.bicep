@@ -1,3 +1,4 @@
+@description('The name of the Rideshare application.')
 param applicationName string = 'Rideshare'
 
 @allowed([
@@ -7,17 +8,24 @@ param applicationName string = 'Rideshare'
   'westeurope'
   'westus2'
 ])
+@description('The location that the Static Web App will be deployed to.')
 param staticWebAppLocation string
+
+@description('The username that will be used for the provisioned SQL Server.')
 param sqlAdminLogin string
 
+@description('The password that will be used for the provisioned SQL Server.')
 @secure()
 param sqlAdminPassword string
+
+@description('The resource tags that will be applied to the deployed resources.')
 param resourceTags object = {
   ProjectType: 'Azure Serverless Microservices'
   Purpose: 'Sample'
 }
 
-var location = resourceGroup().location
+param location string = resourceGroup().location
+
 var functionAppServicePlanName = '${applicationName}Plan'
 var keyVaultName = '${applicationName}KeyVault'
 var cosmosdbName = '${applicationName}Cosmos'
@@ -35,6 +43,8 @@ var functionsApps = [
   'TripArchiver'
   'Orchestrators'
  ]
+var functionRuntime = 'dotnet'
+var functionVersion = '~4'
 
 module cosmos 'modules/cosmosdb.bicep' = {
   name: cosmosdbName
@@ -43,6 +53,7 @@ module cosmos 'modules/cosmosdb.bicep' = {
     location: location
     databaseName: applicationName
     resourceTags: resourceTags
+    keyVaultName: keyVaultName
   }
 }
 
@@ -50,11 +61,12 @@ module sqlDb 'modules/sqldb.bicep' = {
   name: 'sqldb'
   params: {
     sqlServerName: sqlServerName
-    sqlDatabaeName: applicationName
+    sqlDatabaseName: applicationName
     administratorLogin: sqlAdminLogin
     administratorPassword: sqlAdminPassword
     location: location
     resourceTags: resourceTags
+    keyVaultName: keyVaultName
   }
 }
 
@@ -64,6 +76,7 @@ module eventGrid 'modules/eventgrid.bicep' = {
     eventGridTopicName: eventGridName
     location: location
     resourceTags: resourceTags
+    keyVaultName: keyVaultName
   } 
 }
 
@@ -73,6 +86,7 @@ module signalR 'modules/signalr.bicep' = {
     signalRName: signalRName
     location: location
     resourceTags: resourceTags
+    keyVaultName: keyVaultName
   } 
 }
 
@@ -89,13 +103,14 @@ module apim 'modules/apim.bicep' = {
   name: apimName
   params: {
     apimName: apimName
+    location: location
     appInsightsName: applicationInsights.outputs.appInsightsName
     appInsightsInstrumentationKey: applicationInsights.outputs.appInsightsInstrumentationKey
     resourceTags: resourceTags
   }
 }
 
-module staticeWebApp 'modules/staticwebapp.bicep' = {
+module staticWebApp 'modules/staticwebapp.bicep' = {
   name: staticWebAppName
   params: {
     staticWebAppName: staticWebAppName
@@ -104,17 +119,462 @@ module staticeWebApp 'modules/staticwebapp.bicep' = {
   }
 }
 
-module functions 'modules/functions.bicep' = {
-  name: 'functions'
+module appPlan 'modules/appServicePlan.bicep' = {
+  name: functionAppServicePlanName
   params: {
-    storageAccountName: storageAccountName
-    functionAppPrefix: applicationName
-    functionApps: functionsApps
     appServicePlanName: functionAppServicePlanName
     location: location
-    staticWebAppURL: staticeWebApp.outputs.staticWebAppURL
-    appInsightsInstrumentationKey: applicationInsights.outputs.appInsightsInstrumentationKey
-    resourceTags: resourceTags
+  }
+}
+
+resource storage 'Microsoft.Storage/storageAccounts@2021-08-01' = {
+  name: storageAccountName
+  location: location
+  sku: {
+    name: 'Standard_LRS'
+  }
+  kind: 'StorageV2'
+  properties: {
+    supportsHttpsTrafficOnly: true
+    encryption: {
+      services: {
+        file: {
+          keyType: 'Account'
+          enabled: true
+        }
+        blob: {
+          keyType: 'Account'
+          enabled: true
+        }
+      }
+      keySource: 'Microsoft.Storage'
+    }
+    accessTier: 'Hot'
+  }
+}
+
+resource tripFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
+  name: '${applicationName}Trips'
+  location: location
+  kind: 'functionapp'
+  properties: {
+    serverFarmId: appPlan.outputs.appServicePlanId
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: 'InstrumentationKey=${applicationInsights.outputs.appInsightsInstrumentationKey}'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: functionRuntime
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: functionVersion
+        }
+        {
+          name: 'DocDbApiKey'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+        }
+        {
+          name: 'DocDbEndpointUri'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+        }
+        {
+          name: 'DocDbRideShareDatabaseName'
+          value: cosmos.outputs.cosmosDBDatabaseName
+        }
+        {
+          name: 'DocDbRideShareMainCollectionName'
+          value: cosmos.outputs.cosmosDBRideMainCollectionName
+        }
+        {
+          name: 'DocDbThroughput'
+          value: '${cosmos.outputs.cosmosDBThroughput}'
+        }
+        {
+          name: 'InsightsInstrumentationKey'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'IsEnqueueToOrchestrators'
+          value: 'true'
+        }
+        {
+          name: 'TripManagersQueue'
+          value: 'trip-managers'
+        }
+        {
+          name: 'TripMonitorsQueue'
+          value: 'trip-monitors'
+        }
+        {
+          name: 'TripDemosQueue'
+          value: 'trip-demos'
+        }
+        {
+          name: 'AuthorityUrl'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AuthorityUrl)'
+        }
+        {
+          name: 'ApiApplicationId'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiApplicationId)'
+        }
+        {
+          name: 'ApiScopeName'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiScopeName)'
+        }
+        {
+          name: 'EnableAuth'
+          value: 'true'
+        }
+        {
+          name: 'SqlConnectionString'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/SqlConnectionString)'
+        }
+        {
+          name: 'AzureSignalRConnectionString'
+          value:'@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AzureSignalRConnectionString)'
+        }
+      ]
+      cors: {
+        allowedOrigins: [
+          staticWebApp.outputs.staticWebAppURL
+        ]
+      }
+    }
+    httpsOnly: true
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+resource driverFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
+  name: '${applicationName}Drivers'
+  location: location
+  kind: 'functionapp'
+  properties: {
+    serverFarmId: appPlan.outputs.appServicePlanId
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: 'InstrumentationKey=${applicationInsights.outputs.appInsightsInstrumentationKey}'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: functionRuntime
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: functionVersion
+        }
+        {
+          name: 'DocDbApiKey'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+        }
+        {
+          name: 'DocDbEndpointUri'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+        }
+        {
+          name: 'DocDbRideShareDatabaseName'
+          value: cosmos.outputs.cosmosDBDatabaseName
+        }
+        {
+          name: 'DocDbRideShareMainCollectionName'
+          value: cosmos.outputs.cosmosDBRideMainCollectionName
+        }
+        {
+          name: 'DocDbThroughput'
+          value: '${cosmos.outputs.cosmosDBThroughput}'
+        }
+        {
+          name: 'InsightsInstrumentationKey'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'AuthorityUrl'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AuthorityUrl)'
+        }
+        {
+          name: 'ApiApplicationId'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiApplicationId)'
+        }
+        {
+          name: 'ApiScopeName'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiScopeName)'
+        }
+        {
+          name: 'EnableAuth'
+          value: 'true'
+        }
+      ]
+      cors: {
+        allowedOrigins: [
+          staticWebApp.outputs.staticWebAppURL
+        ]
+      }
+    }
+    httpsOnly: true
+  }
+  identity: {
+    type: 'SystemAssigned'
+  }
+}
+
+resource passengerFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
+  name: '${applicationName}Passengers'
+  location: location
+  kind: 'functionapp'
+  properties: {
+    serverFarmId: appPlan.outputs.appServicePlanId
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: 'InstrumentationKey=${applicationInsights.outputs.appInsightsInstrumentationKey}'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: functionRuntime
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: functionVersion
+        }
+        {
+          name: 'DocDbApiKey'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+        }
+        {
+          name: 'DocDbEndpointUri'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+        }
+        {
+          name: 'DocDbRideShareDatabaseName'
+          value: cosmos.outputs.cosmosDBDatabaseName
+        }
+        {
+          name: 'DocDbRideShareMainCollectionName'
+          value: cosmos.outputs.cosmosDBRideMainCollectionName
+        }
+        {
+          name: 'DocDbThroughput'
+          value: '${cosmos.outputs.cosmosDBThroughput}'
+        }
+        {
+          name: 'InsightsInstrumentationKey'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'AuthorityUrl'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AuthorityUrl)'
+        }
+        {
+          name: 'ApiApplicationId'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiApplicationId)'
+        }
+        {
+          name: 'ApiScopeName'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiScopeName)'
+        }
+        {
+          name: 'EnableAuth'
+          value: 'true'
+        }
+        {
+          name: 'GraphTenantId'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/GraphTenantId)'
+        }
+        {
+          name: 'GraphClientId'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/GraphClientId)'
+        }
+        {
+          name: 'GraphClientSecret'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/GraphClientSecret)'
+        }
+      ]
+      cors: {
+        allowedOrigins: [
+          staticWebApp.outputs.staticWebAppURL
+        ]
+      }
+    }
+  }
+}
+
+resource orchestratorsFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
+  name: '${applicationName}Orchestrators'
+  location: location
+  kind: 'functionapp'
+  properties: {
+    serverFarmId: appPlan.outputs.appServicePlanId
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'AzureWebJobsStorage'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'WEBSITE_CONTENTAZUREFILECONNECTIONSTRING'
+          value: 'DefaultEndpointsProtocol=https;AccountName=${storage.name};EndpointSuffix=${environment().suffixes.storage};AccountKey=${listKeys(storage.id, storage.apiVersion).keys[0].value}'
+        }
+        {
+          name: 'APPINSIGHTS_INSTRUMENTATIONKEY'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'APPLICATIONINSIGHTS_CONNECTION_STRING'
+          value: 'InstrumentationKey=${applicationInsights.outputs.appInsightsInstrumentationKey}'
+        }
+        {
+          name: 'FUNCTIONS_WORKER_RUNTIME'
+          value: functionRuntime
+        }
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: functionVersion
+        }
+        {
+          name: 'DocDbApiKey'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+        }
+        {
+          name: 'DocDbEndpointUri'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+        }
+        {
+          name: 'DocDbRideShareDatabaseName'
+          value: cosmos.outputs.cosmosDBDatabaseName
+        }
+        {
+          name: 'DocDbRideShareMainCollectionName'
+          value: cosmos.outputs.cosmosDBRideMainCollectionName
+        }
+        {
+          name: 'DocDbThroughput'
+          value: '${cosmos.outputs.cosmosDBThroughput}'
+        }
+        {
+          name: 'InsightsInstrumentationKey'
+          value: applicationInsights.outputs.appInsightsInstrumentationKey
+        }
+        {
+          name: 'DriversAcknowledgeMaxWaitPeriodInSeconds'
+          value: '120'
+        }
+        {
+          name: 'DriversLocationRadiusInMiles'
+          value: '15'
+        }
+        {
+          name: 'TripMonitorIntervalInSeconds'
+          value: '10'
+        }
+        {
+          name: 'TripMonitorMaxIterations'
+          value: '20'
+        }
+        {
+          name: 'IsPersistDirectly'
+          value: 'true'
+        }
+        {
+          name: 'TripManagersQueue'
+          value: 'trip-managers'
+        }
+        {
+          name: 'TripMonitorsQueue'
+          value: 'trip-monitors'
+        }
+        {
+          name: 'TripDemosQueue'
+          value: 'trip-demos'
+        }
+        {
+          name: 'TripDriversQueue'
+          value: 'trip-drivers'
+        }
+        {
+          name: 'TripExternalizationsEventGridTopicUrl'
+          value: eventGrid.outputs.eventGripEndpoint
+        }
+        {
+          name: 'TripExternalizationsEventGridTopicApiKey'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/TripExternalizationsEventGridTopicApiKey)'
+        }
+      ]
+      cors: {
+        allowedOrigins: [
+          staticWebApp.outputs.staticWebAppURL
+        ]
+      }
+    }
+  }
+}
+
+resource tripArchiverFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
+  name: '${applicationName}TripArchiver'
+  location: location
+  kind: 'functionapp'
+  properties: {
+    siteConfig: {
+      appSettings: [
+        {
+          name: 'FUNCTIONS_EXTENSION_VERSION'
+          value: '~1'
+        }
+        {
+          name: 'DocDbConnectionString'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbConnectionString)'
+        }
+      ]
+      cors: {
+        allowedOrigins: [
+          staticWebApp.outputs.staticWebAppURL
+        ]
+      }
+    }
   }
 }
 
@@ -125,9 +585,14 @@ module keyVault 'modules/keyvault.bicep' = {
     functionAppPrefix: applicationName
     functionApps: functionsApps
     resourceTags: resourceTags
+    location: location
   }
   dependsOn: [
-    functions
+    tripFunctionApp
+    driverFunctionApp
+    passengerFunctionApp
+    tripArchiverFunctionApp
+    orchestratorsFunctionApp
   ]
 }
 

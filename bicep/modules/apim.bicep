@@ -1,7 +1,13 @@
 @description('API Management DB account name')
 param apimName string
+
+@description('The name of the Application insights workspace to send APIM logs to.')
 param appInsightsName string
+
+@description('The Application insights instrumentation key to authenticate APIM logs.')
 param appInsightsInstrumentationKey string
+
+@description('The resource tags that will be applied to the APIM instance.')
 param resourceTags object
 
 @allowed([
@@ -18,7 +24,9 @@ param sku string = 'Developer'
 @minValue(1)
 param skuCount int = 1
 
-var location = resourceGroup().location
+@description('The location of this API Management service')
+param location string
+
 var publisherEmail = 'email@contoso.com'
 var publisherName = 'Company Name'
 
