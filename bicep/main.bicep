@@ -18,6 +18,9 @@ param sqlAdminLogin string
 @secure()
 param sqlAdminPassword string
 
+@description('Service principal Id used for deployment.')
+param objectId string
+
 @description('The resource tags that will be applied to the deployed resources.')
 param resourceTags object = {
   ProjectType: 'Azure Serverless Microservices'
@@ -36,15 +39,18 @@ var apimName = '${applicationName}Apim'
 var sqlServerName = '${applicationName}-db'
 var staticWebAppName = '${applicationName}Web'
 var storageAccountName = take(toLower(replace('${applicationName}func', '-', '')), 24)
-var functionsApps = [
-  'Trips'
-  'Drivers'
-  'Passengers'
-  'TripArchiver'
-  'Orchestrators'
- ]
 var functionRuntime = 'dotnet'
 var functionVersion = '~4'
+
+module keyVault 'modules/keyvault.bicep' = {
+  name: keyVaultName
+  params: {
+    keyVaultName: keyVaultName
+    objectId: objectId
+    resourceTags: resourceTags
+    location: location
+  }
+}
 
 module cosmos 'modules/cosmosdb.bicep' = {
   name: cosmosdbName
@@ -53,7 +59,7 @@ module cosmos 'modules/cosmosdb.bicep' = {
     location: location
     databaseName: applicationName
     resourceTags: resourceTags
-    keyVaultName: keyVaultName
+    keyVaultName: keyVault.name
   }
 }
 
@@ -66,7 +72,7 @@ module sqlDb 'modules/sqldb.bicep' = {
     administratorPassword: sqlAdminPassword
     location: location
     resourceTags: resourceTags
-    keyVaultName: keyVaultName
+    keyVaultName: keyVault.name
   }
 }
 
@@ -76,7 +82,7 @@ module eventGrid 'modules/eventgrid.bicep' = {
     eventGridTopicName: eventGridName
     location: location
     resourceTags: resourceTags
-    keyVaultName: keyVaultName
+    keyVaultName: keyVault.name
   } 
 }
 
@@ -86,7 +92,7 @@ module signalR 'modules/signalr.bicep' = {
     signalRName: signalRName
     location: location
     resourceTags: resourceTags
-    keyVaultName: keyVaultName
+    keyVaultName: keyVault.name
   } 
 }
 
@@ -187,11 +193,11 @@ resource tripFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'DocDbApiKey'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
         }
         {
           name: 'DocDbEndpointUri'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbEndpoint)'
         }
         {
           name: 'DocDbRideShareDatabaseName'
@@ -227,15 +233,15 @@ resource tripFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'AuthorityUrl'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AuthorityUrl)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/AuthorityUrl)'
         }
         {
           name: 'ApiApplicationId'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiApplicationId)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/ApiApplicationId)'
         }
         {
           name: 'ApiScopeName'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiScopeName)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/ApiScopeName)'
         }
         {
           name: 'EnableAuth'
@@ -243,11 +249,11 @@ resource tripFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'SqlConnectionString'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/SqlConnectionString)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/SqlConnectionString)'
         }
         {
           name: 'AzureSignalRConnectionString'
-          value:'@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AzureSignalRConnectionString)'
+          value:'@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/AzureSignalRConnectionString)'
         }
       ]
       cors: {
@@ -297,11 +303,11 @@ resource driverFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'DocDbApiKey'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
         }
         {
           name: 'DocDbEndpointUri'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbEndpoint)'
         }
         {
           name: 'DocDbRideShareDatabaseName'
@@ -321,15 +327,15 @@ resource driverFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'AuthorityUrl'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AuthorityUrl)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/AuthorityUrl)'
         }
         {
           name: 'ApiApplicationId'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiApplicationId)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/ApiApplicationId)'
         }
         {
           name: 'ApiScopeName'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiScopeName)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/ApiScopeName)'
         }
         {
           name: 'EnableAuth'
@@ -383,11 +389,11 @@ resource passengerFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'DocDbApiKey'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
         }
         {
           name: 'DocDbEndpointUri'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbEndpoint)'
         }
         {
           name: 'DocDbRideShareDatabaseName'
@@ -407,15 +413,15 @@ resource passengerFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'AuthorityUrl'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/AuthorityUrl)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/AuthorityUrl)'
         }
         {
           name: 'ApiApplicationId'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiApplicationId)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/ApiApplicationId)'
         }
         {
           name: 'ApiScopeName'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/ApiScopeName)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/ApiScopeName)'
         }
         {
           name: 'EnableAuth'
@@ -423,15 +429,15 @@ resource passengerFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'GraphTenantId'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/GraphTenantId)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/GraphTenantId)'
         }
         {
           name: 'GraphClientId'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/GraphClientId)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/GraphClientId)'
         }
         {
           name: 'GraphClientSecret'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/GraphClientSecret)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/GraphClientSecret)'
         }
       ]
       cors: {
@@ -440,6 +446,9 @@ resource passengerFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         ]
       }
     }
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 
@@ -477,11 +486,11 @@ resource orchestratorsFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'DocDbApiKey'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbPrimaryKey)'
         }
         {
           name: 'DocDbEndpointUri'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbEndpoint)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbEndpoint)'
         }
         {
           name: 'DocDbRideShareDatabaseName'
@@ -541,7 +550,7 @@ resource orchestratorsFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'TripExternalizationsEventGridTopicApiKey'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/TripExternalizationsEventGridTopicApiKey)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/TripExternalizationsEventGridTopicApiKey)'
         }
       ]
       cors: {
@@ -550,6 +559,9 @@ resource orchestratorsFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         ]
       }
     }
+  }
+  identity: {
+    type: 'SystemAssigned'
   }
 }
 
@@ -566,7 +578,7 @@ resource tripArchiverFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
         }
         {
           name: 'DocDbConnectionString'
-          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVaultName}.vault.azure.net/secrets/CosmosDbConnectionString)'
+          value: '@Microsoft.KeyVault(SecretUri=https:://${keyVault.name}.vault.azure.net/secrets/CosmosDbConnectionString)'
         }
       ]
       cors: {
@@ -576,23 +588,23 @@ resource tripArchiverFunctionApp 'Microsoft.Web/sites@2021-03-01' = {
       }
     }
   }
+  identity: {
+    type: 'SystemAssigned'
+  }
 }
 
-module keyVault 'modules/keyvault.bicep' = {
-  name: keyVaultName
+module keyVaultPolicies 'modules/keyvaultPolicies.bicep' = {
+  name: '${keyVaultName}polices'
   params: {
     keyVaultName: keyVaultName
-    functionAppPrefix: applicationName
-    functionApps: functionsApps
-    resourceTags: resourceTags
-    location: location
+    functionAppPrincipalIds: [
+      tripFunctionApp.identity.principalId
+      driverFunctionApp.identity.principalId
+      passengerFunctionApp.identity.principalId
+      tripArchiverFunctionApp.identity.principalId
+      orchestratorsFunctionApp.identity.principalId
+    ]
   }
-  dependsOn: [
-    tripFunctionApp
-    driverFunctionApp
-    passengerFunctionApp
-    tripArchiverFunctionApp
-    orchestratorsFunctionApp
-  ]
 }
 
+output principalId string = orchestratorsFunctionApp.identity.principalId
