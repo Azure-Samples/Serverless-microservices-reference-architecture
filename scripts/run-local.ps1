@@ -1,6 +1,5 @@
 # NOTE: Install latest versions of Node and NPM: https://nodejs.org/en/download/
 # NOTE: Install latest version of func CLI: https://docs.microsoft.com/en-us/azure/azure-functions/functions-run-local
-# NOTE: Start Azure Storage Emulator https://docs.microsoft.com/en-us/azure/storage/common/storage-use-emulator
 
 $ErrorActionPreference = 'Stop'
 
