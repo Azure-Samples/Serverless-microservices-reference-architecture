@@ -31,3 +31,34 @@ jobs:
         cache-dependency-path: ./web/serverless-microservices-web
     - run: npm install
     - run: npm run build
+
+  arm64_job:
+      name: Build and Test for arm64
+      runs-on: ubuntu-20.04
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up QEMU
+          id: qemu
+          uses: docker/setup-qemu-action@v1
+        - name: Install and Run tests
+          run: |
+            docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+              arm64v8/ubuntu:20.04 \
+              bash -exc 'apt-get update && \
+              apt install sudo -y && \
+              sudo apt clean && \
+              sudo apt update && \
+              sudo apt install --fix-missing && \
+              sudo apt update --fix-missing && \
+              sudo apt install curl -y && \
+              curl -o- https://raw.githubusercontent.com/nvm-sh/nvm/v0.39.1/install.sh | bash  && \
+              export NVM_DIR="$([ -z "${XDG_CONFIG_HOME-}" ] && printf %s "${HOME}/.nvm" ||
+              printf %s "${XDG_CONFIG_HOME}/nvm")" && \
+              [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh" && \
+              nvm install node && \
+              node --version  && \
+              npm --version && \
+              cd web/serverless-microservices-web && \
+              npm install && \
+              export NODE_OPTIONS=--openssl-legacy-provider && \
+              npm run build'

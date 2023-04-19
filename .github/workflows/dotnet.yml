@@ -18,7 +18,38 @@ jobs:
     - name: Setup .NET
       uses: actions/setup-dotnet@v1
       with:
-        dotnet-version: 5.0.x
+        dotnet-version: 6.0.x
     - name: Build, restore, test
       shell: pwsh
       run: ./pipelines/build-dotnet.ps1
+
+  arm64_job:
+      name: Build and Test for arm64
+      runs-on: ubuntu-20.04
+      steps:
+        - uses: actions/checkout@v2
+        - name: Set up QEMU
+          id: qemu
+          uses: docker/setup-qemu-action@v1
+        - name: Install and Run tests
+          run: |
+            docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \
+              arm64v8/ubuntu:20.04 \
+              bash -exc 'apt-get update && \
+              apt install sudo -y && \
+              sudo apt clean && \
+              sudo apt update && \
+              sudo apt install --fix-missing && \
+              sudo apt update --fix-missing && \
+              sudo apt install wget -y && \
+              wget https://dot.net/v1/dotnet-install.sh -O dotnet-install.sh && \
+              sudo chmod +x ./dotnet-install.sh && \
+              ./dotnet-install.sh --channel 6.0 && \
+              export DOTNET_ROOT=$HOME/.dotnet && \
+              export PATH=$PATH:$HOME/.dotnet:$HOME/.dotnet/tools && \
+              export DOTNET_SYSTEM_GLOBALIZATION_INVARIANT=1 && \
+              dotnet --version && \
+              cd dotnet && \
+              dotnet restore && \
+              dotnet build -c Release && \
+              dotnet test -c Release'
