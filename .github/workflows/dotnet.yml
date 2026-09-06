@@ -14,9 +14,9 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
     - name: Setup .NET
-      uses: actions/setup-dotnet@v1
+      uses: actions/setup-dotnet@871f041373faaad213a635d9afb62905ec029bbb # v1.10.1
       with:
         dotnet-version: 6.0.x
     - name: Build, restore, test
@@ -27,10 +27,10 @@ jobs:
       name: Build and Test for arm64
       runs-on: ubuntu-20.04
       steps:
-        - uses: actions/checkout@v2
+        - uses: actions/checkout@0717577d45739eb3c851188b29f50ed6c0b2194e # v2.8.0
         - name: Set up QEMU
           id: qemu
-          uses: docker/setup-qemu-action@v1
+          uses: docker/setup-qemu-action@27d0a4f181a40b142cce983c5393082c365d1480 # v1.2.0
         - name: Install and Run tests
           run: |
             docker run --rm -v ${{ github.workspace }}:/ws:rw --workdir=/ws \

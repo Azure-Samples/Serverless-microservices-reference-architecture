@@ -19,10 +19,10 @@ jobs:
       security-events: write
     steps:
       - name: Checkout
-        uses: actions/checkout@v4
+        uses: actions/checkout@11d5960a326750d5838078e36cf38b85af677262 # v4.4.0
 
       - name: Run PSRule analysis
-        uses: microsoft/ps-rule@v2.9.0
+        uses: microsoft/ps-rule@46451b8f5258c41beb5ae69ed7190ccbba84112c # v2.9.0
         with:
           modules: PSRule.Rules.Azure
           baseline: Azure.Pillar.Security
@@ -37,7 +37,7 @@ jobs:
           PSRULE_CONFIGURATION_AZURE_BICEP_FILE_EXPANSION_TIMEOUT: '30'
 
       - name: Upload results to security tab
-        uses: github/codeql-action/upload-sarif@v3
+        uses: github/codeql-action/upload-sarif@6f5948dfacef28e207b48d0905cf90c03365536d # v3.37.9
         if: github.repository_owner == 'Azure-Samples'
         with:
           sarif_file: reports/ps-rule-results.sarif
